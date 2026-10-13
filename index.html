@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zen Bonsai Syndicate — Imperial Botanical Empire v1.11</title>
+<style>
+  :root {
+    --bg-base: #08080a;
+    --bg-panel: #111116;
+    --bg-card: #16161f;
+    --border-dim: #252533;
+    --border-glow: #22c55e;
+    
+    --neon-green: #22c55e;
+    --neon-pink: #ec4899;
+    --neon-blue: #38bdf8;
+    --neon-gold: #fbbf24;
+    --neon-red: #f43f5e;
+    --neon-purple: #a855f7;
+    
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 60px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  /* HUD HEADER */
+  .hud {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 14, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-glow);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: 0 4px 25px rgba(34, 197, 94, 0.12);
+  }
+  .hud-brand {
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    color: var(--neon-green);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hud-stats { display: flex; gap: 10px; font-family: var(--font-mono); font-size: 0.85rem; flex-wrap: wrap; align-items: center; }
+  .stat-badge {
+    background: #000;
+    border: 1px solid var(--border-dim);
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .val-money { color: var(--neon-gold); font-weight: bold; }
+  .val-zen { color: var(--neon-pink); font-weight: bold; }
+  .val-fert { color: var(--neon-blue); font-weight: bold; }
+
+  /* NAVIGATION TABS */
+  .tabs {
+    display: flex;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-dim);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 13px 18px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
+  .tab-btn.active { color: var(--neon-green); border-bottom-color: var(--neon-green); background: #0c0c10; }
+
+  /* CONTAINERS & GRIDS */
+  .container { max-width: 1440px; margin: 18px auto; padding: 0 16px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  @media (max-width: 850px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* BUTTONS */
+  .btn {
+    background: #000;
+    border: 1px solid var(--border-dim);
+    color: var(--text-main);
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    user-select: none;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--border-dim) !important; box-shadow: none !important; }
+  
+  .btn-green { border-color: var(--neon-green); color: var(--neon-green); background: rgba(34, 197, 94, 0.05); }
+  .btn-green:hover:not(:disabled) { background: var(--neon-green); color: #000; }
+  .btn-gold { border-color: var(--neon-gold); color: var(--neon-gold); background: rgba(251, 191, 36, 0.05); }
+  .btn-gold:hover:not(:disabled) { background: var(--neon-gold); color: #000; }
+  .btn-blue { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); }
+  .btn-blue:hover:not(:disabled) { background: var(--neon-blue); color: #000; }
+  .btn-red { border-color: var(--neon-red); color: var(--neon-red); background: rgba(244, 63, 94, 0.05); }
+  .btn-red:hover:not(:disabled) { background: var(--neon-red); color: #000; }
+  .btn-pink { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(236, 72, 153, 0.05); }
+  .btn-purple { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(168, 85, 247, 0.05); }
+  .btn-sm { padding: 5px 8px; font-size: 0.72rem; }
+
+  /* PANELS */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-dim);
+    border-radius: 8px;
+    padding: 18px;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+    margin-bottom: 16px;
+  }
+  .panel-header {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--neon-green);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px dashed #2a2a38;
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* 64x64 HD CANVAS DISPLAY & CARDS */
+  .tree-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .tree-card:hover { border-color: var(--neon-blue); transform: translateY(-2px); }
+  .tree-display {
+    background: #040406;
+    border-bottom: 1px solid var(--border-dim);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    position: relative;
+    background-image: radial-gradient(circle at center, #161622 0%, #040406 100%);
+  }
+  
+  /* CRUCIAL 64x64 PIXEL-ART SCALING */
+  .pixel-canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: transparent;
+    display: block;
+  }
+  .canvas-sm { width: 140px; height: 140px; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.85)); }
+  .canvas-lg { width: 280px; height: 280px; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.95)); margin: 0 auto; border: 1px solid #222; background: #000; border-radius: 4px; }
+  .canvas-auc { width: 160px; height: 160px; filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.2)); }
+
+  .tree-info { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .tree-name { font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; justify-content: space-between; align-items: flex-start; }
+  .tree-tier { font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .tier-0 { background: #27272a; color: #a1a1aa; border: 1px solid #444; }
+  .tier-1 { background: rgba(34, 197, 94, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
+  .tier-2 { background: rgba(56, 189, 248, 0.15); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
+  .tier-3 { background: rgba(236, 72, 153, 0.15); color: var(--neon-pink); border: 1px solid var(--neon-pink); }
+  .tier-4 { background: rgba(251, 191, 36, 0.15); color: var(--neon-gold); border: 1px solid var(--neon-gold); box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
+
+  .tree-stats { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .stat-row { display: flex; justify-content: space-between; background: #0a0a0f; padding: 3px 6px; border-radius: 4px; border: 1px solid #1c1c28; }
+  .trade-code { font-family: var(--font-mono); font-size: 0.68rem; background: #000; padding: 5px; border: 1px dashed #3a3a4f; color: var(--neon-green); text-align: center; margin-top: auto; letter-spacing: 2px; }
+
+  /* AUCTION SYSTEM (10-LANE HIGH VELOCITY) */
+  .auction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .auc-lane-card {
+    background: #09090d;
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .auc-lane-card.active { border-color: var(--neon-gold); box-shadow: 0 0 15px rgba(251, 191, 36, 0.1); }
+  .auc-lane-pulse {
+    position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+    background: var(--neon-gold);
+    transform-origin: left;
+    transition: transform 0.1s linear;
+  }
+  .auc-mini-log {
+    height: 70px;
+    overflow-y: auto;
+    background: #000;
+    border: 1px solid #1f1f2e;
+    padding: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-radius: 4px;
+  }
+
+  /* GACHA CRATES */
+  .gacha-crate {
+    background: #0b0b10;
+    border: 1px dashed var(--border-dim);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+  }
+  .gacha-crate:hover { border-color: var(--neon-blue); background: #11111a; transform: translateY(-2px); }
+  .crate-icon { font-size: 3rem; filter: drop-shadow(0 0 8px rgba(255,255,255,0.1)); }
+
+  /* BURNER PHONE & ORDERS */
+  .order-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .order-vip { border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(236, 72, 153, 0.15); }
+
+  /* TOAST NOTIFICATIONS */
+  #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; pointer-events: none; }
+  .toast {
+    background: #000; border-left: 4px solid var(--neon-green); color: #fff;
+    padding: 12px 20px; font-family: var(--font-mono); font-size: 0.8rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.85); border-radius: 4px;
+    animation: fadeUp 0.25s ease-out forwards; opacity: 0; transform: translateY(15px);
+  }
+  .toast.error { border-left-color: var(--neon-red); }
+  .toast.gold { border-left-color: var(--neon-gold); }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- TOP HUD STATUS BAR -->
+<div class="hud">
+  <div class="hud-brand">
+    <span style="font-size: 1.4rem;">🌲</span> ZEN BONSAI :: IMPERIAL SYNDICATE v1.11
+  </div>
+  <div class="hud-stats">
+    <div class="stat-badge"><span class="val-money">¥</span> <span id="ui-money">12,500</span></div>
+    <div class="stat-badge"><span class="val-zen">☯</span> <span id="ui-zen">250</span></div>
+    <div class="stat-badge"><span class="val-fert">🧪 FERT:</span> <span id="ui-fert">100</span>L</div>
+    <div class="stat-badge" style="color:var(--text-muted);">FLEET: <span id="ui-fleet" style="color:#fff;">3/3 IDLE</span></div>
+    <div class="stat-badge" style="color:var(--text-muted);">BENCH: <span id="ui-bench" style="color:#fff;">0</span>/120</div>
+    <button class="btn btn-sm btn-gold" id="btnGod" onclick="toggleGodMode()">⚡ GOD MODE: OFF</button>
+    <button class="btn btn-sm" onclick="saveGame(true)">💾 SAVE</button>
+  </div>
+</div>
+
+<!-- NAVIGATION TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('bench')">⛩️ Benches (Vault)</button>
+  <button class="tab-btn" onclick="switchTab('nursery')">🌱 Wholesale Nursery (Gacha)</button>
+  <button class="tab-btn" onclick="switchTab('dispatch')">🚚 Exhibition Dispatch (Logistics)</button>
+  <button class="tab-btn" onclick="switchTab('workshop')">✂️ Studio Workshop & MRO</button>
+  <button class="tab-btn" onclick="switchTab('burner')">📱 Burner Phone (VIP Contracts)</button>
+  <button class="tab-btn" onclick="switchTab('auction')">🔨 10-Lane Wholesale Auction</button>
+  <button class="tab-btn" onclick="switchTab('upgrades')">🏢 Greenhouse Automation</button>
+</div>
+
+<!-- MAIN VIEWPORT CONTAINER -->
+<div class="container">
+
+  <!-- 1. BENCHES (VAULT INVENTORY) -->
+  <div id="view-bench" class="view active">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Collection Benches (<span id="bench-header-count">0</span> Trees)</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-sm btn-blue" onclick="quickWaterAll()">💧 Hydrate All (¥<span id="ui-bulk-cost">0</span>)</button>
+          <button class="btn btn-sm btn-green" onclick="renderBenches()">🔄 Refresh Matrix</button>
+        </div>
+      </div>
+      <div class="grid-3" id="bench-grid"></div>
+    </div>
+  </div>
+
+  <!-- 2. NURSERY WHOLESALE (GACHA PROCUREMENT) -->
+  <div id="view-nursery" class="view">
+    <div class="panel">
+      <div class="panel-header">Wholesale Seedlings & Raw Yamadori Imports</div>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 20px; line-height: 1.5;">
+        Procure genetic botanical specimens. Every unit is procedurally compiled into a <b>64×64 cellular pixel-art matrix</b> with a unique Base36 trade-code, biological age, vigor, and structural branch curvature.
+      </p>
+      
+      <div class="grid-4">
+        <div class="gacha-crate">
+          <div>
+            <div class="crate-icon">🌱</div>
+            <h3 style="color:var(--neon-green); font-size:1rem; margin-bottom:4px;">Bulk Seedling Flats</h3>
+            <p style="font-size:0.75rem; color:#888;">Nursery baseline. 85% Common, 14% Specimen, 1% Exhibition.</p>
+          </div>
+          <button class="btn btn-green" onclick="buyGacha('seedling')">Buy Flat - ¥600</button>
+        </div>
+
+        <div class="gacha-crate">
+          <div>
+            <div class="crate-icon">🪴</div>
+            <h3 style="color:var(--neon-blue); font-size:1rem; margin-bottom:4px;">Imported Pre-Bonsai</h3>
+            <p style="font-size:0.75rem; color:#888;">Grown 15-30 yrs. Guaranteed Specimen+. 15% Exhibition, 2% Masterpiece.</p>
+          </div>
+          <button class="btn btn-blue" onclick="buyGacha('import')">Import Crate - ¥4,500</button>
+        </div>
+
+        <div class="gacha-crate">
+          <div>
+            <div class="crate-icon">🗻</div>
+            <h3 style="color:var(--neon-gold); font-size:1rem; margin-bottom:4px;">Alpine Yamadori Expedition</h3>
+            <p style="font-size:0.75rem; color:#888;">Cliff-harvested. Guaranteed Exhibition+. 18% Masterpiece, 2% National Treasure.</p>
+          </div>
+          <button class="btn btn-gold" onclick="buyGacha('yamadori')">Expedition - ¥22,000</button>
+        </div>
+
+        <div class="gacha-crate">
+          <div>
+            <div class="crate-icon">👑</div>
+            <h3 style="color:var(--neon-purple); font-size:1rem; margin-bottom:4px;">Imperial Dynasty Vault</h3>
+            <p style="font-size:0.75rem; color:#888;">Centuries-old heritage trees. Guaranteed Masterpiece+. 15% National Treasure.</p>
+          </div>
+          <button class="btn btn-purple" onclick="buyGacha('dynasty')">Sealed Auction - ¥95,000</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. EXHIBITION DISPATCH (LOGISTICS & ROUTES) -->
+  <div id="view-dispatch" class="view">
+    <div class="panel">
+      <div class="panel-header">Logistics Fleet & Gallery Consignment Circuits</div>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 16px;">
+        Dispatch your styled bonsai to commercial showrooms, luxury hotel lobbies, and tea houses across Japan. High vigor guarantees 100% consignment payout. Low vigor risks branch damage in transit!
+      </p>
+      <div class="grid-3" id="dispatch-zones"></div>
+    </div>
+  </div>
+
+  <!-- 4. WORKSHOP & MRO (TURNTABLE REFINEMENT) -->
+  <div id="view-workshop" class="view">
+    <div class="grid-2">
+      <!-- High-Res Viewer -->
+      <div class="panel" style="text-align: center;">
+        <div class="panel-header" id="ws-title">Turntable Examination (64×64 HD Canvas)</div>
+        <canvas id="ws-canvas" class="pixel-canvas canvas-lg" width="64" height="64"></canvas>
+        <div class="trade-code" id="ws-code" style="margin-top: 16px; font-size:0.95rem; padding: 8px;">NO SPECIMEN MOUNTED</div>
+      </div>
+      
+      <!-- Studio Controls -->
+      <div class="panel">
+        <div class="panel-header">Bonsai MRO & Styling Bench</div>
+        <div id="ws-empty-msg" style="color:#666; font-style:italic;">Select any tree from your Benches to mount it on the turntable.</div>
+        
+        <div id="ws-active-tools" style="display:none; flex-direction: column; gap: 12px;">
+          <div style="background:#0a0a0f; padding:14px; border:1px solid #222; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem;">
+            <div style="color:var(--neon-green); font-weight:bold; margin-bottom:8px; border-bottom:1px solid #1f1f2e; padding-bottom:4px;">BIOLOGICAL METRICS</div>
+            <div class="stat-row" style="margin-bottom:4px;"><span>Species:</span> <span id="ws-spec" style="color:#fff;">--</span></div>
+            <div class="stat-row" style="margin-bottom:4px;"><span>Estimated Age:</span> <span id="ws-age" style="color:#fff;">--</span></div>
+            <div class="stat-row" style="margin-bottom:4px;"><span>Vigor / Hydration:</span> <span id="ws-vigor" style="color:var(--neon-blue);">--</span></div>
+            <div class="stat-row" style="margin-bottom:4px;"><span>Growth Style:</span> <span id="ws-style" style="color:var(--neon-gold);">--</span></div>
+            <div class="stat-row"><span>Appraised Valuation:</span> <span id="ws-val" style="color:var(--neon-gold); font-weight:bold;">--</span></div>
+          </div>
+          
+          <button class="btn btn-blue" onclick="wsAction('water')">💧 Deep Root Irrigation (Costs ¥80 + 2L Fert)</button>
+          <button class="btn btn-pink" onclick="wsAction('prune')">✂️ Prune Silhouette & Foliage Pads (Costs 15 ☯)</button>
+          <button class="btn btn-gold" onclick="wsAction('wire')">🌀 Restructure With Copper Wire (Costs 35 ☯)</button>
+          <button class="btn btn-purple" onclick="wsAction('jin')">🪵 Carve Deadwood Shari / Jin (Costs 60 ☯)</button>
+          
+          <div style="border-bottom: 1px dashed #222; margin: 6px 0;"></div>
+          <button class="btn btn-red" onclick="wsSendToAuction()">🔨 Dispatch Immediately to Live Wholesale Auction</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. BURNER PHONE (VIP CONTRACTS) -->
+  <div id="view-burner" class="view">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Encrypted Burner Phone :: Private Broker Orders</span>
+        <button class="btn btn-sm btn-gold" onclick="refreshBurnerOrders()">🔄 Scramble Signals (¥500)</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 16px;">
+        Private collectors, corporate executives, and tea masters require specific trees matching strict criteria. Deliver matching specimens before time expires for enormous bounties.
+      </p>
+      <div class="grid-3" id="burner-grid"></div>
+    </div>
+  </div>
+
+  <!-- 6. 10-LANE WHOLESALE AUCTION BLOCK -->
+  <div id="view-auction" class="view">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Wholesale Botanical Trading Exchange (10 Active Lanes)</span>
+        <span style="font-size:0.8rem; color:var(--neon-gold); font-family:var(--font-mono);">MARKET VOLATILITY: ACTIVE</span>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 16px;">
+        Syndicate wholesale auction block modeled after Tokyo central floral markets. Trees undergo rapid automated bidding wars with snipe extensions.
+      </p>
+      <div class="auction-grid" id="auction-lanes-container"></div>
+    </div>
+  </div>
+
+  <!-- 7. UPGRADES (GREENHOUSE AUTOMATION) -->
+  <div id="view-upgrades" class="view">
+    <div class="panel">
+      <div class="panel-header">Greenhouse Infrastructure & Automated Systems</div>
+      <div class="grid-3" id="upgrades-grid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+/* =========================================================================
+   ZEN BONSAI IMPERIAL SYNDICATE v1.11 — ENGINE SPECIFICATIONS
+   - 64x64 HD Cellular Procedural Bonsai Generator (Dual-Tone Pixel Canvas)
+   - Base36 Trade Code Encoder & Parser
+   - Logistics Delivery Fleet & Consignment Zones
+   - 10-Lane Simultaneous Wholesale Auction Exchange
+   - VIP Burner Phone Encrypted Mission System
+========================================================================= */
+
+const TIERS = [
+  { id: 0, name: "Nursery Stock", mult: 1, color: "tier-0" },
+  { id: 1, name: "Specimen", mult: 3.5, color: "tier-1" },
+  { id: 2, name: "Exhibition", mult: 12, color: "tier-2" },
+  { id: 3, name: "Masterpiece", mult: 55, color: "tier-3" },
+  { id: 4, name: "National Treasure", mult: 300, color: "tier-4" }
+];
+
+const SPECIES = [
+  { id: 0, name: "Shimpaku Juniper", bark: "#4d3326", folMain: "#227335", folAlt: "#144820", deadwood: "#f1f5f9" },
+  { id: 1, name: "Trident Maple", bark: "#665749", folMain: "#dc2626", folAlt: "#991b1b", deadwood: "#e2e8f0" },
+  { id: 2, name: "Japanese Black Pine", bark: "#2c2623", folMain: "#14532d", folAlt: "#052e16", deadwood: "#f8fafc" },
+  { id: 3, name: "Weeping Sakura", bark: "#443435", folMain: "#f472b6", folAlt: "#db2777", deadwood: "#e2e8f0" },
+  { id: 4, name: "Chinese Elm", bark: "#594d42", folMain: "#65a30d", folAlt: "#3f6212", deadwood: "#cbd5e1" },
+  { id: 5, name: "Royal Jacaranda", bark: "#524a44", folMain: "#a855f7", folAlt: "#7e22ce", deadwood: "#f1f5f9" },
+  { id: 6, name: "Golden Larch", bark: "#4a3b2c", folMain: "#eab308", folAlt: "#ca8a04", deadwood: "#f8fafc" },
+  { id: 7, name: "Satsuki Azalea", bark: "#40312d", folMain: "#fb7185", folAlt: "#e11d48", deadwood: "#f1f5f9" }
+];
+
+const STYLES = [
+  { id: 0, name: "Chokkan (Formal Upright)" },
+  { id: 1, name: "Moyogi (Informal Upright)" },
+  { id: 2, name: "Shakan (Slanting)" },
+  { id: 3, name: "Kengai (Cascade)" },
+  { id: 4, name: "Fukinagashi (Windswept)" },
+  { id: 5, name: "Bunjingi (Literati)" },
+  { id: 6, name: "Sokan (Twin Trunk)" }
+];
+
+const POT_PALETTES = [
+  { rim: "#1a1a24", body: "#2a2a3a", accent: "#3b82f6" },
+  { rim: "#3b1e13", body: "#572b1b", accent: "#d97706" },
+  { rim: "#132b1e", body: "#1c402d", accent: "#22c55e" },
+  { rim: "#2b1324", body: "#401c36", accent: "#ec4899" },
+  { rim: "#1f2937", body: "#111827", accent: "#6b7280" },
+  { rim: "#713f12", body: "#854d0e", accent: "#eab308" }
+];
+
+const SYNDICATES = [
+  "Omiya Nursery", "Kyoto Imperial", "Tokyo Metro Elite", "Osaka Floral Syndicate",
+  "Sapporo Mountain Guild", "Kobe Botanical Trade", "Nagoya Heritage", "Fukuoka Traders",
+  "Shikoku Island Clan", "Sendai Forest Syndicate", "Yokohama Pier Exports", "Zenith Conglomerate"
+];
+
+const DISPATCH_ROUTES = [
+  { id: 'r1', name: 'Local Kyoto Zen Tea House', time: 15, reqTier: 0, reward: 1200, zen: 8, costFert: 5 },
+  { id: 'r2', name: 'Ginza Tokyo Flagship Showroom', time: 30, reqTier: 1, reward: 4800, zen: 25, costFert: 12 },
+  { id: 'r3', name: 'Osaka High Roller Penthouse Suite', time: 60, reqTier: 2, reward: 18000, zen: 70, costFert: 25 },
+  { id: 'r4', name: 'Imperial Arboretum Exhibition Gala', time: 120, reqTier: 3, reward: 85000, zen: 280, costFert: 60 }
+];
+
+const UPGRADES_DEF = [
+  { id: 'auto_water', name: 'Automated Drip Hydroponics', desc: 'Maintains vigor across all bench inventory over time.', cost: 3500, max: 5 },
+  { id: 'fert_synth', name: 'Nutrient Tea Synthesizer', desc: 'Generates free chemical fertilizer each market tick.', cost: 5000, max: 5 },
+  { id: 'fleet_size', name: 'Refrigerated Transport Vans', desc: 'Adds +1 active fleet courier slot for simultaneous dispatches.', cost: 8000, max: 4 },
+  { id: 'snipe_radar', name: 'Auction Insider Intelligence', desc: 'Increases final buyout bids in wholesale trading lanes by 15% per tier.', cost: 12000, max: 5 }
+];
+
+/* =========================================================================
+   STATE MANAGEMENT
+========================================================================= */
+
+let state = {
+  money: 12500,
+  zen: 250,
+  fertilizer: 100,
+  godMode: false,
+  trees: [],
+  activeTurntableId: null,
+  fleetSlots: 3,
+  dispatches: [], // { id, routeId, treeId, endTime, maxTime }
+  burnerOrders: [],
+  auctionLanes: Array(10).fill(null).map((_, i) => createEmptyAuctionLane(i + 1)),
+  upgrades: {
+    auto_water: 0,
+    fert_synth: 0,
+    fleet_size: 0,
+    snipe_radar: 0
+  }
+};
+
+function createEmptyAuctionLane(id) {
+  return {
+    laneId: id,
+    active: false,
+    tree: null,
+    currentBid: 0,
+    highestBidder: 'Awaiting Consignment',
+    timeLeft: 0,
+    totalTime: 15,
+    logs: []
+  };
+}
+
+/* =========================================================================
+   BASE36 SEEDING & CELLULAR GENERATOR
+========================================================================= */
+
+function numToBase36(num, pad) {
+  return num.toString(36).toUpperCase().padStart(pad, '0');
+}
+
+function parseBase36(str) {
+  return parseInt(str, 36);
+}
+
+function Mulberry32(seed) {
+  return function() {
+    var t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function generateBonsaiCode(species, style, tier, pot, trunkSeed, folSeed) {
+  // Format: [Sp][St][Tr]-[Pot][TrunkSeed3]-[FolSeed3]
+  return `${numToBase36(species,1)}${numToBase36(style,1)}${numToBase36(tier,1)}-${numToBase36(pot,1)}${numToBase36(trunkSeed,3)}-${numToBase36(folSeed,3)}`;
+}
+
+function parseBonsaiCode(code) {
+  let parts = code.split('-');
+  return {
+    species: parseBase36(parts[0][0]),
+    style: parseBase36(parts[0][1]),
+    tier: parseBase36(parts[0][2]),
+    pot: parseBase36(parts[1][0]),
+    trunkSeed: parseBase36(parts[1].substring(1,4)),
+    folSeed: parseBase36(parts[2])
+  };
+}
+
+/* =========================================================================
+   64x64 HD CELLULAR CANVAS RENDERING ENGINE
+========================================================================= */
+
+function drawBonsaiHD(canvas, code) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 64, 64);
+  
+  const gene = parseBonsaiCode(code);
+  const spec = SPECIES[gene.species];
+  const potStyle = POT_PALETTES[gene.pot % POT_PALETTES.length];
+  
+  const randT = Mulberry32(gene.trunkSeed);
+  const randF = Mulberry32(gene.folSeed);
+
+  // 1. CERAMIC DISPLAY POT (Y: 53 to 60)
+  const potW = 32 + Math.floor(randT() * 10); // 32 to 41 wide
+  const potX = Math.floor((64 - potW) / 2);
+  const potY = 53;
+  const potH = 7;
+
+  // Pot Shadow / Floor line
+  ctx.fillStyle = "rgba(0,0,0,0.4)";
+  ctx.fillRect(potX - 2, 60, potW + 4, 2);
+
+  // Pot Body
+  ctx.fillStyle = potStyle.body;
+  ctx.fillRect(potX, potY, potW, potH);
+
+  // Pot Rim & Glaze Highlights
+  ctx.fillStyle = potStyle.rim;
+  ctx.fillRect(potX - 1, potY, potW + 2, 2);
+  ctx.fillStyle = potStyle.accent;
+  ctx.fillRect(potX + 2, potY + 2, potW - 4, 1);
+
+  // Pot Feet
+  ctx.fillStyle = potStyle.rim;
+  ctx.fillRect(potX + 3, potY + potH, 3, 2);
+  ctx.fillRect(potX + potW - 6, potY + potH, 3, 2);
+
+  // 2. ROOT FLARE (NEBARI) & TRUNK GROWTH (64x64 Spline Walk)
+  ctx.fillStyle = spec.bark;
+  let trunkNodes = [];
+  let tx = 32;
+  let ty = potY;
+  let tWidth = 6 + Math.floor(randT() * 3); // Root base flare: 6 to 8 pixels wide
+
+  // Anchor Nebari base
+  ctx.fillRect(tx - Math.floor(tWidth / 2) - 2, ty - 1, tWidth + 4, 2);
+
+  const iterations = 18 + Math.floor(randT() * 10);
+
+  for (let i = 0; i < iterations; i++) {
+    let dx = 0;
+    let dy = -(2 + Math.floor(randT() * 2));
+
+    // Growth morphology styles
+    if (gene.style === 0) { // Chokkan (Formal Upright)
+      dx = (randT() > 0.5 ? 1 : -1) * (randT() < 0.25 ? 1 : 0);
+    } else if (gene.style === 1) { // Moyogi (S-Curve)
+      dx = Math.sin(i * 0.7) * 3.5;
+    } else if (gene.style === 2) { // Shakan (Slanting)
+      dx = 2.2 + (randT() * 1.5);
+    } else if (gene.style === 3) { // Kengai (Cascade below pot)
+      dx = (i < 5) ? 2 : -3.5;
+      dy = (i < 5) ? -2 : 3;
+    } else if (gene.style === 4) { // Fukinagashi (Windswept)
+      dx = 3.8 + (randT() * 2);
+      dy = -1;
+    } else if (gene.style === 5) { // Bunjingi (Literati slender erratic)
+      dx = (randT() > 0.5 ? 2.5 : -2.5);
+      dy = -3.5;
+      tWidth = Math.min(tWidth, 3);
+    } else if (gene.style === 6) { // Sokan (Twin trunk flare)
+      dx = (i % 2 === 0 ? 2 : -1.5);
+    }
+
+    tx += dx;
+    ty += dy;
+
+    // Gradual taper towards apex
+    if (i > 4 && randT() > 0.45 && tWidth > 2) {
+      tWidth--;
+    }
+
+    const drawX = Math.floor(tx) - Math.floor(tWidth / 2);
+    const drawY = Math.floor(ty);
+    
+    trunkNodes.push({ x: Math.floor(tx), y: Math.floor(ty), w: tWidth });
+    ctx.fillRect(drawX, drawY, tWidth, Math.abs(dy) + 1);
+
+    // Deadwood (Jin / Shari) Bleached Spikes
+    if (randT() < 0.12 && gene.tier >= 1) {
+      ctx.fillStyle = spec.deadwood;
+      const jinLength = 3 + Math.floor(randT() * 4);
+      const jinDir = randT() > 0.5 ? 1 : -1;
+      ctx.fillRect(Math.floor(tx) + (jinDir * Math.floor(tWidth / 2)), drawY, jinLength, 1);
+      ctx.fillStyle = spec.bark; // restore bark
+    }
+  }
+
+  // 3. FOLIAGE CLOUDS (DUAL-TONE LAYERED CANOPY PADS)
+  let folPads = [];
+  trunkNodes.forEach((node, idx) => {
+    let padChance = 0.32;
+    if (gene.style === 5) padChance = idx > iterations - 4 ? 0.9 : 0.05; // Literati only top pads
+    if (gene.style === 4) padChance = 0.55; // Windswept dense lateral clouds
+
+    if (randF() < padChance && idx > 3) {
+      let cx = node.x;
+      let cy = node.y;
+      if (gene.style === 4) cx += 8; // Lateral shift for wind
+
+      let rad = 5 + Math.floor(randF() * 6); // 5 to 10px radius
+      if (gene.tier >= 2) rad += 2; // Lush canopy on higher tiers
+      folPads.push({ x: cx, y: cy, r: rad });
+    }
+  });
+
+  // Always enforce an apex crown
+  if (trunkNodes.length > 0) {
+    const top = trunkNodes[trunkNodes.length - 1];
+    folPads.push({ x: top.x, y: top.y, r: 7 + Math.floor(randF() * 3) });
+  }
+
+  // Layer 1: Deep Core Shadow Foliage
+  folPads.forEach(pad => {
+    paintFoliageCluster(ctx, pad.x, pad.y, pad.r, spec.folAlt, randF, 0.2);
+  });
+
+  // Layer 2: Sunlit Highlight Foliage (Shifted up 1px)
+  folPads.forEach(pad => {
+    paintFoliageCluster(ctx, pad.x, pad.y - 1, Math.max(3, pad.r - 2), spec.folMain, randF, 0.25);
+  });
+}
+
+function paintFoliageCluster(ctx, cx, cy, radius, color, prng, skipThreshold) {
+  ctx.fillStyle = color;
+  for (let y = -radius; y <= radius; y++) {
+    for (let x = -radius; x <= radius; x++) {
+      if ((x * x) + (y * y) <= (radius * radius)) {
+        if (prng() > skipThreshold) {
+          ctx.fillRect(cx + x, cy + y, 1, 1);
+        }
+      }
+    }
+  }
+}
+
+/* =========================================================================
+   GAME ENGINE ACTIONS & LOGIC
+========================================================================= */
+
+function buyGacha(crateKey) {
+  if (state.trees.length >= 120) return toast("Bench capacity full (120/120)!", "error");
+
+  const costs = { seedling: 600, import: 4500, yamadori: 22000, dynasty: 95000 };
+  const cost = costs[crateKey];
+
+  if (state.money < cost && !state.godMode) return toast("Insufficient funds for procurement!", "error");
+  if (!state.godMode) state.money -= cost;
+
+  // Rarity rolls
+  let tier = 0;
+  let r = Math.random();
+  if (crateKey === 'seedling') {
+    tier = r < 0.01 ? 2 : (r < 0.15 ? 1 : 0);
+  } else if (crateKey === 'import') {
+    tier = r < 0.02 ? 3 : (r < 0.17 ? 2 : 1);
+  } else if (crateKey === 'yamadori') {
+    tier = r < 0.02 ? 4 : (r < 0.20 ? 3 : 2);
+  } else if (crateKey === 'dynasty') {
+    tier = r < 0.18 ? 4 : 3;
+  }
+
+  const specId = Math.floor(Math.random() * SPECIES.length);
+  const styleId = Math.floor(Math.random() * STYLES.length);
+  const potId = Math.floor(Math.random() * POT_PALETTES.length);
+  const tSeed = Math.floor(Math.random() * 46600);
+  const fSeed = Math.floor(Math.random() * 46600);
+
+  const code = generateBonsaiCode(specId, styleId, tier, potId, tSeed, fSeed);
+  
+  let baseAge = 8 + (tier * 35) + Math.floor(Math.random() * 30);
+  if (crateKey === 'yamadori') baseAge += 70;
+  if (crateKey === 'dynasty') baseAge += 180;
+
+  const baseVal = Math.floor(120 * TIERS[tier].mult * (1 + (baseAge / 80)));
+
+  const newTree = {
+    id: 'tr_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+    code: code,
+    speciesId: specId,
+    styleId: styleId,
+    tierId: tier,
+    age: baseAge,
+    vigor: 60 + Math.floor(Math.random() * 35),
+    baseVal: baseVal
+  };
+
+  state.trees.push(newTree);
+  updateHUD();
+  renderBenches();
+  toast(`Acquired: ${SPECIES[specId].name} [${TIERS[tier].name}]!`, "gold");
+}
+
+/* =========================================================================
+   WORKSHOP (MRO REFINEMENT BENCH)
+========================================================================= */
+
+function mountTurntable(treeId) {
+  state.activeTurntableId = treeId;
+  switchTab('workshop');
+  renderWorkshop();
+}
+
+function renderWorkshop() {
+  const empty = document.getElementById('ws-empty-msg');
+  const active = document.getElementById('ws-active-tools');
+  const canvas = document.getElementById('ws-canvas');
+
+  if (!state.activeTurntableId) {
+    empty.style.display = 'block';
+    active.style.display = 'none';
+    document.getElementById('ws-code').innerText = 'NO SPECIMEN MOUNTED';
+    canvas.getContext('2d').clearRect(0, 0, 64, 64);
+    return;
+  }
+
+  const tree = state.trees.find(t => t.id === state.activeTurntableId);
+  if (!tree) {
+    state.activeTurntableId = null;
+    return renderWorkshop();
+  }
+
+  empty.style.display = 'none';
+  active.style.display = 'flex';
+
+  document.getElementById('ws-code').innerText = tree.code;
+  document.getElementById('ws-spec').innerText = SPECIES[tree.speciesId].name;
+  document.getElementById('ws-age').innerText = `${tree.age} YRS`;
+  document.getElementById('ws-vigor').innerText = `${tree.vigor} / 100`;
+  document.getElementById('ws-style').innerText = STYLES[tree.styleId].name;
+  document.getElementById('ws-val').innerText = `¥${tree.baseVal.toLocaleString()}`;
+
+  drawBonsaiHD(canvas, tree.code);
+}
+
+function wsAction(type) {
+  const tree = state.trees.find(t => t.id === state.activeTurntableId);
+  if (!tree) return;
+
+  if (type === 'water') {
+    if (state.money < 80 && !state.godMode) return toast("Insufficient funds (¥80 required)!", "error");
+    if (state.fertilizer < 2 && !state.godMode) return toast("Need 2L Fertilizer!", "error");
+    if (!state.godMode) {
+      state.money -= 80;
+      state.fertilizer -= 2;
+    }
+    tree.vigor = Math.min(100, tree.vigor + 25);
+    toast("Hydrated root flare! Vigor restored to " + tree.vigor + "%");
+  } else if (type === 'prune') {
+    if (state.zen < 15 && !state.godMode) return toast("Need 15 Zen (☯)!", "error");
+    if (tree.vigor < 25) return toast("Tree is too dehydrated to withstand pruning!", "error");
+    if (!state.godMode) {
+      state.zen -= 15;
+      tree.vigor -= 15;
+    }
+    const valBoost = Math.floor(tree.baseVal * 0.14);
+    tree.baseVal += valBoost;
+
+    // Mutate foliage seed slightly
+    const gene = parseBonsaiCode(tree.code);
+    gene.folSeed = (gene.folSeed + 17) % 46600;
+    tree.code = generateBonsaiCode(gene.species, gene.style, gene.tier, gene.pot, gene.trunkSeed, gene.folSeed);
+    toast(`Pruned foliage pads! Market Value +¥${valBoost.toLocaleString()}`, "gold");
+  } else if (type === 'wire') {
+    if (state.zen < 35 && !state.godMode) return toast("Need 35 Zen (☯)!", "error");
+    if (tree.vigor < 40) return toast("Vigor too low! Branches will snap under copper wire.", "error");
+    if (!state.godMode) {
+      state.zen -= 35;
+      tree.vigor -= 25;
+    }
+    const valBoost = Math.floor(tree.baseVal * 0.32);
+    tree.baseVal += valBoost;
+
+    // Randomize style
+    const gene = parseBonsaiCode(tree.code);
+    gene.style = (gene.style + 1 + Math.floor(Math.random() * (STYLES.length - 1))) % STYLES.length;
+    tree.styleId = gene.style;
+    tree.code = generateBonsaiCode(gene.species, gene.style, gene.tier, gene.pot, gene.trunkSeed, gene.folSeed);
+    toast(`Wired new silhouette: ${STYLES[gene.style].name}! Value +¥${valBoost.toLocaleString()}`, "gold");
+  } else if (type === 'jin') {
+    if (state.zen < 60 && !state.godMode) return toast("Need 60 Zen (☯)!", "error");
+    if (tree.tierId < 1) return toast("Specimen too immature for deadwood carving!", "error");
+    if (!state.godMode) {
+      state.zen -= 60;
+      tree.vigor -= 30;
+    }
+    const valBoost = Math.floor(tree.baseVal * 0.5);
+    tree.baseVal += valBoost;
+    toast(`Carved dramatic Deadwood Jin / Shari! Value +¥${valBoost.toLocaleString()}`, "gold");
+  }
+
+  updateHUD();
+  renderWorkshop();
+  renderBenches();
+}
+
+function wsSendToAuction() {
+  if (!state.activeTurntableId) return;
+  const tree = state.trees.find(t => t.id === state.activeTurntableId);
+  if (!tree) return;
+
+  const targetLane = state.auctionLanes.find(l => !l.active);
+  if (!targetLane) return toast("All 10 auction lanes are currently congested!", "error");
+
+  // Remove from benches
+  state.trees = state.trees.filter(t => t.id !== tree.id);
+  state.activeTurntableId = null;
+
+  startAuctionInLane(targetLane.laneId, tree);
+  switchTab('auction');
+  toast(`Tree transferred to Auction Lane #${targetLane.laneId}!`);
+}
+
+/* =========================================================================
+   10-LANE HIGH VELOCITY WHOLESALE AUCTION BLOCK
+========================================================================= */
+
+function startAuctionInLane(laneId, tree) {
+  const lane = state.auctionLanes.find(l => l.laneId === laneId);
+  if (!lane) return;
+
+  const appVal = Math.floor(tree.baseVal * (tree.vigor / 100));
+  lane.active = true;
+  lane.tree = tree;
+  lane.currentBid = Math.floor(appVal * 0.7);
+  lane.highestBidder = "Floor Minimum";
+  lane.timeLeft = 15.0;
+  lane.totalTime = 15.0;
+  lane.logs = [`Consigned at reserve ¥${lane.currentBid.toLocaleString()}`];
+
+  renderAuctionLanes();
+}
+
+function updateAuctionTicks(deltaSec) {
+  let changed = false;
+
+  state.auctionLanes.forEach(lane => {
+    if (!lane.active) return;
+    changed = true;
+    lane.timeLeft -= deltaSec;
+
+    // Automated Syndicate Bidding Wars
+    const p = lane.timeLeft / lane.totalTime;
+    const appVal = Math.floor(lane.tree.baseVal * (lane.tree.vigor / 100));
+    let bidChance = 0.08 + (0.15 * (1 - p));
+    if (lane.currentBid > appVal * 2.5) bidChance *= 0.15; // Slow down over valuation
+
+    if (Math.random() < bidChance && lane.timeLeft > 0.5) {
+      const syn = SYNDICATES[Math.floor(Math.random() * SYNDICATES.length)];
+      let multBump = 0.06 + (Math.random() * 0.16);
+      if (state.upgrades.snipe_radar > 0) multBump += (state.upgrades.snipe_radar * 0.04);
+      
+      const bump = Math.max(100, Math.floor(lane.currentBid * multBump));
+      lane.currentBid += bump;
+      lane.highestBidder = syn;
+      lane.logs.unshift(`${syn} bids ¥${lane.currentBid.toLocaleString()}`);
+
+      // Snipe extension
+      if (lane.timeLeft < 3.0) {
+        lane.timeLeft += 2.0;
+        lane.logs.unshift(`* Anti-Snipe Extension (+2.0s) *`);
+      }
+    }
+
+    if (lane.timeLeft <= 0) {
+      // Hammer falls! SOLD!
+      lane.active = false;
+      const finalGain = lane.currentBid;
+      const zenGain = 10 * TIERS[lane.tree.tierId].mult;
+
+      state.money += finalGain;
+      state.zen += zenGain;
+
+      toast(`Lane #${lane.laneId} HAMMER DOWN! Sold to ${lane.highestBidder} for ¥${finalGain.toLocaleString()}! (+${zenGain} ☯)`, "gold");
+      lane.tree = null;
+      lane.logs.unshift(`HAMMER FALLS: Sold for ¥${finalGain.toLocaleString()}`);
+      updateHUD();
+    }
+  });
+
+  if (changed) renderAuctionLanes();
+}
+
+function buyoutAuctionLane(laneId) {
+  const lane = state.auctionLanes.find(l => l.laneId === laneId);
+  if (!lane || !lane.active) return;
+
+  const finalGain = lane.currentBid;
+  const zenGain = 5 * TIERS[lane.tree.tierId].mult;
+  state.money += finalGain;
+  state.zen += zenGain;
+
+  lane.active = false;
+  lane.tree = null;
+  toast(`Lane #${laneId} Buyout accepted! +¥${finalGain.toLocaleString()}`, "gold");
+  updateHUD();
+  renderAuctionLanes();
+}
+
+function renderAuctionLanes() {
+  const container = document.getElementById('auction-lanes-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  state.auctionLanes.forEach(lane => {
+    const card = document.createElement('div');
+    card.className = `auc-lane-card ${lane.active ? 'active' : ''}`;
+
+    if (!lane.active) {
+      card.innerHTML = `
+        <div style="font-weight:800; color:#555; font-size:0.85rem;">LANE #${lane.laneId} [VACANT]</div>
+        <div style="font-size:0.75rem; color:#444; padding: 25px 0; text-align:center;">No Tree On Stand</div>
+        <button class="btn btn-sm btn-green" onclick="openConsignModal(${lane.laneId})">Consign From Benches</button>
+      `;
+    } else {
+      const p = Math.max(0, Math.min(1, lane.timeLeft / lane.totalTime));
+      const tData = TIERS[lane.tree.tierId];
+      const sData = SPECIES[lane.tree.speciesId];
+
+      card.innerHTML = `
+        <div class="auc-lane-pulse" style="transform: scaleX(${p});"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:800; font-size:0.8rem; color:var(--neon-gold);">LANE #${lane.laneId}</span>
+          <span class="tree-tier ${tData.color}">${tData.name}</span>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; margin: 4px 0;">
+          <canvas id="cvs-auc-${lane.laneId}" class="pixel-canvas canvas-auc" width="64" height="64" style="width:70px; height:70px;"></canvas>
+          <div style="font-size:0.75rem;">
+            <div style="font-weight:bold; color:#fff;">${sData.name}</div>
+            <div style="color:var(--text-muted); font-size:0.7rem;">Age: ${lane.tree.age}y | ${lane.tree.vigor}%</div>
+            <div style="color:var(--neon-red); font-weight:bold; font-family:var(--font-mono); margin-top:3px;">
+              ⏱️ ${lane.timeLeft.toFixed(1)}s
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#000; padding:6px; border:1px solid #222; border-radius:4px; text-align:center;">
+          <div style="font-size:0.65rem; color:#888;">HIGH BID: ${lane.highestBidder}</div>
+          <div style="font-size:1.15rem; font-weight:900; color:var(--neon-gold); font-family:var(--font-mono);">
+            ¥${lane.currentBid.toLocaleString()}
+          </div>
+        </div>
+
+        <div class="auc-mini-log">
+          ${lane.logs.slice(0, 4).map(l => `<div>• ${l}</div>`).join('')}
+        </div>
+
+        <button class="btn btn-sm btn-red" onclick="buyoutAuctionLane(${lane.laneId})">Hammer / Buyout Now</button>
+      `;
+    }
+
+    container.appendChild(card);
+
+    if (lane.active) {
+      setTimeout(() => {
+        const cvs = document.getElementById(`cvs-auc-${lane.laneId}`);
+        if (cvs) drawBonsaiHD(cvs, lane.tree.code);
+      }, 0);
+    }
+  });
+}
+
+function openConsignModal(laneId) {
+  if (state.trees.length === 0) return toast("No trees on your benches to consign!", "error");
+  // Grab highest value unassigned tree
+  const tree = state.trees[0];
+  state.trees.shift();
+  startAuctionInLane(laneId, tree);
+  updateHUD();
+  renderBenches();
+}
+
+/* =========================================================================
+   LOGISTICS FLEET (DISPATCH CIRCUITS)
+========================================================================= */
+
+function renderDispatchRoutes() {
+  const container = document.getElementById('dispatch-zones');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const activeCount = state.dispatches.length;
+  const maxFleet = state.fleetSlots + state.upgrades.fleet_size;
+
+  DISPATCH_ROUTES.forEach(route => {
+    const card = document.createElement('div');
+    card.className = 'panel';
+    card.style.background = '#14141d';
+
+    // Find active courier on this route
+    const currentRun = state.dispatches.find(d => d.routeId === route.id);
+
+    if (currentRun) {
+      const p = Math.max(0, Math.min(100, Math.round(((currentRun.maxTime - currentRun.timeLeft) / currentRun.maxTime) * 100)));
+      card.innerHTML = `
+        <div class="panel-header"><span>${route.name}</span><span style="color:var(--neon-blue);">EN ROUTE</span></div>
+        <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">Courier transit in progress (${currentRun.timeLeft}s remaining)</div>
+        <div style="height:6px; background:#000; border-radius:4px; overflow:hidden; margin-bottom:12px;">
+          <div style="height:100%; width:${p}%; background:var(--neon-blue);"></div>
+        </div>
+        <button class="btn btn-sm" disabled>🚚 Transport En Route...</button>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="panel-header"><span>${route.name}</span><span style="color:var(--neon-gold);">+¥${route.reward.toLocaleString()}</span></div>
+        <div style="font-size:0.75rem; color:#888; margin-bottom:12px; line-height:1.4;">
+          • Requirement: Min ${TIERS[route.reqTier].name}<br>
+          • Circuit Transit Duration: ${route.time}s<br>
+          • Payout: +¥${route.reward.toLocaleString()} & +${route.zen} ☯ (Cost: ${route.costFert}L Fert)
+        </div>
+        <button class="btn btn-sm btn-green" onclick="dispatchCourier('${route.id}')" ${activeCount >= maxFleet ? 'disabled' : ''}>
+          ${activeCount >= maxFleet ? 'Fleet Fully Deployed' : '🚚 Deploy Transport Van'}
+        </button>
+      `;
+    }
+
+    container.appendChild(card);
+  });
+}
+
+function dispatchCourier(routeId) {
+  const maxFleet = state.fleetSlots + state.upgrades.fleet_size;
+  if (state.dispatches.length >= maxFleet) return toast("All couriers currently in transit!", "error");
+
+  const route = DISPATCH_ROUTES.find(r => r.id === routeId);
+  if (!route) return;
+
+  if (state.fertilizer < route.costFert && !state.godMode) return toast("Insufficient fertilizer reserves for transport prep!", "error");
+
+  // Find candidate tree on bench matching requirement
+  const eligibleTreeIdx = state.trees.findIndex(t => t.tierId >= route.reqTier);
+  if (eligibleTreeIdx === -1) return toast(`No bonsai on bench meets requirement: ${TIERS[route.reqTier].name}!`, "error");
+
+  if (!state.godMode) state.fertilizer -= route.costFert;
+
+  const deployedTree = state.trees[eligibleTreeIdx];
+  // Remove tree during exhibition run
+  state.trees.splice(eligibleTreeIdx, 1);
+
+  state.dispatches.push({
+    id: 'disp_' + Date.now(),
+    routeId: route.id,
+    tree: deployedTree,
+    timeLeft: route.time,
+    maxTime: route.time,
+    reward: route.reward,
+    zen: route.zen
+  });
+
+  toast(`Van departed for ${route.name}!`, "gold");
+  updateHUD();
+  renderBenches();
+  renderDispatchRoutes();
+}
+
+function updateDispatchTicks(deltaSec) {
+  if (state.dispatches.length === 0) return;
+
+  for (let i = state.dispatches.length - 1; i >= 0; i--) {
+    let disp = state.dispatches[i];
+    disp.timeLeft -= deltaSec;
+
+    if (disp.timeLeft <= 0) {
+      // Completed! Return tree + payout
+      state.money += disp.reward;
+      state.zen += disp.zen;
+
+      // Tree vigor reduction from road stress
+      disp.tree.vigor = Math.max(10, disp.tree.vigor - 12);
+      state.trees.push(disp.tree);
+
+      toast(`Gallery delivery complete! Received +¥${disp.reward.toLocaleString()} & +${disp.zen} ☯`, "gold");
+      state.dispatches.splice(i, 1);
+      updateHUD();
+      renderBenches();
+    }
+  }
+
+  renderDispatchRoutes();
+}
+
+/* =========================================================================
+   BURNER PHONE (VIP CONTRACT ORDERS)
+========================================================================= */
+
+function refreshBurnerOrders() {
+  if (state.money < 500 && !state.godMode) return toast("Need ¥500 to scramble encrypted frequencies!", "error");
+  if (!state.godMode) state.money -= 500;
+
+  state.burnerOrders = [
+    createBurnerOrder(1),
+    createBurnerOrder(2),
+    createBurnerOrder(3)
+  ];
+
+  toast("Burner phone synchronized with new VIP contracts!");
+  renderBurnerOrders();
+}
+
+function createBurnerOrder(id) {
+  const clientTypes = ["Yakuza Boss", "Shinto Priest", "Tech Tycoon", "Michelin Chef", "Imperial Emissary"];
+  const client = clientTypes[Math.floor(Math.random() * clientTypes.length)];
+  const spec = SPECIES[Math.floor(Math.random() * SPECIES.length)];
+  const targetTier = Math.floor(Math.random() * 3) + 1; // Specimen to Masterpiece
+  const payout = Math.floor(1800 * TIERS[targetTier].mult * (1.2 + Math.random() * 0.5));
+
+  return {
+    id: id,
+    title: `${client}'s Sanctuary`,
+    reqSpecies: spec.id,
+    reqTier: targetTier,
+    reward: payout,
+    zenReward: 30 * targetTier,
+    timeLeft: 120
+  };
+}
+
+function renderBurnerOrders() {
+  const container = document.getElementById('burner-grid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  state.burnerOrders.forEach(ord => {
+    const spec = SPECIES[ord.reqSpecies];
+    const tier = TIERS[ord.reqTier];
+    const card = document.createElement('div');
+    card.className = 'order-card order-vip';
+
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:800; font-size:0.9rem; color:var(--neon-pink);">${ord.title}</span>
+        <span style="font-family:var(--font-mono); color:var(--neon-gold); font-size:0.8rem;">¥${ord.reward.toLocaleString()}</span>
+      </div>
+      <div style="font-size:0.75rem; color:#aaa; line-height:1.4;">
+        • Demanded Strain: <b>${spec.name}</b><br>
+        • Minimum Classification: <span class="tree-tier ${tier.color}">${tier.name}</span><br>
+        • Deadline: <span style="color:var(--neon-red); font-family:var(--font-mono);">${ord.timeLeft}s</span>
+      </div>
+      <button class="btn btn-sm btn-pink" style="margin-top:6px;" onclick="fulfillBurnerOrder(${ord.id})">
+        💼 Deliver Consignment
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function fulfillBurnerOrder(orderId) {
+  const ord = state.burnerOrders.find(o => o.id === orderId);
+  if (!ord) return;
+
+  const matchIdx = state.trees.findIndex(t => t.speciesId === ord.reqSpecies && t.tierId >= ord.reqTier);
+  if (matchIdx === -1) return toast(`No tree on bench satisfies the criteria for ${ord.title}!`, "error");
+
+  // Remove delivered tree
+  state.trees.splice(matchIdx, 1);
+  state.money += ord.reward;
+  state.zen += ord.zenReward;
+
+  toast(`VIP Contract fulfilled! Received +¥${ord.reward.toLocaleString()} and +${ord.zenReward} ☯!`, "gold");
+
+  // Re-roll this order slot
+  state.burnerOrders = state.burnerOrders.filter(o => o.id !== orderId);
+  state.burnerOrders.push(createBurnerOrder(orderId));
+
+  updateHUD();
+  renderBenches();
+  renderBurnerOrders();
+}
+
+/* =========================================================================
+   BENCHES INVENTORY DISPLAY
+========================================================================= */
+
+function renderBenches() {
+  const grid = document.getElementById('bench-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  document.getElementById('bench-header-count').innerText = state.trees.length;
+  document.getElementById('ui-bulk-cost').innerText = (state.trees.length * 30).toLocaleString();
+
+  if (state.trees.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;">
+      Collection benches are vacant. Purchase seed flats or wild Yamadori in the Nursery!
+    </div>`;
+    return;
+  }
+
+  state.trees.forEach(tree => {
+    const sData = SPECIES[tree.speciesId];
+    const tData = TIERS[tree.tierId];
+    const stData = STYLES[tree.styleId];
+
+    const card = document.createElement('div');
+    card.className = 'tree-card';
+    card.innerHTML = `
+      <div class="tree-display">
+        <canvas id="cvs-tree-${tree.id}" class="pixel-canvas canvas-sm" width="64" height="64"></canvas>
+      </div>
+      <div class="tree-info">
+        <div class="tree-name">
+          <span>${sData.name}</span>
+          <span class="tree-tier ${tData.color}">${tData.name}</span>
+        </div>
+        <div class="tree-stats">
+          <div class="stat-row"><span>Style</span><span>${stData.name.split(' ')[0]}</span></div>
+          <div class="stat-row"><span>Age</span><span>${tree.age}y</span></div>
+          <div class="stat-row"><span>Vigor</span><span>${tree.vigor}%</span></div>
+          <div class="stat-row"><span>Val</span><span style="color:var(--neon-gold);">¥${tree.baseVal.toLocaleString()}</span></div>
+        </div>
+        <div class="trade-code">${tree.code}</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:6px;">
+          <button class="btn btn-sm btn-green" onclick="mountTurntable('${tree.id}')">✂️ Turntable</button>
+          <button class="btn btn-sm btn-gold" onclick="sendDirectToAuction('${tree.id}')">🔨 Auction</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    setTimeout(() => {
+      const cvs = document.getElementById(`cvs-tree-${tree.id}`);
+      if (cvs) drawBonsaiHD(cvs, tree.code);
+    }, 0);
+  });
+}
+
+function quickWaterAll() {
+  const cost = state.trees.length * 30;
+  if (state.money < cost && !state.godMode) return toast("Insufficient funds for bulk irrigation!", "error");
+  if (!state.godMode) state.money -= cost;
+
+  state.trees.forEach(t => t.vigor = Math.min(100, t.vigor + 20));
+  toast(`Hydrated all ${state.trees.length} trees on benches!`);
+  updateHUD();
+  renderBenches();
+}
+
+function sendDirectToAuction(treeId) {
+  const targetLane = state.auctionLanes.find(l => !l.active);
+  if (!targetLane) return toast("All 10 auction lanes are occupied!", "error");
+
+  const treeIdx = state.trees.findIndex(t => t.id === treeId);
+  if (treeIdx === -1) return;
+
+  const tree = state.trees[treeIdx];
+  state.trees.splice(treeIdx, 1);
+
+  startAuctionInLane(targetLane.laneId, tree);
+  switchTab('auction');
+  toast(`Tree consigned directly to Lane #${targetLane.laneId}!`);
+  updateHUD();
+  renderBenches();
+}
+
+/* =========================================================================
+   INFRASTRUCTURE UPGRADES
+========================================================================= */
+
+function renderUpgrades() {
+  const container = document.getElementById('upgrades-grid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  UPGRADES_DEF.forEach(up => {
+    const cur = state.upgrades[up.id] || 0;
+    const cost = Math.floor(up.cost * Math.pow(1.6, cur));
+    const isMax = cur >= up.max;
+
+    const card = document.createElement('div');
+    card.className = 'panel';
+    card.style.background = '#14141e';
+    card.innerHTML = `
+      <div class="panel-header">
+        <span>${up.name}</span>
+        <span style="font-size:0.75rem; color:var(--neon-green);">Rank ${cur}/${up.max}</span>
+      </div>
+      <div style="font-size:0.8rem; color:#888; margin-bottom:14px; min-height:38px;">${up.desc}</div>
+      <button class="btn btn-sm btn-green" style="width:100%;" onclick="buyUpgrade('${up.id}')" ${isMax ? 'disabled' : ''}>
+        ${isMax ? 'MAX ARCHITECTURE' : `Install Rank ${cur + 1} - ¥${cost.toLocaleString()}`}
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function buyUpgrade(upId) {
+  const up = UPGRADES_DEF.find(u => u.id === upId);
+  const cur = state.upgrades[upId] || 0;
+  if (cur >= up.max) return;
+
+  const cost = Math.floor(up.cost * Math.pow(1.6, cur));
+  if (state.money < cost && !state.godMode) return toast("Insufficient capital!", "error");
+
+  if (!state.godMode) state.money -= cost;
+  state.upgrades[upId] = cur + 1;
+
+  toast(`Upgraded ${up.name} to Rank ${cur + 1}!`, "gold");
+  updateHUD();
+  renderUpgrades();
+}
+
+/* =========================================================================
+   CORE UI & LOOP CONTROLLERS
+========================================================================= */
+
+function updateHUD() {
+  document.getElementById('ui-money').innerText = Math.floor(state.money).toLocaleString();
+  document.getElementById('ui-zen').innerText = Math.floor(state.zen).toLocaleString();
+  document.getElementById('ui-fert').innerText = Math.floor(state.fertilizer).toLocaleString();
+  
+  const activeFleet = state.dispatches.length;
+  const maxFleet = state.fleetSlots + state.upgrades.fleet_size;
+  document.getElementById('ui-fleet').innerText = `${maxFleet - activeFleet}/${maxFleet} IDLE`;
+  document.getElementById('ui-bench').innerText = state.trees.length;
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  const target = document.getElementById('view-' + tabId);
+  if (target) target.classList.add('active');
+
+  const btn = document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`);
+  if (btn) btn.classList.add('active');
+
+  if (tabId === 'bench') renderBenches();
+  if (tabId === 'workshop') renderWorkshop();
+  if (tabId === 'auction') renderAuctionLanes();
+  if (tabId === 'dispatch') renderDispatchRoutes();
+  if (tabId === 'burner') renderBurnerOrders();
+  if (tabId === 'upgrades') renderUpgrades();
+}
+
+function toggleGodMode() {
+  state.godMode = !state.godMode;
+  const btn = document.getElementById('btnGod');
+  if (state.godMode) {
+    btn.innerText = "⚡ GOD MODE: ACTIVE";
+    btn.style.background = "#e11d48";
+    state.money += 500000;
+    state.zen += 5000;
+    state.fertilizer += 500;
+    toast("God Mode activated. Syndicate vault flooded with capital!", "gold");
+  } else {
+    btn.innerText = "⚡ GOD MODE: OFF";
+    btn.style.background = "rgba(251, 191, 36, 0.05)";
+    toast("God Mode deactivated.");
+  }
+  updateHUD();
+}
+
+function toast(msg, type = "") {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerText = msg;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+function saveGame(manual = false) {
+  localStorage.setItem('zen_bonsai_save_v111', JSON.stringify(state));
+  if (manual) toast("Syndicate registry saved to local storage!", "gold");
+}
+
+function loadGame() {
+  const raw = localStorage.getItem('zen_bonsai_save_v111');
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      state = { ...state, ...parsed };
+    } catch (e) {
+      console.error("Save load failure", e);
+    }
+  }
+}
+
+// Master Automation Loop (100ms interval for auction ticking + 1s dispatch intervals)
+let masterTimer = null;
+let lastSecTick = Date.now();
+
+function masterLoop() {
+  const now = Date.now();
+  const delta = (now - lastSecTick) / 1000;
+  lastSecTick = now;
+
+  // 1. Live Auction High Velocity Ticks
+  updateAuctionTicks(delta);
+
+  // 2. Dispatch Couriers
+  updateDispatchTicks(delta);
+
+  // 3. Passive Fertilizer Synthesis
+  if (state.upgrades.fert_synth > 0 && Math.random() < 0.1) {
+    state.fertilizer += (state.upgrades.fert_synth * 1);
+    updateHUD();
+  }
+
+  // 4. Burner Phone Deadlines
+  state.burnerOrders.forEach(ord => {
+    ord.timeLeft = Math.max(0, Math.floor(ord.timeLeft - delta));
+    if (ord.timeLeft <= 0) {
+      ord.timeLeft = 120;
+    }
+  });
+}
+
+function init() {
+  loadGame();
+
+  // Seed default trees if empty
+  if (state.trees.length === 0) {
+    buyGacha('import');
+    buyGacha('seedling');
+  }
+
+  if (state.burnerOrders.length === 0) {
+    refreshBurnerOrders();
+  }
+
+  updateHUD();
+  renderBenches();
+  renderAuctionLanes();
+  renderDispatchRoutes();
+  renderBurnerOrders();
+  renderUpgrades();
+
+  if (masterTimer) clearInterval(masterTimer);
+  masterTimer = setInterval(masterLoop, 100);
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
