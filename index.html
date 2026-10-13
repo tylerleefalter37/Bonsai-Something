@@ -2,1567 +2,1830 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zen Bonsai Syndicate — Imperial Botanical Empire v1.11</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Blissful Bonsai - Master's Edition</title>
 <style>
   :root {
-    --bg-base: #08080a;
-    --bg-panel: #111116;
-    --bg-card: #16161f;
-    --border-dim: #252533;
-    --border-glow: #22c55e;
+    --bg-base: #0a0c0a;
+    --panel-bg: #111411;
+    --panel-border: #1e261e;
+    --silver-bright: #e2e8e2;
+    --silver-main: #9ca39c;
+    --silver-dim: #647064;
+    --silver-dark: #2a332a;
     
-    --neon-green: #22c55e;
-    --neon-pink: #ec4899;
-    --neon-blue: #38bdf8;
-    --neon-gold: #fbbf24;
-    --neon-red: #f43f5e;
-    --neon-purple: #a855f7;
+    --status-green: #4ade80;
+    --status-red: #ef4444;
+    --status-amber: #d97706;
+    --status-blue: #38bdf8;
+    --status-purple: #d946ef;
+    --status-exotic: #0ea5e9;
     
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --text-dim: #64748b;
-    
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --t0-col: #647064; --t1-col: #4ade80; --t2-col: #38bdf8; --t3-col: #3b82f6; --t4-col: #a855f7; 
+    --t5-col: #d946ef; --t6-col: #f59e0b; --t7-col: #ea580c; --t8-col: #ef4444; --t9-col: #10b981;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background-color: var(--bg-base);
-    color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding-bottom: 60px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+  html, body { width: 100%; height: 100%; background: var(--bg-base); color: var(--silver-bright); display: flex; flex-direction: column; overflow: hidden; }
+
+  body::before {
+    content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(74, 222, 128, 0.03) 0%, transparent 65%);
+    pointer-events: none; z-index: 1;
   }
 
-  /* HUD HEADER */
-  .hud {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10, 10, 14, 0.96);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-glow);
-    padding: 10px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    box-shadow: 0 4px 25px rgba(34, 197, 94, 0.12);
-  }
-  .hud-brand {
-    font-weight: 900;
-    font-size: 1.15rem;
-    letter-spacing: 2px;
-    color: var(--neon-green);
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .hud-stats { display: flex; gap: 10px; font-family: var(--font-mono); font-size: 0.85rem; flex-wrap: wrap; align-items: center; }
-  .stat-badge {
-    background: #000;
-    border: 1px solid var(--border-dim);
-    padding: 5px 10px;
-    border-radius: 4px;
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  .val-money { color: var(--neon-gold); font-weight: bold; }
-  .val-zen { color: var(--neon-pink); font-weight: bold; }
-  .val-fert { color: var(--neon-blue); font-weight: bold; }
+  header { flex-shrink: 0; background: #050605; border-bottom: 1px solid var(--status-green); padding: 6px 10px; display: flex; flex-direction: column; gap: 4px; z-index: 10; }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  .brand-title { font-size: 13px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; }
+  .brand-title span { color: var(--status-green); text-shadow: 0 0 5px rgba(74,222,128,0.4); }
 
-  /* NAVIGATION TABS */
-  .tabs {
-    display: flex;
-    background: var(--bg-panel);
-    border-bottom: 1px solid var(--border-dim);
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-  .tab-btn {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 13px 18px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
-  .tab-btn.active { color: var(--neon-green); border-bottom-color: var(--neon-green); background: #0c0c10; }
+  .hud-stats { display: flex; gap: 4px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
+  .hud-stats::-webkit-scrollbar { display: none; }
+  .hud-pill { background: #000; border: 1px solid var(--panel-border); padding: 3px 6px; border-radius: 3px; font-size: 10px; font-family: monospace; font-weight: bold; }
 
-  /* CONTAINERS & GRIDS */
-  .container { max-width: 1440px; margin: 18px auto; padding: 0 16px; }
-  .view { display: none; }
-  .view.active { display: block; }
+  nav { flex-shrink: 0; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); z-index: 9; }
+  .nav-btn { padding: 10px 4px; background: transparent; border: none; border-right: 1px solid var(--panel-border); border-bottom: 1px solid var(--panel-border); color: var(--silver-dim); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: 0.15s; text-align: center; }
+  .nav-btn:nth-child(3n) { border-right: none; }
+  .nav-btn:nth-child(n+7) { border-bottom: none; }
+  .nav-btn.active { background: rgba(74, 222, 128, 0.08); color: var(--status-green); box-shadow: inset 0 -2px 0 var(--status-green); }
 
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
-  .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-  @media (max-width: 850px) { .grid-2 { grid-template-columns: 1fr; } }
+  main { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 70px; z-index: 2; }
+  .view-tab { display: none; flex-direction: column; gap: 10px; }
+  .view-tab.active { display: flex; }
 
-  /* BUTTONS */
-  .btn {
-    background: #000;
-    border: 1px solid var(--border-dim);
-    color: var(--text-main);
-    padding: 8px 14px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.15s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    user-select: none;
-  }
-  .btn:hover:not(:disabled) { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); }
-  .btn:active:not(:disabled) { transform: scale(0.98); }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--border-dim) !important; box-shadow: none !important; }
+  .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 5px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .panel-header { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding-bottom: 6px; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center; }
+
+  .control-bar { display: flex; flex-wrap: wrap; gap: 6px; background: #050605; padding: 6px 8px; border-radius: 4px; border: 1px solid var(--panel-border); align-items: center; }
+  .control-group { display: flex; gap: 4px; align-items: center; border-right: 1px solid var(--panel-border); padding-right: 6px; }
+  .control-group:last-child { border-right: none; padding-right: 0; }
+  .control-label { font-size: 8.5px; font-weight: bold; color: var(--silver-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  button.btn { background: #000; border: 1px solid var(--silver-dim); color: var(--silver-bright); padding: 5px 9px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 3px; cursor: pointer; transition: 0.1s; }
+  button.btn:active { background: var(--silver-bright); color: #000; border-color: var(--silver-bright); }
+  button.btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--silver-dark); }
+  button.btn-green { background: #091209; border-color: var(--status-green); color: var(--status-green); }
+  button.btn-green:active { background: var(--status-green); color: #000; }
+  button.btn-danger { border-color: var(--status-red); color: var(--status-red); }
+  button.btn-danger:active { background: var(--status-red); color: #fff; }
+  button.btn-purple { border-color: var(--status-purple); color: var(--status-purple); }
+  button.btn-purple:active { background: var(--status-purple); color: #fff; }
+
+  .fleet-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  @media(min-width: 600px) { .fleet-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); } }
+
+  .strain-card { background: #050605; border: 1px solid var(--panel-border); border-radius: 4px; padding: 10px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .strain-card.in-flight { border-left: 3px solid var(--status-green); }
+  .strain-card.damaged { border-left: 3px solid var(--status-red); }
   
-  .btn-green { border-color: var(--neon-green); color: var(--neon-green); background: rgba(34, 197, 94, 0.05); }
-  .btn-green:hover:not(:disabled) { background: var(--neon-green); color: #000; }
-  .btn-gold { border-color: var(--neon-gold); color: var(--neon-gold); background: rgba(251, 191, 36, 0.05); }
-  .btn-gold:hover:not(:disabled) { background: var(--neon-gold); color: #000; }
-  .btn-blue { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); }
-  .btn-blue:hover:not(:disabled) { background: var(--neon-blue); color: #000; }
-  .btn-red { border-color: var(--neon-red); color: var(--neon-red); background: rgba(244, 63, 94, 0.05); }
-  .btn-red:hover:not(:disabled) { background: var(--neon-red); color: #000; }
-  .btn-pink { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(236, 72, 153, 0.05); }
-  .btn-purple { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(168, 85, 247, 0.05); }
-  .btn-sm { padding: 5px 8px; font-size: 0.72rem; }
+  .bud-art-container { display: flex; gap: 10px; align-items: center; background: #080a08; border: 1px solid var(--panel-border); padding: 6px; border-radius: 3px; }
+  .bud-pixel-canvas { width: 64px; height: 64px; image-rendering: pixelated; border-radius: 2px; background: #000; flex-shrink: 0; border: 1px solid #142014; }
 
-  /* PANELS */
-  .panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-dim);
-    border-radius: 8px;
-    padding: 18px;
-    position: relative;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
-    margin-bottom: 16px;
-  }
-  .panel-header {
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--neon-green);
-    margin-bottom: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 1px dashed #2a2a38;
-    padding-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .spec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; background: #080a08; padding: 6px; border-radius: 3px; font-size: 9px; font-family: monospace; border: 1px solid var(--panel-border); }
+  .spec-grid span { color: var(--silver-dim); }
 
-  /* 64x64 HD CANVAS DISPLAY & CARDS */
-  .tree-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-  .tree-card:hover { border-color: var(--neon-blue); transform: translateY(-2px); }
-  .tree-display {
-    background: #040406;
-    border-bottom: 1px solid var(--border-dim);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
-    position: relative;
-    background-image: radial-gradient(circle at center, #161622 0%, #040406 100%);
-  }
+  .badge { padding: 2px 4px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: monospace; background: #091209; color: var(--status-green); border: 1px solid var(--status-green); }
   
-  /* CRUCIAL 64x64 PIXEL-ART SCALING */
-  .pixel-canvas {
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    background: transparent;
-    display: block;
-  }
-  .canvas-sm { width: 140px; height: 140px; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.85)); }
-  .canvas-lg { width: 280px; height: 280px; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.95)); margin: 0 auto; border: 1px solid #222; background: #000; border-radius: 4px; }
-  .canvas-auc { width: 160px; height: 160px; filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.2)); }
+  .route-row { background: #050605; border: 1px solid var(--panel-border); border-radius: 3px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; }
 
-  .tree-info { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .tree-name { font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; justify-content: space-between; align-items: flex-start; }
-  .tree-tier { font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .flight-bar-bg { width: 100%; height: 6px; background: #111; border: 1px solid #1a261a; border-radius: 2px; overflow: hidden; margin-top: 2px; }
+  .flight-bar-fill { height: 100%; background: var(--status-green); width: 0%; box-shadow: 0 0 6px var(--status-green);}
+
+  .auction-slot { background: #050605; border: 1px solid var(--panel-border); padding: 10px; border-radius: 4px; display: flex; flex-direction: column; gap: 6px; }
+  .auction-timer-bg { width: 100%; height: 5px; background: #111; border: 1px solid var(--status-green); border-radius: 2px; overflow: hidden; }
+  .auction-timer-bar { height: 100%; background: var(--status-green); width: 100%; transition: width 0.1s linear;}
+  .auction-log { height: 44px; background: #080a08; border: 1px solid var(--panel-border); padding: 4px; font-size: 8.5px; font-family: monospace; overflow: hidden; border-radius: 3px; color: var(--silver-main); }
+
+  .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .pack-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+
+  select { background: #080a08; color: #fff; border: 1px solid var(--silver-dark); padding: 5px; font-size: 10px; border-radius: 3px; outline: none; font-weight: bold; cursor: pointer; }
   
-  .tier-0 { background: #27272a; color: #a1a1aa; border: 1px solid #444; }
-  .tier-1 { background: rgba(34, 197, 94, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
-  .tier-2 { background: rgba(56, 189, 248, 0.15); color: var(--neon-blue); border: 1px solid var(--neon-blue); }
-  .tier-3 { background: rgba(236, 72, 153, 0.15); color: var(--neon-pink); border: 1px solid var(--neon-pink); }
-  .tier-4 { background: rgba(251, 191, 36, 0.15); color: var(--neon-gold); border: 1px solid var(--neon-gold); box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
+  .check-item { display: flex; justify-content: space-between; align-items: center; background: #050605; padding: 8px 10px; border: 1px solid var(--panel-border); border-radius: 3px; font-size: 10px; }
+  .check-item.done { border-color: var(--status-green); background: rgba(74, 222, 128, 0.08); }
 
-  .tree-stats { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-  .stat-row { display: flex; justify-content: space-between; background: #0a0a0f; padding: 3px 6px; border-radius: 4px; border: 1px solid #1c1c28; }
-  .trade-code { font-family: var(--font-mono); font-size: 0.68rem; background: #000; padding: 5px; border: 1px dashed #3a3a4f; color: var(--neon-green); text-align: center; margin-top: auto; letter-spacing: 2px; }
-
-  /* AUCTION SYSTEM (10-LANE HIGH VELOCITY) */
-  .auction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-  .auc-lane-card {
-    background: #09090d;
-    border: 1px solid var(--border-dim);
-    border-radius: 6px;
-    padding: 12px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .auc-lane-card.active { border-color: var(--neon-gold); box-shadow: 0 0 15px rgba(251, 191, 36, 0.1); }
-  .auc-lane-pulse {
-    position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-    background: var(--neon-gold);
-    transform-origin: left;
-    transition: transform 0.1s linear;
-  }
-  .auc-mini-log {
-    height: 70px;
-    overflow-y: auto;
-    background: #000;
-    border: 1px solid #1f1f2e;
-    padding: 6px;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    border-radius: 4px;
-  }
-
-  /* GACHA CRATES */
-  .gacha-crate {
-    background: #0b0b10;
-    border: 1px dashed var(--border-dim);
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.2s;
-    display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
-  }
-  .gacha-crate:hover { border-color: var(--neon-blue); background: #11111a; transform: translateY(-2px); }
-  .crate-icon { font-size: 3rem; filter: drop-shadow(0 0 8px rgba(255,255,255,0.1)); }
-
-  /* BURNER PHONE & ORDERS */
-  .order-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 6px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .order-vip { border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(236, 72, 153, 0.15); }
-
-  /* TOAST NOTIFICATIONS */
-  #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; pointer-events: none; }
-  .toast {
-    background: #000; border-left: 4px solid var(--neon-green); color: #fff;
-    padding: 12px 20px; font-family: var(--font-mono); font-size: 0.8rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.85); border-radius: 4px;
-    animation: fadeUp 0.25s ease-out forwards; opacity: 0; transform: translateY(15px);
-  }
-  .toast.error { border-left-color: var(--neon-red); }
-  .toast.gold { border-left-color: var(--neon-gold); }
-  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  #toast-rack { position: fixed; bottom: 16px; left: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 1000; pointer-events: none; }
+  .toast { background: #000; border: 1px solid var(--silver-dark); border-left: 3px solid var(--status-green); color: #fff; padding: 8px 12px; font-size: 11px; font-weight: bold; font-family: monospace; border-radius: 3px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideUp 0.2s, fadeOut 0.4s 2.6s forwards; pointer-events: auto;}
+  
+  @keyframes slideUp { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateY(-5px); } }
 </style>
 </head>
 <body>
 
-<!-- TOP HUD STATUS BAR -->
-<div class="hud">
-  <div class="hud-brand">
-    <span style="font-size: 1.4rem;">🌲</span> ZEN BONSAI :: IMPERIAL SYNDICATE v1.11
+<header>
+  <div class="header-top">
+    <div class="brand-title">BLISSFUL BONSAI <span>// V1.0</span></div>
+    <div style="display:flex; gap:4px;">
+      <button class="btn" style="padding:3px 6px; font-size:8px;" onclick="saveGame()">SAVE</button>
+      <button class="btn" style="padding:3px 6px; font-size:8px;" onclick="loadGame()">LOAD</button>
+      <button class="btn btn-danger" style="padding:3px 6px; font-size:8px;" onclick="godMode()">GRANDMASTER</button>
+    </div>
   </div>
-  <div class="hud-stats">
-    <div class="stat-badge"><span class="val-money">¥</span> <span id="ui-money">12,500</span></div>
-    <div class="stat-badge"><span class="val-zen">☯</span> <span id="ui-zen">250</span></div>
-    <div class="stat-badge"><span class="val-fert">🧪 FERT:</span> <span id="ui-fert">100</span>L</div>
-    <div class="stat-badge" style="color:var(--text-muted);">FLEET: <span id="ui-fleet" style="color:#fff;">3/3 IDLE</span></div>
-    <div class="stat-badge" style="color:var(--text-muted);">BENCH: <span id="ui-bench" style="color:#fff;">0</span>/120</div>
-    <button class="btn btn-sm btn-gold" id="btnGod" onclick="toggleGodMode()">⚡ GOD MODE: OFF</button>
-    <button class="btn btn-sm" onclick="saveGame(true)">💾 SAVE</button>
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="hud-stats">
+        <div class="hud-pill">CASH: <span id="hud-funds" style="color:var(--status-green);">$0</span></div>
+        <div class="hud-pill">BENCHES: <span id="hud-fleet-count">0</span></div>
+        <div class="hud-pill">APPRENTICES: <span id="hud-pilot-count">0</span></div>
+        <div class="hud-pill">WATER: <span id="hud-fuel" style="color:var(--status-amber);">0</span></div>
+      </div>
+      <div class="control-bar" style="padding:2px 4px; margin-left:4px;">
+        <button class="btn btn-green active" id="buy-1" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(1)">1x</button>
+        <button class="btn" id="buy-0.25" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(0.25)">25%</button>
+        <button class="btn" id="buy-0.5" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(0.5)">50%</button>
+        <button class="btn" id="buy-1.0" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(1.0)">MAX</button>
+      </div>
   </div>
-</div>
+</header>
 
-<!-- NAVIGATION TABS -->
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('bench')">⛩️ Benches (Vault)</button>
-  <button class="tab-btn" onclick="switchTab('nursery')">🌱 Wholesale Nursery (Gacha)</button>
-  <button class="tab-btn" onclick="switchTab('dispatch')">🚚 Exhibition Dispatch (Logistics)</button>
-  <button class="tab-btn" onclick="switchTab('workshop')">✂️ Studio Workshop & MRO</button>
-  <button class="tab-btn" onclick="switchTab('burner')">📱 Burner Phone (VIP Contracts)</button>
-  <button class="tab-btn" onclick="switchTab('auction')">🔨 10-Lane Wholesale Auction</button>
-  <button class="tab-btn" onclick="switchTab('upgrades')">🏢 Greenhouse Automation</button>
-</div>
+<nav>
+  <button class="nav-btn active" onclick="setTab('market')">Wild Yamadori</button>
+  <button class="nav-btn" onclick="setTab('gacha')">Cultivation</button>
+  <button class="nav-btn" onclick="setTab('fleet')">Garden Benches</button>
+  <button class="nav-btn" onclick="setTab('pilots')">Apprentices</button>
+  <button class="nav-btn" onclick="setTab('routes')">Exhibitions</button>
+  <button class="nav-btn" onclick="setTab('auction')">Master Auctions</button>
+  <button class="nav-btn" onclick="setTab('checklist')">Commissions</button>
+  <button class="nav-btn" onclick="setTab('upgrades')">Nursery Tools</button>
+  <button class="nav-btn" onclick="setTab('gallery')">Tokonoma 🖼️</button>
+</nav>
 
-<!-- MAIN VIEWPORT CONTAINER -->
-<div class="container">
+<main>
 
-  <!-- 1. BENCHES (VAULT INVENTORY) -->
-  <div id="view-bench" class="view active">
+  <!-- TAB 1: REVOLVING CORNER MARKET -->
+  <div id="tab-market" class="view-tab active">
     <div class="panel">
       <div class="panel-header">
-        <span>Collection Benches (<span id="bench-header-count">0</span> Trees)</span>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-sm btn-blue" onclick="quickWaterAll()">💧 Hydrate All (¥<span id="ui-bulk-cost">0</span>)</button>
-          <button class="btn btn-sm btn-green" onclick="renderBenches()">🔄 Refresh Matrix</button>
-        </div>
+        <span>Wild Yamadori & Imports</span>
+        <span style="font-size:10px; color:var(--silver-dim);">RESTOCK: <span id="market-timer" style="font-size:12px; font-weight:bold; color:var(--status-green);">10.0</span>s</span>
       </div>
-      <div class="grid-3" id="bench-grid"></div>
+      <p style="font-size:10px; color:var(--silver-dim);">5 procedural bonsai drop every 10 seconds. Styles shape the physical trunk growth.</p>
+      <div id="market-grid" class="fleet-grid"></div>
     </div>
   </div>
 
-  <!-- 2. NURSERY WHOLESALE (GACHA PROCUREMENT) -->
-  <div id="view-nursery" class="view">
+  <!-- TAB 2: SEED BANK (GROW OPS) -->
+  <div id="tab-gacha" class="view-tab">
     <div class="panel">
-      <div class="panel-header">Wholesale Seedlings & Raw Yamadori Imports</div>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 20px; line-height: 1.5;">
-        Procure genetic botanical specimens. Every unit is procedurally compiled into a <b>64×64 cellular pixel-art matrix</b> with a unique Base36 trade-code, biological age, vigor, and structural branch curvature.
-      </p>
+      <div class="panel-header">Nursery & Cultivation</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; font-weight:bold; margin-bottom:6px;">RAW SEEDLINGS [T1-T4] ($10K / Seed)</div>
+          <div class="pack-row">
+            <button class="btn" onclick="buySeeds(0, 1)">Plant 1x</button>
+            <button class="btn" onclick="buySeeds(0, 5)">Plant 5x</button>
+            <button class="btn btn-green" onclick="buySeeds(0, 10)">Plant 10x</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; color:var(--status-blue); font-weight:bold; margin-bottom:6px;">SHOHIN STOCK [T3-T6] ($100K / Seed)</div>
+          <div class="pack-row">
+            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buySeeds(1, 1)">Plant 1x</button>
+            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buySeeds(1, 5)">Plant 5x</button>
+            <button class="btn btn-green" onclick="buySeeds(1, 10)">Plant 10x</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; color:var(--status-purple); font-weight:bold; margin-bottom:6px;">IMPORTED YAMADORI [T5-T8] ($1.0M / Tree)</div>
+          <div class="pack-row">
+            <button class="btn btn-purple" onclick="buySeeds(2, 1)">Plant 1x</button>
+            <button class="btn btn-purple" onclick="buySeeds(2, 5)">Plant 5x</button>
+            <button class="btn btn-green" onclick="buySeeds(2, 10)">Plant 10x</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; color:var(--status-amber); font-weight:bold; margin-bottom:6px;">IMPERIAL HEIRLOOMS [T7-T10] ($5.0M / Tree)</div>
+          <div class="pack-row">
+            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buySeeds(3, 1)">Plant 1x</button>
+            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buySeeds(3, 5)">Plant 5x</button>
+            <button class="btn btn-green" onclick="buySeeds(3, 10)">Plant 10x</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">Apprentice Hiring Board</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; font-weight:bold; margin-bottom:6px;">NOVICES [T1-T4] ($5K / Hire)</div>
+          <div class="pack-row">
+            <button class="btn" onclick="buyResumes(0, 1)">Hire 1x</button>
+            <button class="btn" onclick="buyResumes(0, 5)">Hire 5x</button>
+            <button class="btn btn-green" onclick="buyResumes(0, 10)">Hire 10x</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; color:var(--status-blue); font-weight:bold; margin-bottom:6px;">JOURNEYMEN [T3-T6] ($50K / Hire)</div>
+          <div class="pack-row">
+            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buyResumes(1, 1)">Hire 1x</button>
+            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buyResumes(1, 5)">Hire 5x</button>
+            <button class="btn btn-green" onclick="buyResumes(1, 10)">Hire 10x</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; color:var(--status-purple); font-weight:bold; margin-bottom:6px;">ARTISANS [T5-T8] ($250K / Hire)</div>
+          <div class="pack-row">
+            <button class="btn btn-purple" onclick="buyResumes(2, 1)">Hire 1x</button>
+            <button class="btn btn-purple" onclick="buyResumes(2, 5)">Hire 5x</button>
+            <button class="btn btn-green" onclick="buyResumes(2, 10)">Hire 10x</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
+          <div style="font-size:10px; color:var(--status-amber); font-weight:bold; margin-bottom:6px;">MASTERS [T7-T10] ($1.0M / Hire)</div>
+          <div class="pack-row">
+            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buyResumes(3, 1)">Hire 1x</button>
+            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buyResumes(3, 5)">Hire 5x</button>
+            <button class="btn btn-green" onclick="buyResumes(3, 10)">Hire 10x</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span>Reservoir (Water & Soil)</span>
+        <span style="font-size:11px; font-weight:bold; color:var(--status-amber);">$<span id="fuel-price">2.80</span> / GAL</span>
+      </div>
+      <div class="fraction-row">
+        <button class="btn" onclick="buyFuelFixed(50000)">50K Gal</button>
+        <button class="btn" onclick="buyFuelFixed(250000)">250K Gal</button>
+        <button class="btn" onclick="buyFuelFixed(1000000)">1M Gal</button>
+        <button class="btn btn-green" onclick="buyFuelFixed('MAX')">Max Fill</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: INVENTORY (STASH) -->
+  <div id="tab-fleet" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Garden Benches</span>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-green" onclick="autoAssignPilots()">Auto-Assign</button>
+          <button class="btn btn-green" onclick="autoAssignRoutes()">Auto-Exhibit</button>
+          <button class="btn btn-green" onclick="dispatchAll()">Send All</button>
+          <button class="btn" onclick="maintainAll()">Prune All</button>
+        </div>
+      </div>
       
-      <div class="grid-4">
-        <div class="gacha-crate">
-          <div>
-            <div class="crate-icon">🌱</div>
-            <h3 style="color:var(--neon-green); font-size:1rem; margin-bottom:4px;">Bulk Seedling Flats</h3>
-            <p style="font-size:0.75rem; color:#888;">Nursery baseline. 85% Common, 14% Specimen, 1% Exhibition.</p>
-          </div>
-          <button class="btn btn-green" onclick="buyGacha('seedling')">Buy Flat - ¥600</button>
+      <div class="control-bar">
+        <div class="control-group">
+          <span class="control-label">Sort:</span>
+          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('val')">VAL</button>
+          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('tier')">TIER</button>
+          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('range')">DIST</button>
         </div>
-
-        <div class="gacha-crate">
-          <div>
-            <div class="crate-icon">🪴</div>
-            <h3 style="color:var(--neon-blue); font-size:1rem; margin-bottom:4px;">Imported Pre-Bonsai</h3>
-            <p style="font-size:0.75rem; color:#888;">Grown 15-30 yrs. Guaranteed Specimen+. 15% Exhibition, 2% Masterpiece.</p>
-          </div>
-          <button class="btn btn-blue" onclick="buyGacha('import')">Import Crate - ¥4,500</button>
+        <div class="control-group">
+          <span class="control-label">Style:</span>
+          <select id="fleet-role-filter" onchange="filterHangarRole(this.value)" style="padding:3px; font-size:9px; width:auto;">
+            <option value="ALL">All Styles</option>
+            <option value="CHOKKAN">Chokkan</option>
+            <option value="MOYOGI">Moyogi</option>
+            <option value="SHAKAN">Shakan</option>
+            <option value="KENGAI">Kengai</option>
+            <option value="YOSE_UE">Yose-Ue</option>
+            <option value="BUNJINGI">Bunjingi</option>
+          </select>
         </div>
-
-        <div class="gacha-crate">
-          <div>
-            <div class="crate-icon">🗻</div>
-            <h3 style="color:var(--neon-gold); font-size:1rem; margin-bottom:4px;">Alpine Yamadori Expedition</h3>
-            <p style="font-size:0.75rem; color:#888;">Cliff-harvested. Guaranteed Exhibition+. 18% Masterpiece, 2% National Treasure.</p>
-          </div>
-          <button class="btn btn-gold" onclick="buyGacha('yamadori')">Expedition - ¥22,000</button>
+        <div class="control-group">
+          <span class="control-label">Tier:</span>
+          <select id="fleet-tier-filter" onchange="filterHangarTier(this.value)" style="padding:3px; font-size:9px; width:auto;">
+            <option value="ALL">All Tiers</option>
+            <option value="0">T1</option><option value="1">T2</option><option value="2">T3</option><option value="3">T4</option><option value="4">T5</option>
+            <option value="5">T6</option><option value="6">T7</option><option value="7">T8</option><option value="8">T9</option><option value="9">T10</option>
+          </select>
         </div>
-
-        <div class="gacha-crate">
-          <div>
-            <div class="crate-icon">👑</div>
-            <h3 style="color:var(--neon-purple); font-size:1rem; margin-bottom:4px;">Imperial Dynasty Vault</h3>
-            <p style="font-size:0.75rem; color:#888;">Centuries-old heritage trees. Guaranteed Masterpiece+. 15% National Treasure.</p>
-          </div>
-          <button class="btn btn-purple" onclick="buyGacha('dynasty')">Sealed Auction - ¥95,000</button>
-        </div>
+        <button class="btn btn-green" style="padding:4px 6px; font-size:8px;" onclick="importStrain()">Import Base36</button>
       </div>
+
+      <div class="fraction-row">
+        <button class="btn btn-danger" onclick="quickSellStrains(0)">Sell T1</button>
+        <button class="btn btn-danger" onclick="quickSellStrains(1)">Sell T2&lt;</button>
+        <button class="btn btn-danger" onclick="quickSellStrains(2)">Sell T3&lt;</button>
+        <button class="btn btn-danger" onclick="quickSellStrains(3)">Sell T4&lt;</button>
+      </div>
+
+      <div id="fleet-list" class="fleet-grid"></div>
     </div>
   </div>
-
-  <!-- 3. EXHIBITION DISPATCH (LOGISTICS & ROUTES) -->
-  <div id="view-dispatch" class="view">
+  
+  <!-- TAB: GALLERY -->
+  <div id="tab-gallery" class="view-tab">
     <div class="panel">
-      <div class="panel-header">Logistics Fleet & Gallery Consignment Circuits</div>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 16px;">
-        Dispatch your styled bonsai to commercial showrooms, luxury hotel lobbies, and tea houses across Japan. High vigor guarantees 100% consignment payout. Low vigor risks branch damage in transit!
-      </p>
-      <div class="grid-3" id="dispatch-zones"></div>
+      <div class="panel-header"><span>Tokonoma (Masterpiece Gallery) 🖼️</span></div>
+      <p style="font-size:10px; color:var(--silver-dim);">Lock your best phenotypes to preserve their artwork forever.</p>
+      <div id="gallery-grid" class="fleet-grid"></div>
     </div>
   </div>
 
-  <!-- 4. WORKSHOP & MRO (TURNTABLE REFINEMENT) -->
-  <div id="view-workshop" class="view">
-    <div class="grid-2">
-      <!-- High-Res Viewer -->
-      <div class="panel" style="text-align: center;">
-        <div class="panel-header" id="ws-title">Turntable Examination (64×64 HD Canvas)</div>
-        <canvas id="ws-canvas" class="pixel-canvas canvas-lg" width="64" height="64"></canvas>
-        <div class="trade-code" id="ws-code" style="margin-top: 16px; font-size:0.95rem; padding: 8px;">NO SPECIMEN MOUNTED</div>
-      </div>
+  <!-- TAB 4: COURIERS -->
+  <div id="tab-pilots" class="view-tab">
+    <div class="panel">
+      <div class="panel-header"><span>Apprentice Roster</span></div>
       
-      <!-- Studio Controls -->
-      <div class="panel">
-        <div class="panel-header">Bonsai MRO & Styling Bench</div>
-        <div id="ws-empty-msg" style="color:#666; font-style:italic;">Select any tree from your Benches to mount it on the turntable.</div>
-        
-        <div id="ws-active-tools" style="display:none; flex-direction: column; gap: 12px;">
-          <div style="background:#0a0a0f; padding:14px; border:1px solid #222; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem;">
-            <div style="color:var(--neon-green); font-weight:bold; margin-bottom:8px; border-bottom:1px solid #1f1f2e; padding-bottom:4px;">BIOLOGICAL METRICS</div>
-            <div class="stat-row" style="margin-bottom:4px;"><span>Species:</span> <span id="ws-spec" style="color:#fff;">--</span></div>
-            <div class="stat-row" style="margin-bottom:4px;"><span>Estimated Age:</span> <span id="ws-age" style="color:#fff;">--</span></div>
-            <div class="stat-row" style="margin-bottom:4px;"><span>Vigor / Hydration:</span> <span id="ws-vigor" style="color:var(--neon-blue);">--</span></div>
-            <div class="stat-row" style="margin-bottom:4px;"><span>Growth Style:</span> <span id="ws-style" style="color:var(--neon-gold);">--</span></div>
-            <div class="stat-row"><span>Appraised Valuation:</span> <span id="ws-val" style="color:var(--neon-gold); font-weight:bold;">--</span></div>
-          </div>
-          
-          <button class="btn btn-blue" onclick="wsAction('water')">💧 Deep Root Irrigation (Costs ¥80 + 2L Fert)</button>
-          <button class="btn btn-pink" onclick="wsAction('prune')">✂️ Prune Silhouette & Foliage Pads (Costs 15 ☯)</button>
-          <button class="btn btn-gold" onclick="wsAction('wire')">🌀 Restructure With Copper Wire (Costs 35 ☯)</button>
-          <button class="btn btn-purple" onclick="wsAction('jin')">🪵 Carve Deadwood Shari / Jin (Costs 60 ☯)</button>
-          
-          <div style="border-bottom: 1px dashed #222; margin: 6px 0;"></div>
-          <button class="btn btn-red" onclick="wsSendToAuction()">🔨 Dispatch Immediately to Live Wholesale Auction</button>
+      <div class="control-bar">
+        <div class="control-group">
+          <span class="control-label">Sort:</span>
+          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortPilots('val')">VAL</button>
+          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortPilots('tier')">TIER</button>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Tier:</span>
+          <select id="pilot-tier-filter" onchange="filterPilotTier(this.value)" style="padding:3px; font-size:9px; width:auto;">
+            <option value="ALL">All Tiers</option>
+            <option value="0">T1</option><option value="1">T2</option><option value="2">T3</option><option value="3">T4</option><option value="4">T5</option>
+            <option value="5">T6</option><option value="6">T7</option><option value="7">T8</option><option value="8">T9</option><option value="9">T10</option>
+          </select>
+        </div>
+        <button class="btn btn-green" style="padding:4px 6px; font-size:8px;" onclick="importCourier()">Import Base36</button>
+      </div>
+
+      <div class="fraction-row">
+        <button class="btn btn-danger" onclick="quickSellPilots(0)">Fire T1</button>
+        <button class="btn btn-danger" onclick="quickSellPilots(1)">Fire T2&lt;</button>
+        <button class="btn btn-danger" onclick="quickSellPilots(2)">Fire T3&lt;</button>
+        <button class="btn btn-danger" onclick="quickSellPilots(3)">Fire T4&lt;</button>
+      </div>
+
+      <div id="pilots-grid" class="fleet-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 5: DELIVERY ZONES -->
+  <div id="tab-routes" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Exhibitions & Shows (400)</span>
+        <select id="route-cat-filter" onchange="filterRouteCategory(this.value)" style="padding:3px; font-size:9px; width:auto;">
+          <option value="ALL">All Exhibitions</option>
+          <option value="CHOKKAN">Chokkan Demand</option>
+          <option value="MOYOGI">Moyogi Demand</option>
+          <option value="SHAKAN">Shakan Demand</option>
+          <option value="KENGAI">Kengai Demand</option>
+          <option value="YOSE_UE">Yose-Ue Demand</option>
+          <option value="BUNJINGI">Bunjingi Demand</option>
+        </select>
+      </div>
+      <div id="routes-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+  </div>
+
+  <!-- TAB 6: WHOLESALE AUCTIONS -->
+  <div id="tab-auction" class="view-tab">
+    <div class="panel">
+      <div class="panel-header"><span>Master Auction House</span><span style="color:var(--status-amber);"><span id="auction-count">0</span>/10 LANES</span></div>
+      <p style="font-size:10px; color:var(--silver-dim);">10 live bidding lanes with sniping reset and random multi-thousand-dollar bid spikes.</p>
+      
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-green" style="flex:1; padding:8px;" onclick="fillAuctions('planes')">Auto-Fill 10 Cheapest Trees</button>
+        <button class="btn btn-green" style="flex:1; padding:8px;" onclick="fillAuctions('pilots')">Auto-Fill 10 Novice Apprentices</button>
+      </div>
+
+      <div id="auction-idle" style="text-align:center; padding:16px; color:var(--silver-dim); font-size:11px;">Lanes empty. Push excess inventory to the auction house.</div>
+      <div id="auction-board" class="fleet-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 7: BURNER PHONE -->
+  <div id="tab-checklist" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">Nursery Automations</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div class="check-item">
+          <div><strong>Touring Schedule:</strong> Automatically sends trees to exhibitions upon return.</div>
+          <button id="chk-autoloop" class="btn" onclick="toggleAutoLoop()">ENABLE</button>
+        </div>
+        <div class="check-item">
+          <div><strong>Automated Pruning:</strong> Automatically restores health if vitality drops below 45%.</div>
+          <button id="chk-automro" class="btn" onclick="toggleAutoMRO()">ENABLE</button>
+        </div>
+        <div class="check-item">
+          <div><strong>Automated Irrigation:</strong> Buys 100K Gal when water drops below 50K.</div>
+          <button id="chk-autorefuel" class="btn" onclick="toggleAutoRefuel()">ENABLE</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 5. BURNER PHONE (VIP CONTRACTS) -->
-  <div id="view-burner" class="view">
     <div class="panel">
       <div class="panel-header">
-        <span>Encrypted Burner Phone :: Private Broker Orders</span>
-        <button class="btn btn-sm btn-gold" onclick="refreshBurnerOrders()">🔄 Scramble Signals (¥500)</button>
+        <span>Client Commissions</span>
+        <button class="btn btn-green" style="padding:2px 6px; font-size:8px;" onclick="refreshSideMissions()">Ignore Letters</button>
       </div>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 16px;">
-        Private collectors, corporate executives, and tea masters require specific trees matching strict criteria. Deliver matching specimens before time expires for enormous bounties.
-      </p>
-      <div class="grid-3" id="burner-grid"></div>
+      <p style="font-size:10px; color:var(--silver-dim); margin-bottom:4px;">Exhibit targeted styles at designated shows to earn cash bounties and rare seeds.</p>
+      <div id="side-missions-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">Zen Milestones</div>
+      <div id="milestone-list" style="display:flex; flex-direction:column; gap:6px;"></div>
     </div>
   </div>
 
-  <!-- 6. 10-LANE WHOLESALE AUCTION BLOCK -->
-  <div id="view-auction" class="view">
+  <!-- TAB 8: MARKETING UPGRADES -->
+  <div id="tab-upgrades" class="view-tab">
     <div class="panel">
-      <div class="panel-header">
-        <span>Wholesale Botanical Trading Exchange (10 Active Lanes)</span>
-        <span style="font-size:0.8rem; color:var(--neon-gold); font-family:var(--font-mono);">MARKET VOLATILITY: ACTIVE</span>
+      <div class="panel-header">Nursery Expansion</div>
+      <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px; background:#000;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11px;">
+          <span style="font-weight:bold; color:var(--status-green);">Exhibition Prestige</span>
+          <span style="color:var(--silver-dim);">Lvl <span id="upg-mkt-lvl">0</span> (+<span id="upg-mkt-pct">0</span>%)</span>
+        </div>
+        <div style="font-size:9.5px; color:var(--silver-dim); margin-bottom:6px;">Permanently boosts base exhibition yields by +5% per level.</div>
+        <button class="btn btn-green" style="width:100%;" onclick="buyUpgrade('mkt')">Invest ($<span id="upg-mkt-cost">100000</span>)</button>
       </div>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 16px;">
-        Syndicate wholesale auction block modeled after Tokyo central floral markets. Trees undergo rapid automated bidding wars with snipe extensions.
-      </p>
-      <div class="auction-grid" id="auction-lanes-container"></div>
+      <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px; background:#000;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11px;">
+          <span style="color:var(--status-blue); font-weight:bold;">Automated Drip Lines</span>
+          <span style="color:var(--silver-dim);">Lvl <span id="upg-eng-lvl">0</span> (-<span id="upg-eng-pct">0</span>%)</span>
+        </div>
+        <div style="font-size:9.5px; color:var(--silver-dim); margin-bottom:6px;">Permanently reduces nursery-wide water consumption by 2% per level (Max 70%).</div>
+        <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue); width:100%;" onclick="buyUpgrade('eng')">Invest ($<span id="upg-eng-cost">150000</span>)</button>
+      </div>
     </div>
   </div>
+</main>
 
-  <!-- 7. UPGRADES (GREENHOUSE AUTOMATION) -->
-  <div id="view-upgrades" class="view">
-    <div class="panel">
-      <div class="panel-header">Greenhouse Infrastructure & Automated Systems</div>
-      <div class="grid-3" id="upgrades-grid"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- TOAST CONTAINER -->
-<div id="toast-container"></div>
+<div id="toast-rack"></div>
 
 <script>
-/* =========================================================================
-   ZEN BONSAI IMPERIAL SYNDICATE v1.11 — ENGINE SPECIFICATIONS
-   - 64x64 HD Cellular Procedural Bonsai Generator (Dual-Tone Pixel Canvas)
-   - Base36 Trade Code Encoder & Parser
-   - Logistics Delivery Fleet & Consignment Zones
-   - 10-Lane Simultaneous Wholesale Auction Exchange
-   - VIP Burner Phone Encrypted Mission System
-========================================================================= */
+  /* ================= 9,600 BONSAI COMBINATIONS ================= */
+  const TREE_PREFIXES = ["Twisted","Ancient","Majestic","Delicate","Weathered","Graceful","Rugged","Serene","Whispering","Noble"]; // 10
+  const TREE_ORIGINS = ["Yamadori", "Nursery", "Cutting", "Seedling", "Imported", "Heirloom", "Wild", "Imperial"]; // 8
+  const TREE_SPECIES = ["Juniper", "Black Pine", "Red Pine", "Trident Maple", "Japanese Maple", "Chinese Elm", "Ficus", "Cedar", "Hinoki Cypress", "Cork Bark Oak", "Larch", "Satsuki Azalea", "Bougainvillea", "Jade", "Boxwood", "Hornbeam", "Ginkgo", "Olive", "Wisteria", "Hemlock"]; // 20
+  const TREE_STYLES = ["CHOKKAN", "MOYOGI", "SHAKAN", "KENGAI", "YOSE_UE", "BUNJINGI"]; // 6
 
-const TIERS = [
-  { id: 0, name: "Nursery Stock", mult: 1, color: "tier-0" },
-  { id: 1, name: "Specimen", mult: 3.5, color: "tier-1" },
-  { id: 2, name: "Exhibition", mult: 12, color: "tier-2" },
-  { id: 3, name: "Masterpiece", mult: 55, color: "tier-3" },
-  { id: 4, name: "National Treasure", mult: 300, color: "tier-4" }
-];
+  const P_FIRST = ["Kenji", "Akira", "Hiro", "Mei", "Sakura", "Takeshi", "Sora", "Ren", "Yui", "Hina", "Kaito", "Satoshi", "Yoko", "Taro", "Jiro", "Hanako", "Shin", "Ryota", "Daiki", "Yoshi"];
+  const P_LAST = ["Tanaka", "Watanabe", "Ito", "Takahashi", "Kobayashi", "Yamamoto", "Nakamura", "Saito", "Kato", "Yoshida", "Yamada", "Sasaki", "Yamaguchi", "Matsumoto", "Inoue", "Kimura", "Hayashi", "Shimizu", "Yamazaki", "Mori"];
+  const P_CALL = ["'The Snipe'", "'Steady Hand'", "'Zen'", "'Rootmaster'", "'The Scissor'", "'Patience'", "'Green Thumb'", "'Bonsai Boy'"];
+  const B_TYPES = ["PRUNING","SPEED","WATER","CARE"]; 
 
-const SPECIES = [
-  { id: 0, name: "Shimpaku Juniper", bark: "#4d3326", folMain: "#227335", folAlt: "#144820", deadwood: "#f1f5f9" },
-  { id: 1, name: "Trident Maple", bark: "#665749", folMain: "#dc2626", folAlt: "#991b1b", deadwood: "#e2e8f0" },
-  { id: 2, name: "Japanese Black Pine", bark: "#2c2623", folMain: "#14532d", folAlt: "#052e16", deadwood: "#f8fafc" },
-  { id: 3, name: "Weeping Sakura", bark: "#443435", folMain: "#f472b6", folAlt: "#db2777", deadwood: "#e2e8f0" },
-  { id: 4, name: "Chinese Elm", bark: "#594d42", folMain: "#65a30d", folAlt: "#3f6212", deadwood: "#cbd5e1" },
-  { id: 5, name: "Royal Jacaranda", bark: "#524a44", folMain: "#a855f7", folAlt: "#7e22ce", deadwood: "#f1f5f9" },
-  { id: 6, name: "Golden Larch", bark: "#4a3b2c", folMain: "#eab308", folAlt: "#ca8a04", deadwood: "#f8fafc" },
-  { id: 7, name: "Satsuki Azalea", bark: "#40312d", folMain: "#fb7185", folAlt: "#e11d48", deadwood: "#f1f5f9" }
-];
+  const TIERS = [
+    { tier: 1, name: "Tier I: Seedling", color: "var(--t0-col)", baseVal: 50000 },
+    { tier: 2, name: "Tier II: Sapling", color: "var(--t1-col)", baseVal: 150000 },
+    { tier: 3, name: "Tier III: Pre-Bonsai", color: "var(--t2-col)", baseVal: 500000 },
+    { tier: 4, name: "Tier IV: Shohin", color: "var(--t3-col)", baseVal: 1500000 },
+    { tier: 5, name: "Tier V: Chuhin", color: "var(--t4-col)", baseVal: 5000000 },
+    { tier: 6, name: "Tier VI: Omono", color: "var(--t5-col)", baseVal: 15000000 },
+    { tier: 7, name: "Tier VII: Masterpiece", color: "var(--t6-col)", baseVal: 40000000 },
+    { tier: 8, name: "Tier VIII: Heritage", color: "var(--t7-col)", baseVal: 100000000 },
+    { tier: 9, name: "Tier IX: Imperial", color: "var(--t8-col)", baseVal: 250000000 },
+    { tier: 10, name: "Tier X: Nat. Treasure", color: "var(--t9-col)", baseVal: 500000000 }
+  ];
 
-const STYLES = [
-  { id: 0, name: "Chokkan (Formal Upright)" },
-  { id: 1, name: "Moyogi (Informal Upright)" },
-  { id: 2, name: "Shakan (Slanting)" },
-  { id: 3, name: "Kengai (Cascade)" },
-  { id: 4, name: "Fukinagashi (Windswept)" },
-  { id: 5, name: "Bunjingi (Literati)" },
-  { id: 6, name: "Sokan (Twin Trunk)" }
-];
-
-const POT_PALETTES = [
-  { rim: "#1a1a24", body: "#2a2a3a", accent: "#3b82f6" },
-  { rim: "#3b1e13", body: "#572b1b", accent: "#d97706" },
-  { rim: "#132b1e", body: "#1c402d", accent: "#22c55e" },
-  { rim: "#2b1324", body: "#401c36", accent: "#ec4899" },
-  { rim: "#1f2937", body: "#111827", accent: "#6b7280" },
-  { rim: "#713f12", body: "#854d0e", accent: "#eab308" }
-];
-
-const SYNDICATES = [
-  "Omiya Nursery", "Kyoto Imperial", "Tokyo Metro Elite", "Osaka Floral Syndicate",
-  "Sapporo Mountain Guild", "Kobe Botanical Trade", "Nagoya Heritage", "Fukuoka Traders",
-  "Shikoku Island Clan", "Sendai Forest Syndicate", "Yokohama Pier Exports", "Zenith Conglomerate"
-];
-
-const DISPATCH_ROUTES = [
-  { id: 'r1', name: 'Local Kyoto Zen Tea House', time: 15, reqTier: 0, reward: 1200, zen: 8, costFert: 5 },
-  { id: 'r2', name: 'Ginza Tokyo Flagship Showroom', time: 30, reqTier: 1, reward: 4800, zen: 25, costFert: 12 },
-  { id: 'r3', name: 'Osaka High Roller Penthouse Suite', time: 60, reqTier: 2, reward: 18000, zen: 70, costFert: 25 },
-  { id: 'r4', name: 'Imperial Arboretum Exhibition Gala', time: 120, reqTier: 3, reward: 85000, zen: 280, costFert: 60 }
-];
-
-const UPGRADES_DEF = [
-  { id: 'auto_water', name: 'Automated Drip Hydroponics', desc: 'Maintains vigor across all bench inventory over time.', cost: 3500, max: 5 },
-  { id: 'fert_synth', name: 'Nutrient Tea Synthesizer', desc: 'Generates free chemical fertilizer each market tick.', cost: 5000, max: 5 },
-  { id: 'fleet_size', name: 'Refrigerated Transport Vans', desc: 'Adds +1 active fleet courier slot for simultaneous dispatches.', cost: 8000, max: 4 },
-  { id: 'snipe_radar', name: 'Auction Insider Intelligence', desc: 'Increases final buyout bids in wholesale trading lanes by 15% per tier.', cost: 12000, max: 5 }
-];
-
-/* =========================================================================
-   STATE MANAGEMENT
-========================================================================= */
-
-let state = {
-  money: 12500,
-  zen: 250,
-  fertilizer: 100,
-  godMode: false,
-  trees: [],
-  activeTurntableId: null,
-  fleetSlots: 3,
-  dispatches: [], // { id, routeId, treeId, endTime, maxTime }
-  burnerOrders: [],
-  auctionLanes: Array(10).fill(null).map((_, i) => createEmptyAuctionLane(i + 1)),
-  upgrades: {
-    auto_water: 0,
-    fert_synth: 0,
-    fleet_size: 0,
-    snipe_radar: 0
-  }
-};
-
-function createEmptyAuctionLane(id) {
-  return {
-    laneId: id,
-    active: false,
-    tree: null,
-    currentBid: 0,
-    highestBidder: 'Awaiting Consignment',
-    timeLeft: 0,
-    totalTime: 15,
-    logs: []
+  const ZONE_CAT = {
+    CHOKKAN: ["Formal Gala","Kyoto Pavilion","Emperor's Hall","National Museum"],
+    MOYOGI: ["Tokyo Garden","Spring Festival","Local Shrine","Tea House"],
+    SHAKAN: ["Windswept Ridge Show","Autumn Matsuri","Highland Estate","Zen Center"],
+    KENGAI: ["Cliffside Monastery","Mountain Retreat","Overlook Pavilion","Valley Exhibit"],
+    YOSE_UE: ["Forest Conservation Gala","Botanical Gardens","Shinjuku Gyoen","Palace Grounds"],
+    BUNJINGI: ["Literati Gathering","Scholar's Study","Poetry Reading","Minimalist Expo"]
   };
-}
 
-/* =========================================================================
-   BASE36 SEEDING & CELLULAR GENERATOR
-========================================================================= */
+  const MILESTONES = [
+    { id: "m1", title: "First Exhibition", desc: "Send a tree to a show.", reward: 250000, req: s => s.fleet.some(p => p.status === 'IN_FLIGHT' || p.expRev > 0) },
+    { id: "m2", title: "Nursery Bench", desc: "Hold 5 or more trees in your garden.", reward: 1000000, req: s => s.fleet.length >= 5 },
+    { id: "m3", title: "The Workshop", desc: "Hire 5 or more apprentices.", reward: 750000, req: s => s.pilots.length >= 5 },
+    { id: "m4", title: "Global Stage", desc: "Unlock a show > 3,000 Miles.", reward: 2000000, req: s => s.routes.some(r => r.unlocked && r.dist >= 3000) },
+    { id: "m5", title: "The Forest", desc: "Cultivate a Yose-Ue style bonsai.", reward: 3000000, req: s => s.fleet.some(p => p.role === 'YOSE_UE') },
+    { id: "m6", title: "Chuhin Status", desc: "Acquire a Tier V or higher tree.", reward: 8000000, req: s => s.fleet.some(p => p.tierIndex >= 4) },
+    { id: "m7", title: "Artisan Hire", desc: "Hire a Tier V or higher apprentice.", reward: 4000000, req: s => s.pilots.some(p => p.tierIndex >= 4) },
+    { id: "m8", title: "Water Reserves", desc: "Accumulate over 500,000 Gal of Water.", reward: 2500000, req: s => s.fuelReserve >= 500000 },
+    { id: "m9", title: "Zen Master", desc: "Amass over $100,000,000.", reward: 20000000, req: s => s.funds >= 100000000 },
+    { id: "m10", title: "Grand Garden", desc: "Expand benches to 10 active trees.", reward: 5000000, req: s => s.fleet.length >= 10 },
+    { id: "m11", title: "Auctioneer", desc: "Sell a tree at the Master Auctions.", reward: 1500000, req: s => s.statAuctionsSold > 0 },
+    { id: "m12", title: "Pruned Away", desc: "Sell a tree locally (Compost/Remove).", reward: 1000000, req: s => s.statPlanesScrapped > 0 },
+    { id: "m13", title: "World Tour", desc: "Unlock a show > 6,500 Miles.", reward: 6000000, req: s => s.routes.some(r => r.unlocked && r.dist >= 6500) },
+    { id: "m14", title: "Council of Masters", desc: "Employ 3 or more Tier VII+ Masters.", reward: 15000000, req: s => s.pilots.filter(p => p.tierIndex >= 6).length >= 3 },
+    { id: "m15", title: "National Treasure", desc: "Acquire a Tier X tree.", reward: 50000000, req: s => s.fleet.some(p => p.tierIndex === 9) }
+  ];
 
-function numToBase36(num, pad) {
-  return num.toString(36).toUpperCase().padStart(pad, '0');
-}
+  const $ = id => document.getElementById(id);
 
-function parseBase36(str) {
-  return parseInt(str, 36);
-}
+/* ================= 512x512 MASTER ZEN BONSAI BIO-ENGINE ================= */
+  const offscreenCanvas = document.createElement('canvas');
+  offscreenCanvas.width = 512; offscreenCanvas.height = 512;
+  const offscreenCtx = offscreenCanvas.getContext('2d');
 
-function Mulberry32(seed) {
-  return function() {
-    var t = seed += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-function generateBonsaiCode(species, style, tier, pot, trunkSeed, folSeed) {
-  // Format: [Sp][St][Tr]-[Pot][TrunkSeed3]-[FolSeed3]
-  return `${numToBase36(species,1)}${numToBase36(style,1)}${numToBase36(tier,1)}-${numToBase36(pot,1)}${numToBase36(trunkSeed,3)}-${numToBase36(folSeed,3)}`;
-}
-
-function parseBonsaiCode(code) {
-  let parts = code.split('-');
-  return {
-    species: parseBase36(parts[0][0]),
-    style: parseBase36(parts[0][1]),
-    tier: parseBase36(parts[0][2]),
-    pot: parseBase36(parts[1][0]),
-    trunkSeed: parseBase36(parts[1].substring(1,4)),
-    folSeed: parseBase36(parts[2])
-  };
-}
-
-/* =========================================================================
-   64x64 HD CELLULAR CANVAS RENDERING ENGINE
-========================================================================= */
-
-function drawBonsaiHD(canvas, code) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, 64, 64);
-  
-  const gene = parseBonsaiCode(code);
-  const spec = SPECIES[gene.species];
-  const potStyle = POT_PALETTES[gene.pot % POT_PALETTES.length];
-  
-  const randT = Mulberry32(gene.trunkSeed);
-  const randF = Mulberry32(gene.folSeed);
-
-  // 1. CERAMIC DISPLAY POT (Y: 53 to 60)
-  const potW = 32 + Math.floor(randT() * 10); // 32 to 41 wide
-  const potX = Math.floor((64 - potW) / 2);
-  const potY = 53;
-  const potH = 7;
-
-  // Pot Shadow / Floor line
-  ctx.fillStyle = "rgba(0,0,0,0.4)";
-  ctx.fillRect(potX - 2, 60, potW + 4, 2);
-
-  // Pot Body
-  ctx.fillStyle = potStyle.body;
-  ctx.fillRect(potX, potY, potW, potH);
-
-  // Pot Rim & Glaze Highlights
-  ctx.fillStyle = potStyle.rim;
-  ctx.fillRect(potX - 1, potY, potW + 2, 2);
-  ctx.fillStyle = potStyle.accent;
-  ctx.fillRect(potX + 2, potY + 2, potW - 4, 1);
-
-  // Pot Feet
-  ctx.fillStyle = potStyle.rim;
-  ctx.fillRect(potX + 3, potY + potH, 3, 2);
-  ctx.fillRect(potX + potW - 6, potY + potH, 3, 2);
-
-  // 2. ROOT FLARE (NEBARI) & TRUNK GROWTH (64x64 Spline Walk)
-  ctx.fillStyle = spec.bark;
-  let trunkNodes = [];
-  let tx = 32;
-  let ty = potY;
-  let tWidth = 6 + Math.floor(randT() * 3); // Root base flare: 6 to 8 pixels wide
-
-  // Anchor Nebari base
-  ctx.fillRect(tx - Math.floor(tWidth / 2) - 2, ty - 1, tWidth + 4, 2);
-
-  const iterations = 18 + Math.floor(randT() * 10);
-
-  for (let i = 0; i < iterations; i++) {
-    let dx = 0;
-    let dy = -(2 + Math.floor(randT() * 2));
-
-    // Growth morphology styles
-    if (gene.style === 0) { // Chokkan (Formal Upright)
-      dx = (randT() > 0.5 ? 1 : -1) * (randT() < 0.25 ? 1 : 0);
-    } else if (gene.style === 1) { // Moyogi (S-Curve)
-      dx = Math.sin(i * 0.7) * 3.5;
-    } else if (gene.style === 2) { // Shakan (Slanting)
-      dx = 2.2 + (randT() * 1.5);
-    } else if (gene.style === 3) { // Kengai (Cascade below pot)
-      dx = (i < 5) ? 2 : -3.5;
-      dy = (i < 5) ? -2 : 3;
-    } else if (gene.style === 4) { // Fukinagashi (Windswept)
-      dx = 3.8 + (randT() * 2);
-      dy = -1;
-    } else if (gene.style === 5) { // Bunjingi (Literati slender erratic)
-      dx = (randT() > 0.5 ? 2.5 : -2.5);
-      dy = -3.5;
-      tWidth = Math.min(tWidth, 3);
-    } else if (gene.style === 6) { // Sokan (Twin trunk flare)
-      dx = (i % 2 === 0 ? 2 : -1.5);
-    }
-
-    tx += dx;
-    ty += dy;
-
-    // Gradual taper towards apex
-    if (i > 4 && randT() > 0.45 && tWidth > 2) {
-      tWidth--;
-    }
-
-    const drawX = Math.floor(tx) - Math.floor(tWidth / 2);
-    const drawY = Math.floor(ty);
-    
-    trunkNodes.push({ x: Math.floor(tx), y: Math.floor(ty), w: tWidth });
-    ctx.fillRect(drawX, drawY, tWidth, Math.abs(dy) + 1);
-
-    // Deadwood (Jin / Shari) Bleached Spikes
-    if (randT() < 0.12 && gene.tier >= 1) {
-      ctx.fillStyle = spec.deadwood;
-      const jinLength = 3 + Math.floor(randT() * 4);
-      const jinDir = randT() > 0.5 ? 1 : -1;
-      ctx.fillRect(Math.floor(tx) + (jinDir * Math.floor(tWidth / 2)), drawY, jinLength, 1);
-      ctx.fillStyle = spec.bark; // restore bark
+  function Mulberry32(a) {
+    return function() {
+      var t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
     }
   }
 
-  // 3. FOLIAGE CLOUDS (DUAL-TONE LAYERED CANOPY PADS)
-  let folPads = [];
-  trunkNodes.forEach((node, idx) => {
-    let padChance = 0.32;
-    if (gene.style === 5) padChance = idx > iterations - 4 ? 0.9 : 0.05; // Literati only top pads
-    if (gene.style === 4) padChance = 0.55; // Windswept dense lateral clouds
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function lerpCol(c1, c2, t) {
+    return [
+      Math.round(lerp(c1[0], c2[0], t)),
+      Math.round(lerp(c1[1], c2[1], t)),
+      Math.round(lerp(c1[2], c2[2], t))
+    ];
+  }
+  function rgb(c) { return `rgb(${c[0]},${c[1]},${c[2]})`; }
+  function rgba(c, a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
 
-    if (randF() < padChance && idx > 3) {
-      let cx = node.x;
-      let cy = node.y;
-      if (gene.style === 4) cx += 8; // Lateral shift for wind
-
-      let rad = 5 + Math.floor(randF() * 6); // 5 to 10px radius
-      if (gene.tier >= 2) rad += 2; // Lush canopy on higher tiers
-      folPads.push({ x: cx, y: cy, r: rad });
-    }
-  });
-
-  // Always enforce an apex crown
-  if (trunkNodes.length > 0) {
-    const top = trunkNodes[trunkNodes.length - 1];
-    folPads.push({ x: top.x, y: top.y, r: 7 + Math.floor(randF() * 3) });
+  function drawRoundedRect(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.lineTo(x + w - r, y);
+    c.quadraticCurveTo(x + w, y, x + w, y + r);
+    c.lineTo(x + w, y + h - r);
+    c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    c.lineTo(x + r, y + h);
+    c.quadraticCurveTo(x, y + h, x, y + h - r);
+    c.lineTo(x, y + r);
+    c.quadraticCurveTo(x, y, x + r, y);
+    c.closePath();
   }
 
-  // Layer 1: Deep Core Shadow Foliage
-  folPads.forEach(pad => {
-    paintFoliageCluster(ctx, pad.x, pad.y, pad.r, spec.folAlt, randF, 0.2);
-  });
+  function generateBonsaiImage(seedInt, role, tierIdx, sp) {
+    const ctx = offscreenCtx;
+    ctx.clearRect(0, 0, 512, 512);
+    const rng = Mulberry32(seedInt);
 
-  // Layer 2: Sunlit Highlight Foliage (Shifted up 1px)
-  folPads.forEach(pad => {
-    paintFoliageCluster(ctx, pad.x, pad.y - 1, Math.max(3, pad.r - 2), spec.folMain, randF, 0.25);
-  });
-}
+    // --- 1. BOTANICAL PALETTE DEFINITIONS ---
+    let foliage = {
+      base: [18, 44, 22], mid: [34, 76, 38], high: [64, 128, 68], bloom: null
+    };
 
-function paintFoliageCluster(ctx, cx, cy, radius, color, prng, skipThreshold) {
-  ctx.fillStyle = color;
-  for (let y = -radius; y <= radius; y++) {
-    for (let x = -radius; x <= radius; x++) {
-      if ((x * x) + (y * y) <= (radius * radius)) {
-        if (prng() > skipThreshold) {
-          ctx.fillRect(cx + x, cy + y, 1, 1);
+    if (sp.includes("Maple") || sp.includes("Ginkgo")) {
+      // Momiji Autumn Scarlet & Amber Gold
+      foliage = { base: [68, 16, 6], mid: [160, 42, 12], high: [228, 96, 18], bloom: [248, 168, 24] };
+    } else if (sp.includes("Azalea") || sp.includes("Bougainvillea")) {
+      // Satsuki Flowering Petals
+      foliage = { base: [22, 48, 26], mid: [42, 88, 48], high: [210, 52, 142], bloom: [248, 118, 188] };
+    } else if (sp.includes("Pine") || sp.includes("Juniper") || sp.includes("Cedar")) {
+      // Deep Evergreen Needles
+      foliage = { base: [8, 26, 12], mid: [20, 50, 26], high: [42, 94, 52], bloom: null };
+    } else if (sp.includes("Wisteria")) {
+      // Cascading Purple Racemes
+      foliage = { base: [34, 10, 64], mid: [74, 22, 134], high: [164, 102, 238], bloom: [224, 162, 248] };
+    } else if (sp.includes("Oak") || sp.includes("Elm") || sp.includes("Hornbeam")) {
+      // Deciduous Broadleaf Summer
+      foliage = { base: [24, 52, 24], mid: [52, 104, 46], high: [92, 158, 74], bloom: null };
+    }
+
+    // --- 2. ATMOSPHERIC SHADOW & BACKGROUND ---
+    const bgGrad = ctx.createRadialGradient(256, 210, 40, 256, 256, 310);
+    bgGrad.addColorStop(0, "#0d100d");
+    bgGrad.addColorStop(0.7, "#050705");
+    bgGrad.addColorStop(1, "#020302");
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Subtle Shoji Paper Light Wash
+    ctx.fillStyle = "rgba(74, 222, 128, 0.015)";
+    ctx.beginPath();
+    ctx.moveTo(140, 0); ctx.lineTo(372, 0); ctx.lineTo(512, 512); ctx.lineTo(0, 512);
+    ctx.closePath();
+    ctx.fill();
+
+    // --- 3. YAKISUGI DISPLAY STAND ---
+    const standY = 478;
+    const standH = 22;
+    const standW = role === 'KENGAI' ? 220 : 340;
+    const standX = 256 - standW * 0.5;
+
+    // Dark Rosewood Base
+    ctx.fillStyle = "#0a0807";
+    ctx.fillRect(standX - 10, standY, standW + 20, standH);
+
+    // Beveled Top Highlight & Carved Line
+    ctx.fillStyle = "rgba(48, 34, 26, 0.85)";
+    ctx.fillRect(standX - 8, standY + 2, standW + 16, 5);
+    ctx.strokeStyle = "rgba(18, 14, 12, 0.95)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(standX - 10, standY, standW + 20, standH);
+
+    // Carved Feet
+    ctx.fillStyle = "#060504";
+    ctx.fillRect(standX - 2, standY + standH, 20, 8);
+    ctx.fillRect(standX + standW - 18, standY + standH, 20, 8);
+
+    // --- 4. TOKONAME POTTERY & SLABS ---
+    let potY = standY - 2;
+    let potH = 28;
+    let potW = 108;
+    let potColor = [42, 52, 62]; // Glazed Celadon / Slate
+
+    if (role === 'KENGAI') {
+      potW = 48; potH = 112; potY = standY - 106; // Tall Cascade Vessel
+      potColor = [72, 48, 38]; // Unglazed Red Clay
+    } else if (role === 'YOSE_UE') {
+      potW = 172; potH = 12; potY = standY - 4; // Flat Granite Tray
+      potColor = [48, 52, 48];
+    }
+
+    const potX = 256 - potW;
+
+    // Ambient Grounding Shadow
+    const shGrad = ctx.createRadialGradient(256, potY + potH, 8, 256, potY + potH + 4, potW * 1.35);
+    shGrad.addColorStop(0, "rgba(0, 0, 0, 0.95)");
+    shGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = shGrad;
+    ctx.fillRect(potX - 30, potY + potH - 4, potW * 2 + 60, 14);
+
+    // Ceramic Vessel Body
+    ctx.fillStyle = rgb(potColor);
+    drawRoundedRect(ctx, potX, potY, potW * 2, potH, 3);
+    ctx.fill();
+
+    // Glaze Lighting & Shading
+    const potHighlight = ctx.createLinearGradient(potX, potY, potX + potW * 2, potY);
+    potHighlight.addColorStop(0, "rgba(0, 0, 0, 0.55)");
+    potHighlight.addColorStop(0.18, "rgba(255, 255, 255, 0.14)");
+    potHighlight.addColorStop(0.5, "rgba(255, 255, 255, 0.0)");
+    potHighlight.addColorStop(0.85, "rgba(0, 0, 0, 0.35)");
+    potHighlight.addColorStop(1, "rgba(0, 0, 0, 0.75)");
+    ctx.fillStyle = potHighlight;
+    drawRoundedRect(ctx, potX, potY, potW * 2, potH, 3);
+    ctx.fill();
+
+    // Raised Outer Lip
+    ctx.fillStyle = rgb(lerpCol(potColor, [10, 10, 10], 0.3));
+    ctx.fillRect(potX - 3, potY, potW * 2 + 6, 6);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+    ctx.fillRect(potX - 3, potY + 1, potW * 2 + 6, 1.5);
+
+    // --- 5. PEAT SOIL, NEBARI ROOTS & MOSS ---
+    const soilY = potY + 1;
+    const soilW = potW - 5;
+    ctx.fillStyle = "#22160f"; // Rich Akadama
+    ctx.beginPath();
+    ctx.ellipse(256, soilY, soilW, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Velvet Moss Cushions
+    const mossColor = [38, 80, 30];
+    for (let m = 0; m < 55; m++) {
+      const mx = 256 + (rng() - 0.5) * soilW * 1.65;
+      const my = soilY + (rng() - 0.5) * 13;
+      const mr = 4 + rng() * 7;
+      ctx.fillStyle = rgba(lerpCol(mossColor, [88, 155, 48], rng() * 0.45), 0.88);
+      ctx.beginPath();
+      ctx.arc(mx, my, mr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Suiseki Miniature Accent Stone
+    ctx.fillStyle = "#383431";
+    ctx.beginPath();
+    ctx.ellipse(256 - soilW * 0.45, soilY + 3, 14, 6, 0.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#242220";
+    ctx.beginPath();
+    ctx.ellipse(256 - soilW * 0.45, soilY + 3, 10, 4, 0.12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- 6. GNARLED BRANCHING ENGINE ---
+    function drawSinuousBranch(startX, startY, angle, maxSteps, baseWidth, isTrunk = false) {
+      const points = [];
+      let cx = startX;
+      let cy = startY;
+      let ca = angle;
+
+      const variance = (role === 'MOYOGI') ? 0.36 : 0.18;
+
+      for (let s = 0; s <= maxSteps; s++) {
+        const t = s / maxSteps;
+        const width = baseWidth * Math.pow(1 - t * 0.75, 1.15);
+
+        let sway = Math.sin(t * Math.PI * 3.5 + seedInt) * variance;
+        if (role === 'CHOKKAN' && isTrunk) sway = (rng() - 0.5) * 0.04;
+        if (role === 'SHAKAN' && isTrunk) ca = -Math.PI * 0.42 + Math.sin(t * Math.PI) * 0.08;
+        if (role === 'KENGAI' && isTrunk) {
+          if (t < 0.15) {
+            ca = -Math.PI * 0.46;
+          } else if (t < 0.45) {
+            ca = lerp(-Math.PI * 0.46, Math.PI * 0.48, (t - 0.15) / 0.3);
+            cx -= 0.65;
+          } else {
+            ca = Math.PI * 0.42;
+            cx -= 1.15;
+          }
+        }
+        if (role === 'BUNJINGI' && isTrunk) {
+          sway = Math.sin(t * Math.PI * 6.5 + seedInt) * 0.42;
+        }
+
+        ca += sway;
+
+        const stepLen = isTrunk ? 7.6 : 4.6;
+        cx += Math.cos(ca) * stepLen;
+        cy += Math.sin(ca) * stepLen;
+
+        points.push({ x: cx, y: cy, r: width, step: s });
+      }
+
+      // Draw Wood Cross-Sections with 3D Core Bark Shading
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const r = Math.max(0.6, p.r);
+
+        ctx.fillStyle = "#2c1c15";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (r > 1.8) {
+          // Left-Side Highlight Ridge
+          ctx.fillStyle = "rgba(108, 78, 54, 0.45)";
+          ctx.beginPath();
+          ctx.arc(p.x - r * 0.25, p.y - r * 0.15, r * 0.65, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Right-Side Deep Crevice Shadow
+          ctx.fillStyle = "rgba(20, 10, 6, 0.65)";
+          ctx.beginPath();
+          ctx.arc(p.x + r * 0.35, p.y + r * 0.25, r * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Ancient Bleached Deadwood (Jin / Shari)
+          if (tierIdx >= 5 && isTrunk && i > points.length * 0.22 && i < points.length * 0.62 && (i % 3 === 0)) {
+            ctx.fillStyle = "#dfd9ce";
+            ctx.fillRect(p.x - r * 0.6, p.y, r * 0.32, r * 1.5);
+          }
+        }
+      }
+
+      return points;
+    }
+
+    // --- 7. ORGANIC FOLIAGE PAD SHADER ---
+    function drawOrganicFoliagePad(cx, cy, pw, ph) {
+      const steps = 300;
+      ctx.save();
+
+      for (let f = 0; f < steps; f++) {
+        const u = rng() - 0.5;
+        const v = rng() - 0.5;
+        const d = Math.hypot(u, v);
+
+        if (d <= 0.5) {
+          const fx = cx + u * pw * 2.1;
+          const fy = cy + v * ph * 2.1;
+          const fr = 2.4 + rng() * 3.6;
+
+          let rgbColor = [...foliage.mid];
+          const layerProg = rng();
+
+          if (layerProg < 0.3) rgbColor = [...foliage.base];
+          else if (layerProg > 0.72) rgbColor = [...foliage.high];
+
+          if (foliage.bloom && rng() < 0.16) {
+            rgbColor = [...foliage.bloom];
+          }
+
+          // Tier VII+ Golden Zenith Pollen / Imperial Radiance
+          if (tierIdx >= 6 && rng() < 0.05) {
+            rgbColor = [248, 218, 110];
+          }
+
+          ctx.fillStyle = rgba(rgbColor, 0.74);
+          ctx.beginPath();
+          ctx.ellipse(fx, fy, fr, fr * 0.65, -0.15, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    // --- 8. COMPOSING TREE BY STYLE ---
+    const trunkRootY = soilY - 2;
+    const trunkRootX = 256;
+
+    if (role === 'YOSE_UE') {
+      // Yose-Ue Forest Grove (5 Distinct Tapered Trunks)
+      const forestTrunks = [
+        { offset: -72, depth: 14, h: 40, scale: 5.6 },
+        { offset: -26, depth: -10, h: 48, scale: 7.0 },
+        { offset: 14, depth: 8, h: 56, scale: 9.2 }, // Dominant Master Tree
+        { offset: 50, depth: -12, h: 44, scale: 6.4 },
+        { offset: 80, depth: 10, h: 36, scale: 5.0 }
+      ];
+
+      forestTrunks.forEach(ft => {
+        const trunkPts = drawSinuousBranch(
+          trunkRootX + ft.offset,
+          trunkRootY + ft.depth,
+          -Math.PI * 0.51,
+          ft.h,
+          ft.scale,
+          true
+        );
+
+        for (let j = trunkPts.length - 12; j < trunkPts.length; j += 4) {
+          const pt = trunkPts[j];
+          drawOrganicFoliagePad(pt.x, pt.y - 10, 32, 14);
+        }
+      });
+
+    } else {
+      // Solitary Specimen Bonsai
+      let trunkLen = 42;
+      let initAngle = -Math.PI * 0.48;
+      let startWidth = 15;
+
+      if (role === 'KENGAI') {
+        trunkLen = 64; startWidth = 14; initAngle = -Math.PI * 0.55;
+      } else if (role === 'BUNJINGI') {
+        trunkLen = 56; startWidth = 6.2; initAngle = -Math.PI * 0.52;
+      } else if (role === 'SHAKAN') {
+        trunkLen = 44; startWidth = 13.5; initAngle = -Math.PI * 0.42;
+      }
+
+      const trunkPts = drawSinuousBranch(trunkRootX, trunkRootY, initAngle, trunkLen, startWidth, true);
+
+      // Branching Scaffold
+      const startBranchingIndex = Math.floor(trunkPts.length * 0.28);
+      for (let i = startBranchingIndex; i < trunkPts.length; i++) {
+        const t = i / trunkPts.length;
+        const angleFlip = (i % 2 === 0) ? 1 : -1;
+
+        let subBranchAngle = -Math.PI * 0.51 + angleFlip * (0.35 + rng() * 0.45);
+        if (role === 'KENGAI') {
+          subBranchAngle = Math.PI * 0.12 - rng() * 0.45;
+        }
+
+        if (i % 6 === 0 || i === trunkPts.length - 1) {
+          const pt = trunkPts[i];
+          const bBranch = drawSinuousBranch(pt.x, pt.y, subBranchAngle, 12, pt.r * 0.65);
+
+          const lastPt = bBranch[bBranch.length - 1];
+          const padWidth = 48 * (1 - t * 0.45);
+          const padHeight = 16 * (1 - t * 0.45);
+          drawOrganicFoliagePad(lastPt.x, lastPt.y, padWidth, padHeight);
+
+          if (bBranch.length > 5 && rng() < 0.45) {
+            const midPt = bBranch[Math.floor(bBranch.length * 0.55)];
+            drawOrganicFoliagePad(midPt.x, midPt.y, padWidth * 0.75, padHeight * 0.75);
+          }
         }
       }
     }
-  }
-}
 
-/* =========================================================================
-   GAME ENGINE ACTIONS & LOGIC
-========================================================================= */
-
-function buyGacha(crateKey) {
-  if (state.trees.length >= 120) return toast("Bench capacity full (120/120)!", "error");
-
-  const costs = { seedling: 600, import: 4500, yamadori: 22000, dynasty: 95000 };
-  const cost = costs[crateKey];
-
-  if (state.money < cost && !state.godMode) return toast("Insufficient funds for procurement!", "error");
-  if (!state.godMode) state.money -= cost;
-
-  // Rarity rolls
-  let tier = 0;
-  let r = Math.random();
-  if (crateKey === 'seedling') {
-    tier = r < 0.01 ? 2 : (r < 0.15 ? 1 : 0);
-  } else if (crateKey === 'import') {
-    tier = r < 0.02 ? 3 : (r < 0.17 ? 2 : 1);
-  } else if (crateKey === 'yamadori') {
-    tier = r < 0.02 ? 4 : (r < 0.20 ? 3 : 2);
-  } else if (crateKey === 'dynasty') {
-    tier = r < 0.18 ? 4 : 3;
-  }
-
-  const specId = Math.floor(Math.random() * SPECIES.length);
-  const styleId = Math.floor(Math.random() * STYLES.length);
-  const potId = Math.floor(Math.random() * POT_PALETTES.length);
-  const tSeed = Math.floor(Math.random() * 46600);
-  const fSeed = Math.floor(Math.random() * 46600);
-
-  const code = generateBonsaiCode(specId, styleId, tier, potId, tSeed, fSeed);
-  
-  let baseAge = 8 + (tier * 35) + Math.floor(Math.random() * 30);
-  if (crateKey === 'yamadori') baseAge += 70;
-  if (crateKey === 'dynasty') baseAge += 180;
-
-  const baseVal = Math.floor(120 * TIERS[tier].mult * (1 + (baseAge / 80)));
-
-  const newTree = {
-    id: 'tr_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
-    code: code,
-    speciesId: specId,
-    styleId: styleId,
-    tierId: tier,
-    age: baseAge,
-    vigor: 60 + Math.floor(Math.random() * 35),
-    baseVal: baseVal
+    return offscreenCanvas.toDataURL('image/png');
+  }  /* ================= STATE ================= */
+  let State = {
+    funds: 50000000, 
+    fuelReserve: 250000, // Water
+    fuelSpotPrice: 2.85,
+    buyMode: 1, 
+    sortHangarMode: 'val',
+    filterHangarRole: 'ALL',
+    filterHangarTier: 'ALL',
+    sortPilotsMode: 'val',
+    filterPilotTier: 'ALL',
+    filterRouteCat: 'ALL',
+    fleet: [], pilots: [], routes: [], auctions: [], marketCars: [],
+    gallery: [], 
+    marketTimer: 10.0,
+    upgrades: { mkt: 0, eng: 0 },
+    automation: { autoDispatch: false, autoMRO: false, autoRefuel: false },
+    claimedMilestones: [],
+    sideMissions: [],
+    statAuctionsSold: 0,
+    statPlanesScrapped: 0
   };
+  let globalInterval = null;
+  let needsFleetRender = false;
 
-  state.trees.push(newTree);
-  updateHUD();
-  renderBenches();
-  toast(`Acquired: ${SPECIES[specId].name} [${TIERS[tier].name}]!`, "gold");
-}
-
-/* =========================================================================
-   WORKSHOP (MRO REFINEMENT BENCH)
-========================================================================= */
-
-function mountTurntable(treeId) {
-  state.activeTurntableId = treeId;
-  switchTab('workshop');
-  renderWorkshop();
-}
-
-function renderWorkshop() {
-  const empty = document.getElementById('ws-empty-msg');
-  const active = document.getElementById('ws-active-tools');
-  const canvas = document.getElementById('ws-canvas');
-
-  if (!state.activeTurntableId) {
-    empty.style.display = 'block';
-    active.style.display = 'none';
-    document.getElementById('ws-code').innerText = 'NO SPECIMEN MOUNTED';
-    canvas.getContext('2d').clearRect(0, 0, 64, 64);
-    return;
+  /* ================= UTILITY & BASE36 ================= */
+  function fmt(n) {
+    if (n >= 1e12) return (n / 1e12).toFixed(2) + "T";
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+    if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+    return Math.floor(n).toLocaleString();
   }
-
-  const tree = state.trees.find(t => t.id === state.activeTurntableId);
-  if (!tree) {
-    state.activeTurntableId = null;
-    return renderWorkshop();
+  function toast(msg) {
+    const r = $('toast-rack'); const e = document.createElement('div');
+    e.className = 'toast'; e.innerHTML = msg; r.appendChild(e);
+    setTimeout(() => e.remove(), 2800);
   }
-
-  empty.style.display = 'none';
-  active.style.display = 'flex';
-
-  document.getElementById('ws-code').innerText = tree.code;
-  document.getElementById('ws-spec').innerText = SPECIES[tree.speciesId].name;
-  document.getElementById('ws-age').innerText = `${tree.age} YRS`;
-  document.getElementById('ws-vigor').innerText = `${tree.vigor} / 100`;
-  document.getElementById('ws-style').innerText = STYLES[tree.styleId].name;
-  document.getElementById('ws-val').innerText = `¥${tree.baseVal.toLocaleString()}`;
-
-  drawBonsaiHD(canvas, tree.code);
-}
-
-function wsAction(type) {
-  const tree = state.trees.find(t => t.id === state.activeTurntableId);
-  if (!tree) return;
-
-  if (type === 'water') {
-    if (state.money < 80 && !state.godMode) return toast("Insufficient funds (¥80 required)!", "error");
-    if (state.fertilizer < 2 && !state.godMode) return toast("Need 2L Fertilizer!", "error");
-    if (!state.godMode) {
-      state.money -= 80;
-      state.fertilizer -= 2;
-    }
-    tree.vigor = Math.min(100, tree.vigor + 25);
-    toast("Hydrated root flare! Vigor restored to " + tree.vigor + "%");
-  } else if (type === 'prune') {
-    if (state.zen < 15 && !state.godMode) return toast("Need 15 Zen (☯)!", "error");
-    if (tree.vigor < 25) return toast("Tree is too dehydrated to withstand pruning!", "error");
-    if (!state.godMode) {
-      state.zen -= 15;
-      tree.vigor -= 15;
-    }
-    const valBoost = Math.floor(tree.baseVal * 0.14);
-    tree.baseVal += valBoost;
-
-    // Mutate foliage seed slightly
-    const gene = parseBonsaiCode(tree.code);
-    gene.folSeed = (gene.folSeed + 17) % 46600;
-    tree.code = generateBonsaiCode(gene.species, gene.style, gene.tier, gene.pot, gene.trunkSeed, gene.folSeed);
-    toast(`Pruned foliage pads! Market Value +¥${valBoost.toLocaleString()}`, "gold");
-  } else if (type === 'wire') {
-    if (state.zen < 35 && !state.godMode) return toast("Need 35 Zen (☯)!", "error");
-    if (tree.vigor < 40) return toast("Vigor too low! Branches will snap under copper wire.", "error");
-    if (!state.godMode) {
-      state.zen -= 35;
-      tree.vigor -= 25;
-    }
-    const valBoost = Math.floor(tree.baseVal * 0.32);
-    tree.baseVal += valBoost;
-
-    // Randomize style
-    const gene = parseBonsaiCode(tree.code);
-    gene.style = (gene.style + 1 + Math.floor(Math.random() * (STYLES.length - 1))) % STYLES.length;
-    tree.styleId = gene.style;
-    tree.code = generateBonsaiCode(gene.species, gene.style, gene.tier, gene.pot, gene.trunkSeed, gene.folSeed);
-    toast(`Wired new silhouette: ${STYLES[gene.style].name}! Value +¥${valBoost.toLocaleString()}`, "gold");
-  } else if (type === 'jin') {
-    if (state.zen < 60 && !state.godMode) return toast("Need 60 Zen (☯)!", "error");
-    if (tree.tierId < 1) return toast("Specimen too immature for deadwood carving!", "error");
-    if (!state.godMode) {
-      state.zen -= 60;
-      tree.vigor -= 30;
-    }
-    const valBoost = Math.floor(tree.baseVal * 0.5);
-    tree.baseVal += valBoost;
-    toast(`Carved dramatic Deadwood Jin / Shari! Value +¥${valBoost.toLocaleString()}`, "gold");
+  function updateHUD() {
+    if($('hud-funds')) $('hud-funds').innerText = `$${fmt(State.funds)}`;
+    if($('hud-fleet-count')) $('hud-fleet-count').innerText = State.fleet.length;
+    if($('hud-pilot-count')) $('hud-pilot-count').innerText = State.pilots.length;
+    if($('hud-fuel')) $('hud-fuel').innerText = fmt(State.fuelReserve);
   }
-
-  updateHUD();
-  renderWorkshop();
-  renderBenches();
-}
-
-function wsSendToAuction() {
-  if (!state.activeTurntableId) return;
-  const tree = state.trees.find(t => t.id === state.activeTurntableId);
-  if (!tree) return;
-
-  const targetLane = state.auctionLanes.find(l => !l.active);
-  if (!targetLane) return toast("All 10 auction lanes are currently congested!", "error");
-
-  // Remove from benches
-  state.trees = state.trees.filter(t => t.id !== tree.id);
-  state.activeTurntableId = null;
-
-  startAuctionInLane(targetLane.laneId, tree);
-  switchTab('auction');
-  toast(`Tree transferred to Auction Lane #${targetLane.laneId}!`);
-}
-
-/* =========================================================================
-   10-LANE HIGH VELOCITY WHOLESALE AUCTION BLOCK
-========================================================================= */
-
-function startAuctionInLane(laneId, tree) {
-  const lane = state.auctionLanes.find(l => l.laneId === laneId);
-  if (!lane) return;
-
-  const appVal = Math.floor(tree.baseVal * (tree.vigor / 100));
-  lane.active = true;
-  lane.tree = tree;
-  lane.currentBid = Math.floor(appVal * 0.7);
-  lane.highestBidder = "Floor Minimum";
-  lane.timeLeft = 15.0;
-  lane.totalTime = 15.0;
-  lane.logs = [`Consigned at reserve ¥${lane.currentBid.toLocaleString()}`];
-
-  renderAuctionLanes();
-}
-
-function updateAuctionTicks(deltaSec) {
-  let changed = false;
-
-  state.auctionLanes.forEach(lane => {
-    if (!lane.active) return;
-    changed = true;
-    lane.timeLeft -= deltaSec;
-
-    // Automated Syndicate Bidding Wars
-    const p = lane.timeLeft / lane.totalTime;
-    const appVal = Math.floor(lane.tree.baseVal * (lane.tree.vigor / 100));
-    let bidChance = 0.08 + (0.15 * (1 - p));
-    if (lane.currentBid > appVal * 2.5) bidChance *= 0.15; // Slow down over valuation
-
-    if (Math.random() < bidChance && lane.timeLeft > 0.5) {
-      const syn = SYNDICATES[Math.floor(Math.random() * SYNDICATES.length)];
-      let multBump = 0.06 + (Math.random() * 0.16);
-      if (state.upgrades.snipe_radar > 0) multBump += (state.upgrades.snipe_radar * 0.04);
+  
+  function saveGame() { 
+    let s = JSON.parse(JSON.stringify(State));
+    s.fleet.forEach(p => delete p.imgData);
+    s.marketCars.forEach(p => delete p.imgData);
+    s.gallery.forEach(g => delete g.imgData);
+    s.auctions.forEach(a => { if(a.item.imgData) delete a.item.imgData; });
+    localStorage.setItem('blissfulBonsaiV1', JSON.stringify(s)); 
+    toast("Nursery Saved."); 
+  }
+  
+  function loadGame() {
+    let s = localStorage.getItem('blissfulBonsaiV1');
+    if (s) {
+      State = JSON.parse(s);
+      if(!State.gallery) State.gallery = [];
+      if(!State.routes || State.routes.length < 400) State.routes = generateRoutes();
       
-      const bump = Math.max(100, Math.floor(lane.currentBid * multBump));
-      lane.currentBid += bump;
-      lane.highestBidder = syn;
-      lane.logs.unshift(`${syn} bids ¥${lane.currentBid.toLocaleString()}`);
+      State.fleet.forEach(p => p.imgData = generateBonsaiImage(p.seedInt, p.role, p.tierIndex, TREE_SPECIES[p.mIdx]));
+      State.marketCars.forEach(p => p.imgData = generateBonsaiImage(p.seedInt, p.role, p.tierIndex, TREE_SPECIES[p.mIdx]));
+      State.gallery.forEach(g => g.imgData = generateBonsaiImage(g.seedInt, g.role, g.tierIdx, TREE_SPECIES[g.mIdx]));
+      State.auctions.forEach(a => { if(a.type==='plane') a.item.imgData = generateBonsaiImage(a.item.seedInt, a.item.role, a.item.tierIndex, TREE_SPECIES[a.item.mIdx]); });
 
-      // Snipe extension
-      if (lane.timeLeft < 3.0) {
-        lane.timeLeft += 2.0;
-        lane.logs.unshift(`* Anti-Snipe Extension (+2.0s) *`);
-      }
-    }
-
-    if (lane.timeLeft <= 0) {
-      // Hammer falls! SOLD!
-      lane.active = false;
-      const finalGain = lane.currentBid;
-      const zenGain = 10 * TIERS[lane.tree.tierId].mult;
-
-      state.money += finalGain;
-      state.zen += zenGain;
-
-      toast(`Lane #${lane.laneId} HAMMER DOWN! Sold to ${lane.highestBidder} for ¥${finalGain.toLocaleString()}! (+${zenGain} ☯)`, "gold");
-      lane.tree = null;
-      lane.logs.unshift(`HAMMER FALLS: Sold for ¥${finalGain.toLocaleString()}`);
-      updateHUD();
-    }
-  });
-
-  if (changed) renderAuctionLanes();
-}
-
-function buyoutAuctionLane(laneId) {
-  const lane = state.auctionLanes.find(l => l.laneId === laneId);
-  if (!lane || !lane.active) return;
-
-  const finalGain = lane.currentBid;
-  const zenGain = 5 * TIERS[lane.tree.tierId].mult;
-  state.money += finalGain;
-  state.zen += zenGain;
-
-  lane.active = false;
-  lane.tree = null;
-  toast(`Lane #${laneId} Buyout accepted! +¥${finalGain.toLocaleString()}`, "gold");
-  updateHUD();
-  renderAuctionLanes();
-}
-
-function renderAuctionLanes() {
-  const container = document.getElementById('auction-lanes-container');
-  if (!container) return;
-  container.innerHTML = '';
-
-  state.auctionLanes.forEach(lane => {
-    const card = document.createElement('div');
-    card.className = `auc-lane-card ${lane.active ? 'active' : ''}`;
-
-    if (!lane.active) {
-      card.innerHTML = `
-        <div style="font-weight:800; color:#555; font-size:0.85rem;">LANE #${lane.laneId} [VACANT]</div>
-        <div style="font-size:0.75rem; color:#444; padding: 25px 0; text-align:center;">No Tree On Stand</div>
-        <button class="btn btn-sm btn-green" onclick="openConsignModal(${lane.laneId})">Consign From Benches</button>
-      `;
+      State.fleet.forEach(p => { p.status = 'READY'; p.flightEnd = 0; p.flightStart = 0; });
+      updateHUD(); setTab('market');
+      toast("Garden Restored.");
     } else {
-      const p = Math.max(0, Math.min(1, lane.timeLeft / lane.totalTime));
-      const tData = TIERS[lane.tree.tierId];
-      const sData = SPECIES[lane.tree.speciesId];
+      toast("No saved nursery found.");
+    }
+  }
 
-      card.innerHTML = `
-        <div class="auc-lane-pulse" style="transform: scaleX(${p});"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-weight:800; font-size:0.8rem; color:var(--neon-gold);">LANE #${lane.laneId}</span>
-          <span class="tree-tier ${tData.color}">${tData.name}</span>
+  function setBuyMode(val) {
+      State.buyMode = val;
+      ['buy-1','buy-0.25','buy-0.5','buy-1.0'].forEach(id => { if($(id)) $(id).classList.remove('active'); });
+      let sel = val===1?'buy-1':val===0.25?'buy-0.25':val===0.5?'buy-0.5':'buy-1.0';
+      if($(sel)) $(sel).classList.add('active');
+  }
+
+  /* BASE36 FOR COURIERS */
+  function exportCourier(uid) {
+    let p = State.pilots.find(x => x.uid===uid); if(!p) return;
+    let codeInt = p.fIdx * 160 + p.lIdx * 8 + p.cIdx;
+    prompt("Copy Apprentice Trade Code:", "CR-" + codeInt.toString(36).toUpperCase());
+  }
+  function importCourier() {
+    let str = prompt("Enter Apprentice Trade Code (CR-XXX):"); if(!str) return;
+    str = str.replace('CR-', '').trim();
+    let codeInt = parseInt(str, 36); if(isNaN(codeInt) || codeInt < 0) { toast("Invalid code."); return; }
+    let cIdx = codeInt % 8; codeInt = Math.floor(codeInt / 8);
+    let lIdx = codeInt % 20; codeInt = Math.floor(codeInt / 20);
+    let fIdx = codeInt % 20;
+    let tIdx = Math.floor(Math.random() * 10);
+    let bIdx = Math.floor(Math.random() * 4);
+    State.pilots.push(hireCourier(fIdx, lIdx, cIdx, tIdx, bIdx)); 
+    updateHUD(); renderPilots(); toast("Apprentice hired via Trade Code!");
+  }
+
+  /* BASE36 FOR TREES */
+  function exportStrain(uid) {
+    let p = State.fleet.find(x => x.uid===uid); if(!p) return;
+    let codeInt = p.pIdx * 960 + p.bIdx * 120 + p.mIdx * 6 + p.rIdx;
+    prompt("Copy Bonsai Trade Code:", "BB-" + codeInt.toString(36).toUpperCase());
+  }
+  function importStrain() {
+    let str = prompt("Enter Bonsai Trade Code (BB-XXX):"); if(!str) return;
+    str = str.replace('BB-', '').trim();
+    let codeInt = parseInt(str, 36); if(isNaN(codeInt) || codeInt < 0) { toast("Invalid code."); return; }
+    let rIdx = codeInt % 6; codeInt = Math.floor(codeInt / 6);
+    let mIdx = codeInt % 20; codeInt = Math.floor(codeInt / 20);
+    let bIdx = codeInt % 8; codeInt = Math.floor(codeInt / 8);
+    let pIdx = codeInt % 10;
+    let tIdx = Math.floor(Math.random() * 10);
+    
+    let tD = TIERS[tIdx];
+    let val = Math.floor(tD.baseVal * 1.0); 
+    let cost = Math.max(50000, Math.floor(val * 0.8)); 
+    let cap = Math.floor(5 + (tIdx * 45)); // Age
+    let rnge = Math.floor(1000 + (tIdx * 900));
+    let burn = Math.floor(20 + (tIdx * 15)); // Water
+    let seedInt = (pIdx * 960 + bIdx * 120 + mIdx * 6 + rIdx) * 31 + tIdx;
+    let sp = TREE_SPECIES[mIdx];
+
+    let importedTree = {
+      uid: 'T' + Math.floor(100+Math.random()*899) + 'BB',
+      pIdx, bIdx, mIdx, rIdx, tierIndex: tIdx,
+      seedInt: seedInt,
+      imgData: generateBonsaiImage(seedInt, TREE_STYLES[rIdx % TREE_STYLES.length], tIdx, sp),
+      name: `${TREE_PREFIXES[pIdx]} ${TREE_ORIGINS[bIdx]} ${sp}`,
+      role: TREE_STYLES[rIdx % TREE_STYLES.length], tierName: tD.name, tierColor: tD.color,
+      value: val, cost: cost, capacity: cap, range: rnge, fuelBurn: burn,
+      condition: 100, status: 'READY', assignedRoute: null, assignedPilot: null
+    };
+    
+    State.fleet.push(importedTree);
+    updateHUD(); renderFleet(); toast("Bonsai acquired via Trade Code!");
+  }
+
+  function generateRoutes() {
+    let rts = [];
+    let roles = TREE_STYLES;
+    let used = new Set();
+    let idCounter = 0;
+
+    roles.forEach(role => {
+      let pool = ZONE_CAT[role] || ZONE_CAT["CHOKKAN"];
+      let count = role === "CHOKKAN" || role === "MOYOGI" ? 80 : 60; // 400 total
+      for(let i=0; i<count; i++) {
+        let a1, a2, pair;
+        let attempts = 0;
+        do {
+          a1 = pool[Math.floor(Math.random() * pool.length)];
+          a2 = pool[Math.floor(Math.random() * pool.length)];
+          pair = `${a1}-${a2}-${role}`;
+          attempts++;
+        } while((a1 === a2 || used.has(pair)) && attempts < 50);
+        
+        used.add(pair);
+        let dist = role === 'BUNJINGI' ? Math.floor(1200 + Math.random() * 7500) : Math.floor(350 + Math.random() * 8500);
+        
+        rts.push({
+          id: "rt_" + (idCounter++),
+          name: `${a1} ↔ ${a2}`, role: role, dist: dist,
+          cost: Math.ceil((100000 + (Math.pow(dist, 1.38) * 32)) / 10000) * 10000,
+          unlocked: idCounter === 1,
+          minTier: dist > 6500 ? "Global" : dist > 4000 ? "National" : dist > 1500 ? "Regional" : "Local"
+        });
+      }
+    });
+
+    rts.sort((a,b) => a.dist - b.dist);
+    rts[0].unlocked = true;
+    return rts;
+  }
+
+  function harvestStrain(tIdx) {
+    let pIdx = Math.floor(Math.random() * TREE_PREFIXES.length);
+    let bIdx = Math.floor(Math.random() * TREE_ORIGINS.length);
+    let mIdx = Math.floor(Math.random() * TREE_SPECIES.length);
+    let rIdx = Math.floor(Math.random() * TREE_STYLES.length);
+    let tD = TIERS[tIdx];
+    let sp = TREE_SPECIES[mIdx];
+
+    let fluct = 1.0 + (Math.random() * 0.4 - 0.2); 
+    let val = Math.floor(tD.baseVal * fluct);
+    let seedInt = Math.floor(Math.random() * 9999999);
+
+    return {
+      uid: 'T' + Math.floor(100+Math.random()*899) + 'BB',
+      pIdx, bIdx, mIdx, rIdx, tierIndex: tIdx, seedInt: seedInt,
+      imgData: generateBonsaiImage(seedInt, TREE_STYLES[rIdx], tIdx, sp),
+      name: `${TREE_PREFIXES[pIdx]} ${TREE_ORIGINS[bIdx]} ${sp}`,
+      role: TREE_STYLES[rIdx], tierName: tD.name, tierColor: tD.color,
+      value: val, cost: Math.max(50000, Math.floor(val * 0.8)), 
+      capacity: Math.floor(5 + (tIdx * 45) * fluct), // Age
+      range: Math.floor(1000 + (tIdx * 900) * fluct), 
+      fuelBurn: Math.floor(20 + (tIdx * 15)), // Water
+      condition: 100, status: 'READY', assignedRoute: null, assignedPilot: null
+    };
+  }
+
+  function hireCourier(fIdx, lIdx, cIdx, tIdx, bIdx) {
+    let rawPow = [6,25,100,300,1000,2500,6000,15000,35000,66666][tIdx];
+    return {
+      uid: Date.now()+Math.random().toString(36).substring(2,8), fIdx, lIdx, cIdx, tIdx, bIdx,
+      name: `${P_FIRST[fIdx]} ${P_CALL[cIdx]} ${P_LAST[lIdx]}`,
+      tierIndex: tIdx, tierName: TIERS[tIdx].name, tierColor: TIERS[tIdx].color,
+      bType: B_TYPES[bIdx], bonus: rawPow, value: Math.floor(TIERS[tIdx].baseVal / 10),
+      locked: false, assignedTo: null
+    };
+  }
+
+  /* ================= MARKETS & NURSERY ================= */
+  function refreshMarket() {
+    State.marketCars = [];
+    for(let i=0; i<5; i++) {
+      let r = Math.random()*100; let tI = r>99.9?9 : r>99?8 : r>95?7 : r>85?6 : r>70?5 : r>50?4 : r>30?3 : r>15?2 : r>5?1 : 0;
+      State.marketCars.push(harvestStrain(tI));
+    }
+    renderMarket();
+  }
+
+  function renderMarket() {
+    const grid = $('market-grid'); if(!grid) return; grid.innerHTML = '';
+    State.marketCars.forEach((c, idx) => {
+      let rCol = c.role === 'CHOKKAN' ? '#a855f7' : c.role === 'MOYOGI' ? '#f59e0b' : c.role === 'SHAKAN' ? '#22c55e' : c.role === 'KENGAI' ? '#ec4899' : c.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
+      grid.innerHTML += `
+        <div class="strain-card" style="border-color:${c.tierColor};">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:${c.tierColor}; font-weight:bold; font-size:10px;">[${c.tierName}]</span>
+            <span class="badge" style="color:${rCol}; border-color:${rCol};">${c.role}</span>
+          </div>
+          <div class="bud-art-container">
+            <img class="bud-pixel-canvas" src="${c.imgData}">
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:900; color:#fff;">${c.name}</div>
+              <div style="font-size:9px; color:var(--silver-dim); margin-top:2px;">Style: ${c.role}</div>
+            </div>
+          </div>
+          <div class="spec-grid">
+            <div><span>AGE:</span> ${c.capacity} YRS</div>
+            <div><span>DIST:</span> ${c.range.toLocaleString()} MILES</div>
+            <div><span>WTR:</span> ${c.fuelBurn} gal/sh</div>
+            <div><span>VAL:</span> $${fmt(c.value)}</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <div>
+              <div style="font-size:9px; color:var(--silver-dim);">Est Val: $${fmt(c.value)}</div>
+              <div style="font-size:12px; color:var(--status-green); font-weight:bold; font-family:monospace;">Price: $${fmt(c.cost)}</div>
+            </div>
+            <button class="btn btn-green" onclick="buyMarketStrain(${idx})">BUY</button>
+          </div>
         </div>
+      `;
+    });
+  }
 
-        <div style="display:flex; gap:10px; align-items:center; margin: 4px 0;">
-          <canvas id="cvs-auc-${lane.laneId}" class="pixel-canvas canvas-auc" width="64" height="64" style="width:70px; height:70px;"></canvas>
-          <div style="font-size:0.75rem;">
-            <div style="font-weight:bold; color:#fff;">${sData.name}</div>
-            <div style="color:var(--text-muted); font-size:0.7rem;">Age: ${lane.tree.age}y | ${lane.tree.vigor}%</div>
-            <div style="color:var(--neon-red); font-weight:bold; font-family:var(--font-mono); margin-top:3px;">
-              ⏱️ ${lane.timeLeft.toFixed(1)}s
+  function buyMarketStrain(idx) {
+    let c = State.marketCars[idx]; if(!c) return;
+    if(State.funds < c.cost) { toast("Insufficient cash."); return; }
+    State.funds -= c.cost; State.fleet.push(c); State.marketCars.splice(idx, 1);
+    toast(`Benched: ${c.name}`); updateHUD(); renderMarket();
+  }
+
+  function buySeeds(bIdx, count) {
+    let costs = [10000, 100000, 1000000, 5000000];
+    let c = State.buyMode === 1 ? count : Math.max(1, Math.floor(Math.floor(State.funds/costs[bIdx]) * State.buyMode));
+    let cost = costs[bIdx] * c;
+    if(State.funds < cost) { toast("Insufficient cash."); return; }
+    State.funds -= cost;
+    let tArr = bIdx===0?[0,1,2,3]:bIdx===1?[2,3,4,5]:bIdx===2?[4,5,6,7]:[6,7,8,9];
+    for(let i=0; i<c; i++) {
+      let r = Math.random()*100; let tI = r>95?tArr[3]:r>80?tArr[2]:r>50?tArr[1]:tArr[0];
+      State.fleet.push(harvestStrain(tI));
+    }
+    updateHUD(); toast(`Cultivated ${c}x Bonsai.`);
+  }
+
+  function buyResumes(bIdx, count) {
+    let costs = [5000, 50000, 250000, 1000000];
+    let c = State.buyMode === 1 ? count : Math.max(1, Math.floor(Math.floor(State.funds/costs[bIdx]) * State.buyMode));
+    let cost = costs[bIdx] * c;
+    if(State.funds < cost) { toast("Insufficient cash."); return; }
+    State.funds -= cost;
+    let tArr = bIdx===0?[0,1,2,3]:bIdx===1?[2,3,4,5]:bIdx===2?[4,5,6,7]:[6,7,8,9];
+    for(let i=0; i<c; i++) {
+      let r = Math.random()*100; let tI = r>95?tArr[3]:r>80?tArr[2]:r>50?tArr[1]:tArr[0];
+      State.pilots.push(hireCourier(Math.floor(Math.random()*20), Math.floor(Math.random()*20), Math.floor(Math.random()*8), tI, Math.floor(Math.random()*4)));
+    }
+    updateHUD(); toast(`Hired ${c}x Apprentices.`);
+  }
+
+  function buyFuelFixed(amount) {
+    let unit = State.fuelSpotPrice;
+    let gal = amount === 'MAX' ? Math.floor(State.funds / unit) : amount;
+    if(gal <= 0) { toast("Insufficient cash."); return; }
+    let cost = gal * unit;
+    if(State.funds < cost) { toast("Insufficient cash."); return; }
+    State.funds -= cost; State.fuelReserve += gal;
+    toast(`Bought ${fmt(gal)} Gal Water.`); updateHUD();
+  }
+
+  /* ================= INVENTORY (BENCHES) ================= */
+  function sortHangar(mode) { State.sortHangarMode = mode; renderFleet(); }
+  function filterHangarRole(val) { State.filterHangarRole = val; renderFleet(); }
+  function filterHangarTier(val) { State.filterHangarTier = val; renderFleet(); }
+  
+  function assignRoute(pUid, rId) { const p = State.fleet.find(x=>x.uid===pUid); if(p) p.assignedRoute = rId; }
+  function assignPilot(pUid, piUid) {
+    const p = State.fleet.find(x=>x.uid===pUid); if(!p) return;
+    if(p.assignedPilot) { let o = State.pilots.find(x=>x.uid===p.assignedPilot); if(o) o.assignedTo = null; }
+    if(piUid==="") p.assignedPilot = null; 
+    else { p.assignedPilot=piUid; let n=State.pilots.find(x=>x.uid===piUid); if(n) n.assignedTo=pUid; }
+    renderFleet();
+  }
+
+  function autoAssignPilots() {
+    let unassigned = State.fleet.filter(p => !p.assignedPilot && p.status === 'READY');
+    let freeCouriers = State.pilots.filter(p => !p.assignedTo && !p.locked).sort((a,b) => b.bonus - a.bonus);
+    if(unassigned.length === 0 || freeCouriers.length === 0) {
+      toast("No idle trees or available apprentices."); return;
+    }
+    let paired = 0;
+    unassigned.forEach(p => {
+      if(freeCouriers.length > 0) {
+        let pilot = freeCouriers.shift();
+        p.assignedPilot = pilot.uid;
+        pilot.assignedTo = p.uid;
+        paired++;
+      }
+    });
+    toast(`Assigned apprentices to ${paired} trees.`); renderFleet(); renderPilots();
+  }
+
+  function autoAssignRoutes() {
+    let unrouted = State.fleet.filter(p => !p.assignedRoute && p.status === 'READY');
+    let uRts = State.routes.filter(r => r.unlocked);
+    if(unrouted.length === 0 || uRts.length === 0) {
+      toast("No idle trees or unlocked exhibitions."); return;
+    }
+    let routedCnt = 0;
+    unrouted.forEach(p => {
+      let valid = uRts.filter(r => (r.role === p.role || r.role === 'CHOKKAN') && r.dist <= p.range);
+      if(valid.length > 0) {
+        valid.sort((a,b) => b.dist - a.dist);
+        p.assignedRoute = valid[0].id;
+        routedCnt++;
+      }
+    });
+    toast(`Auto-Assigned ${routedCnt} trees to furthest shows.`);
+    renderFleet();
+  }
+
+  function renderFleet() {
+    const list = $('fleet-list'); if(!list) return; list.innerHTML = '';
+    let filtered = [...State.fleet];
+    if(State.filterHangarRole !== 'ALL') filtered = filtered.filter(p => p.role === State.filterHangarRole);
+    if(State.filterHangarTier !== 'ALL') filtered = filtered.filter(p => p.tierIndex === parseInt(State.filterHangarTier));
+    
+    if(filtered.length===0) { list.innerHTML=`<div style="text-align:center; padding:20px; color:var(--silver-dim); font-size:11px;">No trees match current filters.</div>`; return; }
+
+    if(State.sortHangarMode==='val') filtered.sort((a,b)=>b.value-a.value);
+    if(State.sortHangarMode==='tier') filtered.sort((a,b)=>b.tierIndex-a.tierIndex);
+    if(State.sortHangarMode==='range') filtered.sort((a,b)=>b.range-a.range);
+
+    const uRts = State.routes.filter(r => r.unlocked);
+    
+    let routeOptionsCache = {};
+    TREE_STYLES.forEach(role => {
+        let opts = `<option value="">-- Assign Exhibition (${role}) --</option>`;
+        uRts.filter(r => r.role === role || r.role === 'CHOKKAN').forEach(r => {
+            opts += `<option value="${r.id}">${r.name} [${r.role}] (${r.dist} MI)</option>`;
+        });
+        routeOptionsCache[role] = opts;
+    });
+
+    let pilotOpts = `<option value="">-- Assign Apprentice --</option>`;
+    State.pilots.forEach(pl => { 
+        if(!pl.assignedTo) pilotOpts += `<option value="${pl.uid}">${pl.name} [${pl.bType}: +${fmt(pl.bonus)}%]</option>`; 
+    });
+
+    filtered.forEach(p => {
+      let rCol = p.role === 'CHOKKAN' ? '#a855f7' : p.role === 'MOYOGI' ? '#f59e0b' : p.role === 'SHAKAN' ? '#22c55e' : p.role === 'KENGAI' ? '#ec4899' : p.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
+      
+      let pOpts = routeOptionsCache[p.role];
+      if(p.assignedRoute) pOpts = pOpts.replace(`value="${p.assignedRoute}"`, `value="${p.assignedRoute}" selected`);
+      let rtSel = `<select ${p.status==='IN_FLIGHT'?'disabled':''} onchange="assignRoute('${p.uid}', this.value)">${pOpts}</select>`;
+
+      let pPilotOpts = pilotOpts;
+      if(p.assignedPilot) {
+          let pl = State.pilots.find(x=>x.uid === p.assignedPilot);
+          if(pl) pPilotOpts += `<option value="${pl.uid}" selected>${pl.name}</option>`;
+      }
+      let piSel = `<select ${p.status==='IN_FLIGHT'?'disabled':''} onchange="assignPilot('${p.uid}', this.value)">${pPilotOpts}</select>`;
+
+      list.innerHTML += `
+        <div class="strain-card ${p.status==='IN_FLIGHT'?'in-flight':p.condition<50?'damaged':''}" style="border-color:${p.tierColor};">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="color:${p.tierColor}; font-weight:bold; font-size:10px;">[${p.tierName}]</span>
+              <span style="font-size:12px; font-weight:900; color:#fff; margin-left:3px;">${p.name}</span>
+            </div>
+            <span class="badge" style="color:${rCol}; border-color:${rCol};">${p.role}</span>
+          </div>
+          
+          <div class="bud-art-container">
+            <img class="bud-pixel-canvas" src="${p.imgData}">
+            <div style="flex:1;">
+              <div style="font-size:10px; font-weight:bold; color:var(--silver-bright);">Style: ${p.role}</div>
+              <div style="font-size:9px; color:var(--silver-dim);">Val: $${fmt(p.value)}</div>
+            </div>
+            <button class="btn btn-purple" style="padding:4px 6px; font-size:9px;" onclick="snapGalleryPic('${p.uid}')">📸 Snap</button>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; font-size:8.5px; font-family:monospace; color:var(--silver-dim);">
+            <span>VITALITY: ${p.condition.toFixed(0)}%</span>
+            <span id="st-${p.uid}">STATUS: <strong style="color:#fff;">${p.status}</strong></span>
+          </div>
+          
+          <div style="display:flex; flex-direction:column; gap:3px;">${rtSel}${piSel}</div>
+          ${p.status==='IN_FLIGHT'?`<div class="flight-bar-bg"><div id="bar-${p.uid}" class="flight-bar-fill"></div></div>`:''}
+          
+          <div style="display:flex; justify-content:space-between; margin-top:3px;">
+            <div style="display:flex; gap:3px;">
+              <button class="btn btn-purple" style="padding:3px 5px; font-size:8px;" ${p.status==='IN_FLIGHT'?'disabled':''} onclick="initAuction('${p.uid}', 'plane')">Auction</button>
+              <button class="btn btn-danger" style="padding:3px 5px; font-size:8px;" ${p.status==='IN_FLIGHT'?'disabled':''} onclick="consumeStrain('${p.uid}')">Sell Local</button>
+            </div>
+            <div style="display:flex; gap:3px;">
+              <button class="btn" style="padding:3px 6px; font-size:8px;" ${p.status==='IN_FLIGHT'?'disabled':''} onclick="maintainAirframe('${p.uid}')">Prune</button>
+              <button class="btn btn-green" style="padding:4px 8px; font-size:8.5px;" ${p.status==='IN_FLIGHT'||!p.assignedRoute||!p.assignedPilot?'disabled':''} onclick="dispatchFlight('${p.uid}')">Exhibit</button>
             </div>
           </div>
         </div>
+      `;
+    });
+  }
 
-        <div style="background:#000; padding:6px; border:1px solid #222; border-radius:4px; text-align:center;">
-          <div style="font-size:0.65rem; color:#888;">HIGH BID: ${lane.highestBidder}</div>
-          <div style="font-size:1.15rem; font-weight:900; color:var(--neon-gold); font-family:var(--font-mono);">
-            ¥${lane.currentBid.toLocaleString()}
+  function consumeStrain(uid) {
+    let i = State.fleet.findIndex(x=>x.uid===uid); if(i===-1) return;
+    let val = Math.floor(State.fleet[i].value * 0.5); State.funds+=val;
+    if(State.fleet[i].assignedPilot) { let p=State.pilots.find(x=>x.uid===State.fleet[i].assignedPilot); if(p) p.assignedTo=null; }
+    State.fleet.splice(i,1); State.statPlanesScrapped++;
+    toast(`Sold locally. Yielded $${fmt(val)}.`); updateHUD(); renderFleet();
+  }
+
+  function quickSellStrains(maxT) {
+    let t = State.fleet.filter(s=>s.tierIndex<=maxT && s.status==='READY');
+    if(t.length===0){toast("No eligible trees in tier bracket.");return;}
+    let tot=0; t.forEach(s=>{
+      tot+=Math.floor(s.value*0.5);
+      if(s.assignedPilot) { let p=State.pilots.find(x=>x.uid===s.assignedPilot); if(p) p.assignedTo=null; }
+      State.statPlanesScrapped++;
+    });
+    State.fleet = State.fleet.filter(s=>s.tierIndex>maxT || s.status!=='READY');
+    State.funds+=tot; toast(`Sold ${t.length} trees locally for $${fmt(tot)}.`); updateHUD(); renderFleet(); renderPilots();
+  }
+
+  /* ================= GALLERY (TOKONOMA) ================= */
+  function snapGalleryPic(uid) {
+    let p = State.fleet.find(x => x.uid === uid);
+    if(!p) return;
+    
+    State.gallery.push({
+      gid: "gal_" + Date.now() + Math.floor(Math.random()*1000),
+      seedInt: p.seedInt, mIdx: p.mIdx, role: p.role, tierIdx: p.tierIndex,
+      name: p.name, tierName: p.tierName, tierColor: p.tierColor,
+      locked: true, imgData: p.imgData
+    });
+    
+    toast(`📸 Snap saved to Tokonoma!`);
+    if($('tab-gallery').classList.contains('active')) renderGallery();
+  }
+
+  function toggleGalleryLock(gid) {
+    let g = State.gallery.find(x => x.gid === gid);
+    if(g) { g.locked = !g.locked; renderGallery(); }
+  }
+
+  function deleteGalleryPic(gid) {
+    let idx = State.gallery.findIndex(x => x.gid === gid);
+    if(idx > -1) {
+       State.gallery.splice(idx, 1);
+       toast(`Photo Removed from Tokonoma.`);
+       renderGallery();
+    }
+  }
+
+  function renderGallery() {
+    const list = $('gallery-grid'); if(!list) return; list.innerHTML = '';
+    
+    if(State.gallery.length === 0) { 
+        list.innerHTML=`<div style="text-align:center; padding:20px; color:var(--silver-dim); font-size:11px;">Your Tokonoma is empty. Snap some pics from your benches!</div>`; 
+        return; 
+    }
+
+    State.gallery.forEach(g => {
+      let rCol = g.role === 'CHOKKAN' ? '#a855f7' : g.role === 'MOYOGI' ? '#f59e0b' : g.role === 'SHAKAN' ? '#22c55e' : g.role === 'KENGAI' ? '#ec4899' : g.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
+      
+      list.innerHTML += `
+        <div class="strain-card" style="border-color:${g.locked ? 'var(--status-green)' : g.tierColor};">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:${g.tierColor}; font-weight:bold; font-size:10px;">[${g.tierName}]</span>
+            <span class="badge" style="color:${rCol}; border-color:${rCol};">${g.role}</span>
+          </div>
+          <div style="display:flex; justify-content:center; padding:10px 0;">
+             <img src="${g.imgData}" style="width:96px; height:96px; image-rendering:pixelated; background:#000; border:1px solid #142014; border-radius:4px;" />
+          </div>
+          <div style="text-align:center; font-size:14px; font-weight:900; color:#fff;">${g.name}</div>
+          <div style="text-align:center; font-size:9px; color:var(--silver-dim); margin-bottom: 8px;">Masterpiece Record</div>
+          <div style="display:flex; justify-content:space-between; gap: 4px;">
+            <button class="btn" style="flex:1;" onclick="toggleGalleryLock('${g.gid}')">${g.locked ? 'UNLOCK 🔓' : 'LOCK 🔒'}</button>
+            <button class="btn btn-danger" style="flex:1;" ${g.locked ? 'disabled' : ''} onclick="deleteGalleryPic('${g.gid}')">REMOVE</button>
           </div>
         </div>
-
-        <div class="auc-mini-log">
-          ${lane.logs.slice(0, 4).map(l => `<div>• ${l}</div>`).join('')}
-        </div>
-
-        <button class="btn btn-sm btn-red" onclick="buyoutAuctionLane(${lane.laneId})">Hammer / Buyout Now</button>
       `;
-    }
+    });
+  }
 
-    container.appendChild(card);
+  /* ================= COURIERS ROSTER ================= */
+  function sortPilots(mode) { State.sortPilotsMode = mode; renderPilots(); }
+  function filterPilotTier(val) { State.filterPilotTier = val; renderPilots(); }
 
-    if (lane.active) {
-      setTimeout(() => {
-        const cvs = document.getElementById(`cvs-auc-${lane.laneId}`);
-        if (cvs) drawBonsaiHD(cvs, lane.tree.code);
-      }, 0);
-    }
-  });
-}
+  function renderPilots() {
+    const grid = $('pilots-grid'); if(!grid) return; grid.innerHTML = '';
+    
+    let filtered = [...State.pilots];
+    if(State.filterPilotTier !== 'ALL') filtered = filtered.filter(p => p.tierIndex === parseInt(State.filterPilotTier));
+    if(filtered.length===0) { grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--silver-dim); font-size:11px;">No apprentices match filter criteria.</div>`; return; }
 
-function openConsignModal(laneId) {
-  if (state.trees.length === 0) return toast("No trees on your benches to consign!", "error");
-  // Grab highest value unassigned tree
-  const tree = state.trees[0];
-  state.trees.shift();
-  startAuctionInLane(laneId, tree);
-  updateHUD();
-  renderBenches();
-}
-
-/* =========================================================================
-   LOGISTICS FLEET (DISPATCH CIRCUITS)
-========================================================================= */
-
-function renderDispatchRoutes() {
-  const container = document.getElementById('dispatch-zones');
-  if (!container) return;
-  container.innerHTML = '';
-
-  const activeCount = state.dispatches.length;
-  const maxFleet = state.fleetSlots + state.upgrades.fleet_size;
-
-  DISPATCH_ROUTES.forEach(route => {
-    const card = document.createElement('div');
-    card.className = 'panel';
-    card.style.background = '#14141d';
-
-    // Find active courier on this route
-    const currentRun = state.dispatches.find(d => d.routeId === route.id);
-
-    if (currentRun) {
-      const p = Math.max(0, Math.min(100, Math.round(((currentRun.maxTime - currentRun.timeLeft) / currentRun.maxTime) * 100)));
-      card.innerHTML = `
-        <div class="panel-header"><span>${route.name}</span><span style="color:var(--neon-blue);">EN ROUTE</span></div>
-        <div style="font-size:0.8rem; color:#aaa; margin-bottom:8px;">Courier transit in progress (${currentRun.timeLeft}s remaining)</div>
-        <div style="height:6px; background:#000; border-radius:4px; overflow:hidden; margin-bottom:12px;">
-          <div style="height:100%; width:${p}%; background:var(--neon-blue);"></div>
+    if(State.sortPilotsMode==='val') filtered.sort((a,b)=>b.value-a.value);
+    if(State.sortPilotsMode==='tier') filtered.sort((a,b)=>b.tierIndex-a.tierIndex);
+    
+    filtered.forEach(p => {
+      grid.innerHTML += `
+        <div class="strain-card" style="border-color:${p.tierColor};">
+          <div class="stat-block" style="display:flex; justify-content:space-between;">
+            <span style="color:${p.tierColor}; font-weight:bold; font-size:9.5px;">${p.tierName}</span>
+            <span style="color:var(--status-green); font-size:9.5px;">[${p.bType}] +${fmt(p.bonus)}%</span>
+          </div>
+          <div style="font-size:12px; font-weight:900; color:#fff;">${p.name} ${p.locked?'[🔒]':''}</div>
+          <div style="font-size:9px; color:var(--silver-dim);">${p.assignedTo ? `Caring for: ${p.assignedTo}` : 'Standby / Unassigned'}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span class="stat-block" style="font-size:10px; color:var(--silver-bright); font-weight:bold;">VAL: $${fmt(p.value)}</span>
+            <div style="display:flex; flex-wrap:wrap; gap:3px; justify-content:flex-end;">
+              <button class="btn" style="padding:3px 5px; font-size:8px;" onclick="exportCourier('${p.uid}')">Trade</button>
+              <button class="btn" style="padding:3px 5px; font-size:8px;" onclick="togglePilotLock('${p.uid}')">${p.locked?'Unlock':'Lock'}</button>
+              ${!p.assignedTo&&!p.locked?`<button class="btn btn-purple" style="padding:3px 5px; font-size:8px;" onclick="initAuction('${p.uid}', 'pilot')">Auction</button><button class="btn btn-danger" style="padding:3px 5px; font-size:8px;" onclick="sellPilot('${p.uid}')">Fire</button>`:''}
+            </div>
+          </div>
         </div>
-        <button class="btn btn-sm" disabled>🚚 Transport En Route...</button>
       `;
-    } else {
-      card.innerHTML = `
-        <div class="panel-header"><span>${route.name}</span><span style="color:var(--neon-gold);">+¥${route.reward.toLocaleString()}</span></div>
-        <div style="font-size:0.75rem; color:#888; margin-bottom:12px; line-height:1.4;">
-          • Requirement: Min ${TIERS[route.reqTier].name}<br>
-          • Circuit Transit Duration: ${route.time}s<br>
-          • Payout: +¥${route.reward.toLocaleString()} & +${route.zen} ☯ (Cost: ${route.costFert}L Fert)
+    });
+  }
+  function togglePilotLock(uid) { let p=State.pilots.find(x=>x.uid===uid); if(p){p.locked=!p.locked; renderPilots();} }
+  function sellPilot(uid) {
+    let idx = State.pilots.findIndex(s=>s.uid===uid);
+    if(idx>-1) { let v=Math.floor(State.pilots[idx].value*0.5); State.funds+=v; State.pilots.splice(idx,1); toast(`Fired. Severance recovered $${fmt(v)}.`); updateHUD(); renderPilots(); renderFleet(); }
+  }
+  function quickSellPilots(maxT) {
+    let ts = State.pilots.filter(s=>s.tierIndex<=maxT && !s.assignedTo && !s.locked);
+    if(ts.length===0){toast("No eligible apprentices.");return;}
+    let tot=0; ts.forEach(s=>tot+=Math.floor(s.value*0.5));
+    State.pilots = State.pilots.filter(s=>s.tierIndex>maxT || s.assignedTo || s.locked);
+    State.funds+=tot; toast(`Fired ${ts.length} apprentices. Recovered $${fmt(tot)}.`); updateHUD(); renderPilots();
+  }
+
+  /* ================= ROUTES ================= */
+  function filterRouteCategory(val) { State.filterRouteCat = val; renderRoutes(); }
+
+  function renderRoutes() {
+    const list = $('routes-list'); if(!list) return; list.innerHTML = '';
+    let filtered = State.filterRouteCat === 'ALL' ? State.routes : State.routes.filter(r => r.role === State.filterRouteCat);
+
+    filtered.forEach(r => {
+      let rCol = r.role === 'CHOKKAN' ? '#a855f7' : r.role === 'MOYOGI' ? '#f59e0b' : r.role === 'SHAKAN' ? '#22c55e' : r.role === 'KENGAI' ? '#ec4899' : r.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
+      let yieldM = 1.0 + (State.upgrades.mkt*0.05);
+      let baseYield = r.dist * 165 * yieldM;
+      let fuelCost = ((r.dist * 0.22) * (1 - Math.min(0.7, State.upgrades.eng*0.02))) * State.fuelSpotPrice;
+      let netProfit = baseYield - fuelCost;
+
+      list.innerHTML += `
+        <div class="route-row">
+          <div style="flex:1;">
+            <div style="font-weight:900; color:#fff;">${r.name} <span class="badge" style="margin-left:4px; color:${rCol}; border-color:${rCol};">${r.role}</span></div>
+            <div style="font-size:9px; color:var(--silver-dim); font-family:monospace; margin-top:2px;">
+              ${r.dist.toLocaleString()} MILES // Area: ${r.minTier}
+            </div>
+            <div style="font-size:9px; color:var(--silver-dim); font-family:monospace; margin-top:2px;">
+              Revenue: $${fmt(baseYield)} | Water/Travel: -$${fmt(fuelCost)}
+            </div>
+            <div style="font-size:10px; color:var(--status-green); font-weight:bold; font-family:monospace; margin-top:2px;">
+              Est. Net Profit: ~$${fmt(netProfit)}
+            </div>
+          </div>
+          <div>
+            ${r.unlocked?`<span style="color:var(--status-green); font-weight:bold; font-family:monospace;">ZONED ✓</span>`:`<button class="btn btn-green" onclick="unlockRoute('${r.id}')">Expand ($${fmt(r.cost)})</button>`}
+          </div>
         </div>
-        <button class="btn btn-sm btn-green" onclick="dispatchCourier('${route.id}')" ${activeCount >= maxFleet ? 'disabled' : ''}>
-          ${activeCount >= maxFleet ? 'Fleet Fully Deployed' : '🚚 Deploy Transport Van'}
-        </button>
       `;
-    }
+    });
+  }
+  function unlockRoute(rId) { const r=State.routes.find(x=>x.id===rId); if(!r)return; if(State.funds<r.cost){toast("Insufficient Cash.");return;} State.funds-=r.cost; r.unlocked=true; updateHUD(); renderRoutes(); renderFleet(); }
 
-    container.appendChild(card);
-  });
-}
+  /* ================= AUTOMATIONS & COMMISSIONS ================= */
+  function toggleAutoLoop() {
+    State.automation.autoDispatch = !State.automation.autoDispatch;
+    toast(`Touring Schedule: ${State.automation.autoDispatch ? 'ON' : 'OFF'}`);
+    updateAutomationUI();
+  }
+  function toggleAutoMRO() {
+    State.automation.autoMRO = !State.automation.autoMRO;
+    toast(`Auto Pruning: ${State.automation.autoMRO ? 'ON' : 'OFF'}`);
+    updateAutomationUI();
+  }
+  function toggleAutoRefuel() {
+    State.automation.autoRefuel = !State.automation.autoRefuel;
+    toast(`Auto Irrigation: ${State.automation.autoRefuel ? 'ON' : 'OFF'}`);
+    updateAutomationUI();
+  }
+  function updateAutomationUI() {
+    if($('chk-autoloop'))$('chk-autoloop').innerText = State.automation.autoDispatch ? 'ACTIVE' : 'ENABLE';
+    if($('chk-automro'))$('chk-automro').innerText = State.automation.autoMRO ? 'ACTIVE' : 'ENABLE';
+    if($('chk-autorefuel'))$('chk-autorefuel').innerText = State.automation.autoRefuel ? 'ACTIVE' : 'ENABLE';
+    renderMilestones();
+    renderSideMissions();
+  }
 
-function dispatchCourier(routeId) {
-  const maxFleet = state.fleetSlots + state.upgrades.fleet_size;
-  if (state.dispatches.length >= maxFleet) return toast("All couriers currently in transit!", "error");
-
-  const route = DISPATCH_ROUTES.find(r => r.id === routeId);
-  if (!route) return;
-
-  if (state.fertilizer < route.costFert && !state.godMode) return toast("Insufficient fertilizer reserves for transport prep!", "error");
-
-  // Find candidate tree on bench matching requirement
-  const eligibleTreeIdx = state.trees.findIndex(t => t.tierId >= route.reqTier);
-  if (eligibleTreeIdx === -1) return toast(`No bonsai on bench meets requirement: ${TIERS[route.reqTier].name}!`, "error");
-
-  if (!state.godMode) state.fertilizer -= route.costFert;
-
-  const deployedTree = state.trees[eligibleTreeIdx];
-  // Remove tree during exhibition run
-  state.trees.splice(eligibleTreeIdx, 1);
-
-  state.dispatches.push({
-    id: 'disp_' + Date.now(),
-    routeId: route.id,
-    tree: deployedTree,
-    timeLeft: route.time,
-    maxTime: route.time,
-    reward: route.reward,
-    zen: route.zen
-  });
-
-  toast(`Van departed for ${route.name}!`, "gold");
-  updateHUD();
-  renderBenches();
-  renderDispatchRoutes();
-}
-
-function updateDispatchTicks(deltaSec) {
-  if (state.dispatches.length === 0) return;
-
-  for (let i = state.dispatches.length - 1; i >= 0; i--) {
-    let disp = state.dispatches[i];
-    disp.timeLeft -= deltaSec;
-
-    if (disp.timeLeft <= 0) {
-      // Completed! Return tree + payout
-      state.money += disp.reward;
-      state.zen += disp.zen;
-
-      // Tree vigor reduction from road stress
-      disp.tree.vigor = Math.max(10, disp.tree.vigor - 12);
-      state.trees.push(disp.tree);
-
-      toast(`Gallery delivery complete! Received +¥${disp.reward.toLocaleString()} & +${disp.zen} ☯`, "gold");
-      state.dispatches.splice(i, 1);
-      updateHUD();
-      renderBenches();
+  function generateSideMissions() {
+    let unlocked = State.routes.filter(r => r.unlocked);
+    if(unlocked.length === 0) unlocked = State.routes; 
+    
+    State.sideMissions = [];
+    for(let i=0; i<3; i++) {
+        let rt = unlocked[Math.floor(Math.random() * unlocked.length)];
+        State.sideMissions.push({
+            id: "sm_" + Date.now() + i,
+            title: `Commission: ${rt.name}`,
+            desc: `Master, please exhibit a fine ${rt.role} at ${rt.name}.`,
+            reqRoute: rt.id, reqRole: rt.role, readyToClaim: false,
+            rewardCash: Math.floor(rt.dist * 500) + 1000000,
+            rewardTier: Math.min(9, Math.floor(rt.dist / 1000))
+        });
     }
   }
 
-  renderDispatchRoutes();
-}
-
-/* =========================================================================
-   BURNER PHONE (VIP CONTRACT ORDERS)
-========================================================================= */
-
-function refreshBurnerOrders() {
-  if (state.money < 500 && !state.godMode) return toast("Need ¥500 to scramble encrypted frequencies!", "error");
-  if (!state.godMode) state.money -= 500;
-
-  state.burnerOrders = [
-    createBurnerOrder(1),
-    createBurnerOrder(2),
-    createBurnerOrder(3)
-  ];
-
-  toast("Burner phone synchronized with new VIP contracts!");
-  renderBurnerOrders();
-}
-
-function createBurnerOrder(id) {
-  const clientTypes = ["Yakuza Boss", "Shinto Priest", "Tech Tycoon", "Michelin Chef", "Imperial Emissary"];
-  const client = clientTypes[Math.floor(Math.random() * clientTypes.length)];
-  const spec = SPECIES[Math.floor(Math.random() * SPECIES.length)];
-  const targetTier = Math.floor(Math.random() * 3) + 1; // Specimen to Masterpiece
-  const payout = Math.floor(1800 * TIERS[targetTier].mult * (1.2 + Math.random() * 0.5));
-
-  return {
-    id: id,
-    title: `${client}'s Sanctuary`,
-    reqSpecies: spec.id,
-    reqTier: targetTier,
-    reward: payout,
-    zenReward: 30 * targetTier,
-    timeLeft: 120
-  };
-}
-
-function renderBurnerOrders() {
-  const container = document.getElementById('burner-grid');
-  if (!container) return;
-  container.innerHTML = '';
-
-  state.burnerOrders.forEach(ord => {
-    const spec = SPECIES[ord.reqSpecies];
-    const tier = TIERS[ord.reqTier];
-    const card = document.createElement('div');
-    card.className = 'order-card order-vip';
-
-    card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:800; font-size:0.9rem; color:var(--neon-pink);">${ord.title}</span>
-        <span style="font-family:var(--font-mono); color:var(--neon-gold); font-size:0.8rem;">¥${ord.reward.toLocaleString()}</span>
-      </div>
-      <div style="font-size:0.75rem; color:#aaa; line-height:1.4;">
-        • Demanded Strain: <b>${spec.name}</b><br>
-        • Minimum Classification: <span class="tree-tier ${tier.color}">${tier.name}</span><br>
-        • Deadline: <span style="color:var(--neon-red); font-family:var(--font-mono);">${ord.timeLeft}s</span>
-      </div>
-      <button class="btn btn-sm btn-pink" style="margin-top:6px;" onclick="fulfillBurnerOrder(${ord.id})">
-        💼 Deliver Consignment
-      </button>
-    `;
-    container.appendChild(card);
-  });
-}
-
-function fulfillBurnerOrder(orderId) {
-  const ord = state.burnerOrders.find(o => o.id === orderId);
-  if (!ord) return;
-
-  const matchIdx = state.trees.findIndex(t => t.speciesId === ord.reqSpecies && t.tierId >= ord.reqTier);
-  if (matchIdx === -1) return toast(`No tree on bench satisfies the criteria for ${ord.title}!`, "error");
-
-  // Remove delivered tree
-  state.trees.splice(matchIdx, 1);
-  state.money += ord.reward;
-  state.zen += ord.zenReward;
-
-  toast(`VIP Contract fulfilled! Received +¥${ord.reward.toLocaleString()} and +${ord.zenReward} ☯!`, "gold");
-
-  // Re-roll this order slot
-  state.burnerOrders = state.burnerOrders.filter(o => o.id !== orderId);
-  state.burnerOrders.push(createBurnerOrder(orderId));
-
-  updateHUD();
-  renderBenches();
-  renderBurnerOrders();
-}
-
-/* =========================================================================
-   BENCHES INVENTORY DISPLAY
-========================================================================= */
-
-function renderBenches() {
-  const grid = document.getElementById('bench-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  document.getElementById('bench-header-count').innerText = state.trees.length;
-  document.getElementById('ui-bulk-cost').innerText = (state.trees.length * 30).toLocaleString();
-
-  if (state.trees.length === 0) {
-    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;">
-      Collection benches are vacant. Purchase seed flats or wild Yamadori in the Nursery!
-    </div>`;
-    return;
+  function refreshSideMissions() {
+    generateSideMissions();
+    renderSideMissions();
+    toast("Commissions refreshed.");
   }
 
-  state.trees.forEach(tree => {
-    const sData = SPECIES[tree.speciesId];
-    const tData = TIERS[tree.tierId];
-    const stData = STYLES[tree.styleId];
-
-    const card = document.createElement('div');
-    card.className = 'tree-card';
-    card.innerHTML = `
-      <div class="tree-display">
-        <canvas id="cvs-tree-${tree.id}" class="pixel-canvas canvas-sm" width="64" height="64"></canvas>
-      </div>
-      <div class="tree-info">
-        <div class="tree-name">
-          <span>${sData.name}</span>
-          <span class="tree-tier ${tData.color}">${tData.name}</span>
+  function renderSideMissions() {
+    const list = $('side-missions-list'); if(!list) return; list.innerHTML = '';
+    State.sideMissions.forEach((m, idx) => {
+      let isReady = m.readyToClaim;
+      let rText = `+$${fmt(m.rewardCash)} & Free T${m.rewardTier+1} Seeds`;
+      list.innerHTML += `
+        <div class="check-item ${isReady ? 'done' : ''}">
+          <div>
+            <div style="font-weight:bold; color:#fff;">${m.title}</div>
+            <div style="font-size:9.5px; color:var(--silver-dim);">${m.desc}</div>
+            <div style="font-size:9.5px; color:var(--status-green); font-weight:bold; margin-top:2px;">Payout: ${rText}</div>
+          </div>
+          <div>
+            <button class="btn btn-green" ${isReady ? '' : 'disabled'} onclick="claimSideMission(${idx})">COLLECT</button>
+          </div>
         </div>
-        <div class="tree-stats">
-          <div class="stat-row"><span>Style</span><span>${stData.name.split(' ')[0]}</span></div>
-          <div class="stat-row"><span>Age</span><span>${tree.age}y</span></div>
-          <div class="stat-row"><span>Vigor</span><span>${tree.vigor}%</span></div>
-          <div class="stat-row"><span>Val</span><span style="color:var(--neon-gold);">¥${tree.baseVal.toLocaleString()}</span></div>
+      `;
+    });
+  }
+
+  function claimSideMission(idx) {
+    let m = State.sideMissions[idx];
+    if(!m || !m.readyToClaim) return;
+    
+    State.funds += m.rewardCash;
+    let bonusStrain = harvestStrain(m.rewardTier); 
+    State.fleet.push(bonusStrain);
+    toast(`Client Paid! +$${fmt(m.rewardCash)} & ${bonusStrain.name} acquired!`);
+
+    State.sideMissions.splice(idx, 1);
+    
+    let unlocked = State.routes.filter(r => r.unlocked);
+    if(unlocked.length === 0) unlocked = State.routes;
+    let rt = unlocked[Math.floor(Math.random() * unlocked.length)];
+    State.sideMissions.push({
+        id: "sm_" + Date.now(),
+        title: `Commission: ${rt.name}`,
+        desc: `Master, please exhibit a fine ${rt.role} at ${rt.name}.`,
+        reqRoute: rt.id, reqRole: rt.role, readyToClaim: false,
+        rewardCash: Math.floor(rt.dist * 500) + 1000000,
+        rewardTier: Math.min(9, Math.floor(rt.dist / 1000))
+    });
+
+    updateHUD(); renderSideMissions();
+  }
+
+  function renderMilestones() {
+    const list = $('milestone-list'); if(!list) return; list.innerHTML = '';
+    MILESTONES.forEach(m => {
+      let isClaimed = State.claimedMilestones.includes(m.id);
+      let canClaim = !isClaimed && m.req(State);
+      list.innerHTML += `
+        <div class="check-item ${isClaimed ? 'done' : ''}">
+          <div>
+            <div style="font-weight:bold; color:${isClaimed ? 'var(--status-green)' : '#fff'};">${isClaimed ? '✓ ' : ''}${m.title}</div>
+            <div style="font-size:9.5px; color:var(--silver-dim);">${m.desc}</div>
+            <div style="font-size:9.5px; color:var(--status-amber); font-weight:bold; margin-top:1px;">Reward: +$${fmt(m.reward)}</div>
+          </div>
+          <div>
+            ${isClaimed 
+              ? `<span style="color:var(--status-green); font-weight:bold; font-size:9px;">CLAIMED</span>` 
+              : `<button class="btn btn-green" ${canClaim ? '' : 'disabled'} onclick="claimMilestone('${m.id}')">CLAIM</button>`
+            }
+          </div>
         </div>
-        <div class="trade-code">${tree.code}</div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:6px;">
-          <button class="btn btn-sm btn-green" onclick="mountTurntable('${tree.id}')">✂️ Turntable</button>
-          <button class="btn btn-sm btn-gold" onclick="sendDirectToAuction('${tree.id}')">🔨 Auction</button>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
+      `;
+    });
+  }
 
-    setTimeout(() => {
-      const cvs = document.getElementById(`cvs-tree-${tree.id}`);
-      if (cvs) drawBonsaiHD(cvs, tree.code);
-    }, 0);
-  });
-}
+  function claimMilestone(mId) {
+    let m = MILESTONES.find(x => x.id === mId);
+    if(!m || State.claimedMilestones.includes(mId) || !m.req(State)) return;
+    State.claimedMilestones.push(mId);
+    State.funds += m.reward;
+    toast(`Milestone Achieved: +$${fmt(m.reward)}`);
+    updateHUD(); renderMilestones();
+  }
 
-function quickWaterAll() {
-  const cost = state.trees.length * 30;
-  if (state.money < cost && !state.godMode) return toast("Insufficient funds for bulk irrigation!", "error");
-  if (!state.godMode) state.money -= cost;
+  /* ================= UPGRADES ================= */
+  function getUpgCost(type, lvl) { return type==='mkt' ? Math.floor(100000*Math.pow(1.5,lvl)) : Math.floor(150000*Math.pow(1.6,lvl)); }
+  function renderUpgrades() {
+    let mC = getUpgCost('mkt', State.upgrades.mkt); let eC = getUpgCost('eng', State.upgrades.eng);
+    if($('upg-mkt-lvl'))$('upg-mkt-lvl').innerText=State.upgrades.mkt; 
+    if($('upg-mkt-pct'))$('upg-mkt-pct').innerText=State.upgrades.mkt*5; 
+    if($('upg-mkt-cost'))$('upg-mkt-cost').innerText=fmt(mC);
+    
+    if($('upg-eng-lvl'))$('upg-eng-lvl').innerText=State.upgrades.eng; 
+    if($('upg-eng-pct'))$('upg-eng-pct').innerText=Math.min(70, State.upgrades.eng*2); 
+    if($('upg-eng-cost'))$('upg-eng-cost').innerText=fmt(eC);
+  }
+  function buyUpgrade(type) {
+    let cost = getUpgCost(type, State.upgrades[type]);
+    if(State.funds < cost) { toast("Insufficient Cash."); return; }
+    State.funds -= cost; State.upgrades[type]++;
+    updateHUD(); renderUpgrades(); toast("Nursery expanded.");
+  }
 
-  state.trees.forEach(t => t.vigor = Math.min(100, t.vigor + 20));
-  toast(`Hydrated all ${state.trees.length} trees on benches!`);
-  updateHUD();
-  renderBenches();
-}
+  /* ================= EXHIBITION DISPATCH ================= */
+  function dispatchFlight(pUid) {
+    const p = State.fleet.find(x=>x.uid===pUid); if(!p||p.status==='IN_FLIGHT'||!p.assignedRoute||!p.assignedPilot)return;
+    const r = State.routes.find(x=>x.id===p.assignedRoute); const pl = State.pilots.find(x=>x.uid===p.assignedPilot); if(!r||!pl)return;
+    
+    if(p.condition < 45) {
+      if(State.automation.autoMRO && State.funds >= Math.floor((100-p.condition)*2500)) {
+        maintainAirframe(p.uid);
+      } else {
+        toast("[WILTED] Vitality critical. Must Prune & Water."); return;
+      }
+    }
 
-function sendDirectToAuction(treeId) {
-  const targetLane = state.auctionLanes.find(l => !l.active);
-  if (!targetLane) return toast("All 10 auction lanes are occupied!", "error");
+    let yieldM = 1.0 + (State.upgrades.mkt*0.05); let speedD = 1.0; let fuelD = 1.0; let safeD = 1.0;
+    if(pl.bType==='PRUNING') yieldM *= (1 + pl.bonus/100);
+    if(pl.bType==='SPEED') speedD = 1 + pl.bonus/100; 
+    if(pl.bType==='WATER') fuelD = 1 + pl.bonus/100;
+    if(pl.bType==='CARE') safeD = 1 + pl.bonus/100;
 
-  const treeIdx = state.trees.findIndex(t => t.id === treeId);
-  if (treeIdx === -1) return;
+    let baseMs = Math.max(5000, Math.min(90000, (r.dist/8000)*90000));
+    let msTime = Math.max(1000, baseMs / speedD); 
 
-  const tree = state.trees[treeIdx];
-  state.trees.splice(treeIdx, 1);
+    let fBurn = Math.floor((r.dist * 0.22) * (1 - Math.min(0.7, State.upgrades.eng*0.02)) / fuelD);
+    
+    if(State.fuelReserve < fBurn) {
+      if(State.automation.autoRefuel && State.funds >= 100000 * State.fuelSpotPrice) {
+        State.funds -= 100000 * State.fuelSpotPrice;
+        State.fuelReserve += 100000;
+      } else {
+        toast("Insufficient Water."); return;
+      }
+    }
+    State.fuelReserve -= fBurn;
 
-  startAuctionInLane(targetLane.laneId, tree);
-  switchTab('auction');
-  toast(`Tree consigned directly to Lane #${targetLane.laneId}!`);
-  updateHUD();
-  renderBenches();
-}
+    let bRev = r.dist * 165 * yieldM;
+    
+    p.status='IN_FLIGHT'; p.flightStart=Date.now(); p.flightDuration=msTime; p.flightEnd=p.flightStart+msTime; p.expRev=bRev; p.wear=10/safeD;
+    
+    State.sideMissions.forEach(m => {
+        if(!m.readyToClaim && p.assignedRoute === m.reqRoute && p.role === m.reqRole) {
+            m.readyToClaim = true;
+            toast(`Client Happy: ${m.title}`);
+            if($('tab-checklist').classList.contains('active')) renderSideMissions();
+        }
+    });
 
-/* =========================================================================
-   INFRASTRUCTURE UPGRADES
-========================================================================= */
+    needsFleetRender = true; updateHUD();
+  }
+  function dispatchAll() { State.fleet.filter(p=>p.status==='READY'&&p.assignedRoute&&p.assignedPilot).forEach(p=>dispatchFlight(p.uid)); }
+  function maintainAirframe(pUid) { const p=State.fleet.find(x=>x.uid===pUid); if(!p||p.status==='IN_FLIGHT')return; let c=Math.floor((100-p.condition)*2500); if(State.funds<c)return; State.funds-=c; p.condition=100; updateHUD(); needsFleetRender = true; }
+  function maintainAll() { let c=0; State.fleet.filter(p=>p.condition<90&&p.status!=='IN_FLIGHT').forEach(p=>c+=Math.floor((100-p.condition)*2500)); if(c===0||State.funds<c)return; State.funds-=c; State.fleet.forEach(p=>p.condition=100); updateHUD(); renderFleet(); }
 
-function renderUpgrades() {
-  const container = document.getElementById('upgrades-grid');
-  if (!container) return;
-  container.innerHTML = '';
-
-  UPGRADES_DEF.forEach(up => {
-    const cur = state.upgrades[up.id] || 0;
-    const cost = Math.floor(up.cost * Math.pow(1.6, cur));
-    const isMax = cur >= up.max;
-
-    const card = document.createElement('div');
-    card.className = 'panel';
-    card.style.background = '#14141e';
-    card.innerHTML = `
-      <div class="panel-header">
-        <span>${up.name}</span>
-        <span style="font-size:0.75rem; color:var(--neon-green);">Rank ${cur}/${up.max}</span>
-      </div>
-      <div style="font-size:0.8rem; color:#888; margin-bottom:14px; min-height:38px;">${up.desc}</div>
-      <button class="btn btn-sm btn-green" style="width:100%;" onclick="buyUpgrade('${up.id}')" ${isMax ? 'disabled' : ''}>
-        ${isMax ? 'MAX ARCHITECTURE' : `Install Rank ${cur + 1} - ¥${cost.toLocaleString()}`}
-      </button>
-    `;
-    container.appendChild(card);
-  });
-}
-
-function buyUpgrade(upId) {
-  const up = UPGRADES_DEF.find(u => u.id === upId);
-  const cur = state.upgrades[upId] || 0;
-  if (cur >= up.max) return;
-
-  const cost = Math.floor(up.cost * Math.pow(1.6, cur));
-  if (state.money < cost && !state.godMode) return toast("Insufficient capital!", "error");
-
-  if (!state.godMode) state.money -= cost;
-  state.upgrades[upId] = cur + 1;
-
-  toast(`Upgraded ${up.name} to Rank ${cur + 1}!`, "gold");
-  updateHUD();
-  renderUpgrades();
-}
-
-/* =========================================================================
-   CORE UI & LOOP CONTROLLERS
-========================================================================= */
-
-function updateHUD() {
-  document.getElementById('ui-money').innerText = Math.floor(state.money).toLocaleString();
-  document.getElementById('ui-zen').innerText = Math.floor(state.zen).toLocaleString();
-  document.getElementById('ui-fert').innerText = Math.floor(state.fertilizer).toLocaleString();
+  /* ================= 10-LANE WHOLESALE AUCTIONS ================= */
+  function initAuction(uid, type) {
+    if(State.auctions.length>=10){toast("Auction house full.");return;}
+    let item;
+    if(type==='plane') { let i=State.fleet.findIndex(x=>x.uid===uid); if(i===-1)return; item=State.fleet[i]; if(item.assignedPilot){ let px=State.pilots.find(x=>x.uid===item.assignedPilot); if(px)px.assignedTo=null; } State.fleet.splice(i,1); }
+    if(type==='pilot') { let i=State.pilots.findIndex(x=>x.uid===uid); if(i===-1)return; item=State.pilots[i]; State.pilots.splice(i,1); }
+    
+    State.auctions.push({ item:item, type:type, baseVal:item.value, timer:20.0, currentBid:Math.floor(item.value*0.9), log:[] });
+    updateHUD(); renderAuctions(); renderFleet(); renderPilots(); toast("Moved to Master Auctions.");
+  }
   
-  const activeFleet = state.dispatches.length;
-  const maxFleet = state.fleetSlots + state.upgrades.fleet_size;
-  document.getElementById('ui-fleet').innerText = `${maxFleet - activeFleet}/${maxFleet} IDLE`;
-  document.getElementById('ui-bench').innerText = state.trees.length;
-}
-
-function switchTab(tabId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-  const target = document.getElementById('view-' + tabId);
-  if (target) target.classList.add('active');
-
-  const btn = document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`);
-  if (btn) btn.classList.add('active');
-
-  if (tabId === 'bench') renderBenches();
-  if (tabId === 'workshop') renderWorkshop();
-  if (tabId === 'auction') renderAuctionLanes();
-  if (tabId === 'dispatch') renderDispatchRoutes();
-  if (tabId === 'burner') renderBurnerOrders();
-  if (tabId === 'upgrades') renderUpgrades();
-}
-
-function toggleGodMode() {
-  state.godMode = !state.godMode;
-  const btn = document.getElementById('btnGod');
-  if (state.godMode) {
-    btn.innerText = "⚡ GOD MODE: ACTIVE";
-    btn.style.background = "#e11d48";
-    state.money += 500000;
-    state.zen += 5000;
-    state.fertilizer += 500;
-    toast("God Mode activated. Syndicate vault flooded with capital!", "gold");
-  } else {
-    btn.innerText = "⚡ GOD MODE: OFF";
-    btn.style.background = "rgba(251, 191, 36, 0.05)";
-    toast("God Mode deactivated.");
+  function fillAuctions(type) {
+    let a=10-State.auctions.length; if(a<=0) { toast("Auction house full."); return; }
+    
+    let c = type==='planes' 
+      ? State.fleet.filter(p=>p.status==='READY'&&!p.assignedPilot).sort((x,y)=>x.value-y.value) 
+      : State.pilots.filter(p=>!p.assignedTo&&!p.locked).sort((x,y)=>x.value-y.value);
+        
+    if(c.length===0){toast("No eligible trees/staff available.");return;}
+    
+    let loaded = 0;
+    c.slice(0,a).forEach(item=>{ 
+      if(type==='planes'){ let i=State.fleet.findIndex(x=>x.uid===item.uid); State.fleet.splice(i,1); }
+      if(type==='pilots'){ let i=State.pilots.findIndex(x=>x.uid===item.uid); State.pilots.splice(i,1); }
+      State.auctions.push({item:item, type:type, baseVal:item.value, timer:20.0, currentBid:Math.floor(item.value*0.9), log:[]}); 
+      loaded++;
+    });
+    
+    updateHUD(); renderPilots(); renderFleet(); renderAuctions(); 
+    toast(`Loaded ${loaded} lots to Auction.`);
   }
-  updateHUD();
-}
 
-function toast(msg, type = "") {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.innerText = msg;
-  container.appendChild(t);
-  setTimeout(() => t.remove(), 2800);
-}
+  function renderAuctions() {
+    const b=$('auction-board'); if(!b)return; $('auction-count').innerText=State.auctions.length; b.innerHTML='';$('auction-idle').style.display = State.auctions.length===0 ? 'block' : 'none';
+    State.auctions.forEach((a) => {
+      let hLog = a.log.map(l=>`<div>${l}</div>`).join('');
+      let col = a.item.tierColor || '#fff';
+      
+      b.innerHTML+=`
+        <div class="auction-slot">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              ${a.type === 'plane' ? `<img src="${a.item.imgData}" style="width:40px; height:40px; image-rendering:pixelated; background:#000; border:1px solid #142014;" />` : ''}
+              <div>
+                <div style="font-size:12px;font-weight:bold;color:${col};">${a.item.name}</div>
+                <div class="stat-block" style="font-size:9px;">VAL: $${fmt(a.baseVal)}</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div id="auc-timer-${a.item.uid}" style="font-size:8.5px;color:var(--silver-dim);font-weight:bold;">TIME [${a.timer.toFixed(1)}s]</div>
+              <div id="auc-bid-${a.item.uid}" style="font-size:14px;font-weight:bold;color:var(--status-green);font-family:monospace;">$${fmt(a.currentBid)}</div>
+            </div>
+          </div>
+          <div class="auction-timer-bg"><div id="auc-bar-${a.item.uid}" class="auction-timer-bar" style="width:${(a.timer/20)*100}%;"></div></div>
+          <div class="auction-log">${hLog}</div>
+        </div>
+      `;
+    });
+  }
 
-function saveGame(manual = false) {
-  localStorage.setItem('zen_bonsai_save_v111', JSON.stringify(state));
-  if (manual) toast("Syndicate registry saved to local storage!", "gold");
-}
+  /* ================= GAME LOOP ================= */
+  const FACTIONS = ["Kyoto Syndicate","Wealthy Patron","Imperial Collector","Local Master"];
+  function gameTick() {
+    let n = Date.now();
+    let auctionChanged = false;
+    
+    // Market Timer
+    State.marketTimer -= 0.1;
+    let mT = $('market-timer'); if(mT) mT.innerText = Math.max(0, State.marketTimer).toFixed(1);
+    if(State.marketTimer <= 0) { State.marketTimer = 10.0; refreshMarket(); }
 
-function loadGame() {
-  const raw = localStorage.getItem('zen_bonsai_save_v111');
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      state = { ...state, ...parsed };
-    } catch (e) {
-      console.error("Save load failure", e);
+    // Exhibitions
+    State.fleet.forEach(p => {
+      if(p.status==='IN_FLIGHT') {
+        let pct = ((n-p.flightStart)/p.flightDuration)*100;
+        if(pct>=100) { 
+          p.status='READY'; State.funds+=p.expRev; p.condition=Math.max(10, p.condition-p.wear); updateHUD(); 
+          let st=$(`st-${p.uid}`); if(st) st.innerHTML=`STATUS: <strong style="color:#fff;">READY</strong>`; 
+          let b=$(`bar-${p.uid}`); if(b){b.style.width='0%'; b.parentElement.style.display='none';} 
+          
+          if(State.automation.autoDispatch && p.assignedRoute && p.assignedPilot) {
+            setTimeout(() => dispatchFlight(p.uid), 200);
+          } else {
+            needsFleetRender = true; 
+          }
+        } 
+        else { let b=$(`bar-${p.uid}`); if(b) b.style.width=pct+'%'; }
+      }
+    });
+
+    if(needsFleetRender) {
+      if($('tab-fleet').classList.contains('active')) renderFleet();
+      needsFleetRender = false;
+    }
+
+    // Auctions
+    if(State.auctions.length>0) {
+      for(let i=State.auctions.length-1; i>=0; i--) {
+        let a=State.auctions[i]; a.timer-=0.1; 
+        
+        let uiT = $(`auc-timer-${a.item.uid}`);
+        let uiB = $(`auc-bar-${a.item.uid}`);
+        let uiBid = $(`auc-bid-${a.item.uid}`);
+
+        if(a.timer>0 && Math.random()<0.10) {
+          let f=FACTIONS[Math.floor(Math.random()*FACTIONS.length)]; let m=1.05+(Math.random()*0.10);
+          if(Math.random()<0.015) { m=2.0+(Math.random()*18.0); a.log.push(`<span style="color:var(--status-amber);">[BID WAR] Spike!</span>`); }
+          let nB=Math.floor(a.currentBid*m); if(nB<=a.currentBid) nB=a.currentBid+1; a.currentBid=nB;
+          a.log.push(`<span style="color:var(--silver-bright);">[${f}] bids $${fmt(a.currentBid)}</span>`);
+          if(a.log.length>3) a.log.shift();
+          if(a.timer<=1.0){ a.timer=3.0; a.log.push(`<span style="color:var(--status-red);">[OVERTIME] Reset to 3s!</span>`); }
+          if(uiBid) uiBid.innerText = "$" + fmt(a.currentBid);
+          auctionChanged = true;
+        } else {
+          if(uiT) uiT.innerText = `TIME [${Math.max(0, a.timer).toFixed(1)}s]`;
+          if(uiB) { uiB.style.width = ((a.timer/20)*100) + '%'; uiB.style.background = a.timer <= 3 ? 'var(--status-red)' : 'var(--status-green)'; }
+        }
+
+        if(a.timer<=0){ 
+          State.funds+=a.currentBid; State.statAuctionsSold++;
+          toast(`SOLD for $${fmt(a.currentBid)}!`); 
+          State.auctions.splice(i,1); updateHUD(); 
+          auctionChanged = true;
+        }
+      }
+      
+      if(auctionChanged && $('tab-auction').classList.contains('active')) renderAuctions();
     }
   }
-}
 
-// Master Automation Loop (100ms interval for auction ticking + 1s dispatch intervals)
-let masterTimer = null;
-let lastSecTick = Date.now();
+  /* ================= INIT & NAVIGATION ================= */
+  function setTab(tabId) {
+    document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); if(b.getAttribute('onclick').includes(tabId)) b.classList.add('active'); });
+    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+    const target = $('tab-'+tabId); if(target) target.classList.add('active');
 
-function masterLoop() {
-  const now = Date.now();
-  const delta = (now - lastSecTick) / 1000;
-  lastSecTick = now;
-
-  // 1. Live Auction High Velocity Ticks
-  updateAuctionTicks(delta);
-
-  // 2. Dispatch Couriers
-  updateDispatchTicks(delta);
-
-  // 3. Passive Fertilizer Synthesis
-  if (state.upgrades.fert_synth > 0 && Math.random() < 0.1) {
-    state.fertilizer += (state.upgrades.fert_synth * 1);
-    updateHUD();
+    if(tabId==='fleet') renderFleet();
+    if(tabId==='auction') renderAuctions();
+    if(tabId==='gallery') renderGallery();
+  }
+  function godMode() {
+    State.funds += 2000000000; State.fuelReserve += 10000000;
+    State.fleet.forEach(p => p.condition = 100);
+    toast("GRANDMASTER: +$2B Cash, +10M Gal Water, Benches Restored.");
+    updateHUD(); renderFleet();
   }
 
-  // 4. Burner Phone Deadlines
-  state.burnerOrders.forEach(ord => {
-    ord.timeLeft = Math.max(0, Math.floor(ord.timeLeft - delta));
-    if (ord.timeLeft <= 0) {
-      ord.timeLeft = 120;
-    }
-  });
-}
-
-function init() {
-  loadGame();
-
-  // Seed default trees if empty
-  if (state.trees.length === 0) {
-    buyGacha('import');
-    buyGacha('seedling');
+  function initUI() {
+    if(!State.gallery) State.gallery = [];
+    if(!State.routes || State.routes.length < 400) State.routes = generateRoutes();
+    updateHUD(); refreshMarket();
+    if(globalInterval) clearInterval(globalInterval); globalInterval = setInterval(gameTick, 100);
   }
-
-  if (state.burnerOrders.length === 0) {
-    refreshBurnerOrders();
-  }
-
-  updateHUD();
-  renderBenches();
-  renderAuctionLanes();
-  renderDispatchRoutes();
-  renderBurnerOrders();
-  renderUpgrades();
-
-  if (masterTimer) clearInterval(masterTimer);
-  masterTimer = setInterval(masterLoop, 100);
-}
-
-window.addEventListener('DOMContentLoaded', init);
+  initUI();
 </script>
 </body>
 </html>
