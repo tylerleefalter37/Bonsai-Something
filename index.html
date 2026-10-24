@@ -1,1831 +1,2096 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Blissful Bonsai - Master's Edition</title>
-<style>
-  :root {
-    --bg-base: #0a0c0a;
-    --panel-bg: #111411;
-    --panel-border: #1e261e;
-    --silver-bright: #e2e8e2;
-    --silver-main: #9ca39c;
-    --silver-dim: #647064;
-    --silver-dark: #2a332a;
-    
-    --status-green: #4ade80;
-    --status-red: #ef4444;
-    --status-amber: #d97706;
-    --status-blue: #38bdf8;
-    --status-purple: #d946ef;
-    --status-exotic: #0ea5e9;
-    
-    --t0-col: #647064; --t1-col: #4ade80; --t2-col: #38bdf8; --t3-col: #3b82f6; --t4-col: #a855f7; 
-    --t5-col: #d946ef; --t6-col: #f59e0b; --t7-col: #ea580c; --t8-col: #ef4444; --t9-col: #10b981;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TENKEI: Living Sculpture // Traditional Japanese Bonsai Cultivation</title>
+  <style>
+    :root {
+      --bg-dark: #0a0d0a;
+      --bg-surface: #121713;
+      --bg-card: #19201a;
+      --bg-elevated: #222b23;
+      --border: #2d382e;
+      --border-light: #3e4d3f;
+      --washi: #f4f6f0;
+      --washi-muted: #a3ab9f;
+      --terracotta: #a0522d;
+      --terracotta-light: #c86a3d;
+      --bamboo: #3d8b41;
+      --bamboo-light: #57b55c;
+      --gold: #d4af37;
+      --gold-light: #f5d76e;
+      --vermilion: #c23b22;
+      --celadon: #709782;
+      --font-serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-  html, body { width: 100%; height: 100%; background: var(--bg-base); color: var(--silver-bright); display: flex; flex-direction: column; overflow: hidden; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--washi);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      font-size: 14px;
+    }
 
-  body::before {
-    content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(74, 222, 128, 0.03) 0%, transparent 65%);
-    pointer-events: none; z-index: 1;
-  }
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 
-  header { flex-shrink: 0; background: #050605; border-bottom: 1px solid var(--status-green); padding: 6px 10px; display: flex; flex-direction: column; gap: 4px; z-index: 10; }
-  .header-top { display: flex; justify-content: space-between; align-items: center; }
-  .brand-title { font-size: 13px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; }
-  .brand-title span { color: var(--status-green); text-shadow: 0 0 5px rgba(74,222,128,0.4); }
+    /* Top HUD */
+    header.hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
 
-  .hud-stats { display: flex; gap: 4px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
-  .hud-stats::-webkit-scrollbar { display: none; }
-  .hud-pill { background: #000; border: 1px solid var(--panel-border); padding: 3px 6px; border-radius: 3px; font-size: 10px; font-family: monospace; font-weight: bold; }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
 
-  nav { flex-shrink: 0; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); z-index: 9; }
-  .nav-btn { padding: 10px 4px; background: transparent; border: none; border-right: 1px solid var(--panel-border); border-bottom: 1px solid var(--panel-border); color: var(--silver-dim); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: 0.15s; text-align: center; }
-  .nav-btn:nth-child(3n) { border-right: none; }
-  .nav-btn:nth-child(n+7) { border-bottom: none; }
-  .nav-btn.active { background: rgba(74, 222, 128, 0.08); color: var(--status-green); box-shadow: inset 0 -2px 0 var(--status-green); }
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      font-weight: 600;
+    }
 
-  main { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 70px; z-index: 2; }
-  .view-tab { display: none; flex-direction: column; gap: 10px; }
-  .view-tab.active { display: flex; }
+    .brand span {
+      font-size: 0.75rem;
+      color: var(--washi-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
 
-  .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 5px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .panel-header { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding-bottom: 6px; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center; }
+    .hud-metrics {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-  .control-bar { display: flex; flex-wrap: wrap; gap: 6px; background: #050605; padding: 6px 8px; border-radius: 4px; border: 1px solid var(--panel-border); align-items: center; }
-  .control-group { display: flex; gap: 4px; align-items: center; border-right: 1px solid var(--panel-border); padding-right: 6px; }
-  .control-group:last-child { border-right: none; padding-right: 0; }
-  .control-label { font-size: 8.5px; font-weight: bold; color: var(--silver-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
 
-  button.btn { background: #000; border: 1px solid var(--silver-dim); color: var(--silver-bright); padding: 5px 9px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 3px; cursor: pointer; transition: 0.1s; }
-  button.btn:active { background: var(--silver-bright); color: #000; border-color: var(--silver-bright); }
-  button.btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--silver-dark); }
-  button.btn-green { background: #091209; border-color: var(--status-green); color: var(--status-green); }
-  button.btn-green:active { background: var(--status-green); color: #000; }
-  button.btn-danger { border-color: var(--status-red); color: var(--status-red); }
-  button.btn-danger:active { background: var(--status-red); color: #fff; }
-  button.btn-purple { border-color: var(--status-purple); color: var(--status-purple); }
-  button.btn-purple:active { background: var(--status-purple); color: #fff; }
+    .metric-badge .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--washi-muted);
+    }
 
-  .fleet-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-  @media(min-width: 600px) { .fleet-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); } }
+    .metric-badge .value {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--washi);
+    }
 
-  .strain-card { background: #050605; border: 1px solid var(--panel-border); border-radius: 4px; padding: 10px; display: flex; flex-direction: column; gap: 6px; position: relative; }
-  .strain-card.in-flight { border-left: 3px solid var(--status-green); }
-  .strain-card.damaged { border-left: 3px solid var(--status-red); }
-  
-  .bud-art-container { display: flex; gap: 10px; align-items: center; background: #080a08; border: 1px solid var(--panel-border); padding: 6px; border-radius: 3px; }
-  .bud-pixel-canvas { width: 64px; height: 64px; image-rendering: pixelated; border-radius: 2px; background: #000; flex-shrink: 0; border: 1px solid #142014; }
+    .metric-badge .value.gold { color: var(--gold-light); }
+    .metric-badge .value.bamboo { color: var(--bamboo-light); }
 
-  .spec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; background: #080a08; padding: 6px; border-radius: 3px; font-size: 9px; font-family: monospace; border: 1px solid var(--panel-border); }
-  .spec-grid span { color: var(--silver-dim); }
+    .god-mode-btn {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.05em;
+    }
 
-  .badge { padding: 2px 4px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: monospace; background: #091209; color: var(--status-green); border: 1px solid var(--status-green); }
-  
-  .route-row { background: #050605; border: 1px solid var(--panel-border); border-radius: 3px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; }
+    .god-mode-btn:hover, .god-mode-btn.active {
+      background: var(--gold);
+      color: var(--bg-dark);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
 
-  .flight-bar-bg { width: 100%; height: 6px; background: #111; border: 1px solid #1a261a; border-radius: 2px; overflow: hidden; margin-top: 2px; }
-  .flight-bar-fill { height: 100%; background: var(--status-green); width: 0%; box-shadow: 0 0 6px var(--status-green);}
+    /* Main Layout */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+      margin-bottom: 70px;
+    }
 
-  .auction-slot { background: #050605; border: 1px solid var(--panel-border); padding: 10px; border-radius: 4px; display: flex; flex-direction: column; gap: 6px; }
-  .auction-timer-bg { width: 100%; height: 5px; background: #111; border: 1px solid var(--status-green); border-radius: 2px; overflow: hidden; }
-  .auction-timer-bar { height: 100%; background: var(--status-green); width: 100%; transition: width 0.1s linear;}
-  .auction-log { height: 44px; background: #080a08; border: 1px solid var(--panel-border); padding: 4px; font-size: 8.5px; font-family: monospace; overflow: hidden; border-radius: 3px; color: var(--silver-main); }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease forwards;
+    }
 
-  .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-  .pack-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .tab-content.active {
+      display: block;
+    }
 
-  select { background: #080a08; color: #fff; border: 1px solid var(--silver-dark); padding: 5px; font-size: 10px; border-radius: 3px; outline: none; font-weight: bold; cursor: pointer; }
-  
-  .check-item { display: flex; justify-content: space-between; align-items: center; background: #050605; padding: 8px 10px; border: 1px solid var(--panel-border); border-radius: 3px; font-size: 10px; }
-  .check-item.done { border-color: var(--status-green); background: rgba(74, 222, 128, 0.08); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  #toast-rack { position: fixed; bottom: 16px; left: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 1000; pointer-events: none; }
-  .toast { background: #000; border: 1px solid var(--silver-dark); border-left: 3px solid var(--status-green); color: #fff; padding: 8px 12px; font-size: 11px; font-weight: bold; font-family: monospace; border-radius: 3px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideUp 0.2s, fadeOut 0.4s 2.6s forwards; pointer-events: auto;}
-  
-  @keyframes slideUp { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  @keyframes fadeOut { to { opacity: 0; transform: translateY(-5px); } }
-</style>
+    /* Bottom Navigation Bar */
+    nav.dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(18, 23, 19, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid var(--border);
+      padding: 6px 4px;
+      z-index: 1000;
+    }
+
+    .dock-btn {
+      background: transparent;
+      border: none;
+      color: var(--washi-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 6px;
+      min-width: 58px;
+    }
+
+    .dock-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      fill: none;
+    }
+
+    .dock-btn.active {
+      color: var(--gold);
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    /* Tokonoma & Viewport Styles */
+    .tokonoma-stage {
+      display: grid;
+      grid-template-columns: minmax(300px, 460px) 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .tokonoma-stage { grid-template-columns: 1fr; }
+    }
+
+    .alcove-frame {
+      background: #141713;
+      border: 8px solid #231c16;
+      border-bottom: 14px solid #1a1511;
+      border-radius: 4px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.7);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .alcove-canvas-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1/1;
+      max-width: 440px;
+    }
+
+    canvas.bonsai-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: auto;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .spec-item {
+      background: var(--bg-surface);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .spec-item .k {
+      font-size: 0.65rem;
+      color: var(--washi-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .spec-item .v {
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--washi);
+    }
+
+    .progress-bar-wrap {
+      margin-top: 4px;
+      height: 5px;
+      background: var(--bg-dark);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--bamboo);
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar-fill.gold { background: var(--gold); }
+    .progress-bar-fill.terracotta { background: var(--terracotta-light); }
+
+    /* Action buttons & toolbars */
+    .btn-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    button.btn {
+      background: var(--bg-elevated);
+      color: var(--washi);
+      border: 1px solid var(--border-light);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    button.btn:hover:not(:disabled) {
+      background: var(--border-light);
+      border-color: var(--gold);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    button.btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button.btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    button.btn.primary {
+      background: #2a3a2c;
+      border-color: var(--bamboo);
+      color: var(--washi);
+    }
+
+    button.btn.primary:hover:not(:disabled) {
+      background: var(--bamboo);
+      color: #fff;
+    }
+
+    button.btn.gold-btn {
+      background: #3a3219;
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    button.btn.gold-btn:hover:not(:disabled) {
+      background: var(--gold);
+      color: var(--bg-dark);
+    }
+
+    /* Garden Tree Carousel & Grid */
+    .bench-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .tree-mini-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .tree-mini-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+
+    .tree-mini-card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.4);
+    }
+
+    .mini-canvas-wrap {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background: #111411;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    /* Upgrade Trees & Grid */
+    .upgrade-category {
+      margin-bottom: 24px;
+    }
+
+    .upgrade-tier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .upgrade-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .upgrade-box.purchased {
+      border-color: var(--bamboo);
+      background: rgba(61, 139, 65, 0.08);
+    }
+
+    .upgrade-box.current {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    /* Seedlings & Yamadori Market */
+    .nursery-market {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .seedling-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .tag.conifer { background: #1c3826; color: #72cf93; }
+    .tag.deciduous { background: #3b2c1b; color: #e8a75e; }
+    .tag.flower { background: #401b2a; color: #f289b7; }
+    .tag.tropical { background: #1b393b; color: #62d9dc; }
+
+    /* God Mode Overlay Terminal */
+    .god-console-wrap {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5,7,5,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .god-console-wrap.active {
+      display: flex;
+    }
+
+    .god-terminal {
+      background: #0d120e;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+    }
+
+    .god-terminal-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-serif);
+      color: var(--gold);
+    }
+
+    .god-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .god-quick-btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+    }
+
+    .terminal-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .terminal-input {
+      flex: 1;
+      background: #060906;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: #92ec9b;
+      font-family: monospace;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .terminal-input:focus {
+      border-color: var(--gold);
+    }
+
+    /* Toast system */
+    #toast-rack {
+      position: fixed;
+      top: 64px;
+      right: 16px;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--bg-surface);
+      border-left: 4px solid var(--gold);
+      color: var(--washi);
+      padding: 10px 16px;
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      font-size: 0.85rem;
+      animation: slideIn 0.25s ease forwards;
+      pointer-events: auto;
+      max-width: 320px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Exhibition Cards */
+    .exhibition-tier {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .exhibition-tier.passed {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, 0.05);
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="header-top">
-    <div class="brand-title">BLISSFUL BONSAI <span>// V1.0</span></div>
-    <div style="display:flex; gap:4px;">
-      <button class="btn" style="padding:3px 6px; font-size:8px;" onclick="saveGame()">SAVE</button>
-      <button class="btn" style="padding:3px 6px; font-size:8px;" onclick="loadGame()">LOAD</button>
-      <button class="btn btn-danger" style="padding:3px 6px; font-size:8px;" onclick="godMode()">GRANDMASTER</button>
-    </div>
-  </div>
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div class="hud-stats">
-        <div class="hud-pill">CASH: <span id="hud-funds" style="color:var(--status-green);">$0</span></div>
-        <div class="hud-pill">BENCHES: <span id="hud-fleet-count">0</span></div>
-        <div class="hud-pill">APPRENTICES: <span id="hud-pilot-count">0</span></div>
-        <div class="hud-pill">WATER: <span id="hud-fuel" style="color:var(--status-amber);">0</span></div>
-      </div>
-      <div class="control-bar" style="padding:2px 4px; margin-left:4px;">
-        <button class="btn btn-green active" id="buy-1" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(1)">1x</button>
-        <button class="btn" id="buy-0.25" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(0.25)">25%</button>
-        <button class="btn" id="buy-0.5" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(0.5)">50%</button>
-        <button class="btn" id="buy-1.0" style="padding:2px 4px; font-size:8px;" onclick="setBuyMode(1.0)">MAX</button>
-      </div>
-  </div>
-</header>
-
-<nav>
-  <button class="nav-btn active" onclick="setTab('market')">Wild Yamadori</button>
-  <button class="nav-btn" onclick="setTab('gacha')">Cultivation</button>
-  <button class="nav-btn" onclick="setTab('fleet')">Garden Benches</button>
-  <button class="nav-btn" onclick="setTab('pilots')">Apprentices</button>
-  <button class="nav-btn" onclick="setTab('routes')">Exhibitions</button>
-  <button class="nav-btn" onclick="setTab('auction')">Master Auctions</button>
-  <button class="nav-btn" onclick="setTab('checklist')">Commissions</button>
-  <button class="nav-btn" onclick="setTab('upgrades')">Nursery Tools</button>
-  <button class="nav-btn" onclick="setTab('gallery')">Tokonoma 🖼️</button>
-</nav>
-
-<main>
-
-  <!-- TAB 1: REVOLVING CORNER MARKET -->
-  <div id="tab-market" class="view-tab active">
-    <div class="panel">
-      <div class="panel-header">
-        <span>Wild Yamadori & Imports</span>
-        <span style="font-size:10px; color:var(--silver-dim);">RESTOCK: <span id="market-timer" style="font-size:12px; font-weight:bold; color:var(--status-green);">10.0</span>s</span>
-      </div>
-      <p style="font-size:10px; color:var(--silver-dim);">5 procedural bonsai drop every 10 seconds. Styles shape the physical trunk growth.</p>
-      <div id="market-grid" class="fleet-grid"></div>
-    </div>
-  </div>
-
-  <!-- TAB 2: SEED BANK (GROW OPS) -->
-  <div id="tab-gacha" class="view-tab">
-    <div class="panel">
-      <div class="panel-header">Nursery & Cultivation</div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; font-weight:bold; margin-bottom:6px;">RAW SEEDLINGS [T1-T4] ($10K / Seed)</div>
-          <div class="pack-row">
-            <button class="btn" onclick="buySeeds(0, 1)">Plant 1x</button>
-            <button class="btn" onclick="buySeeds(0, 5)">Plant 5x</button>
-            <button class="btn btn-green" onclick="buySeeds(0, 10)">Plant 10x</button>
-          </div>
-        </div>
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; color:var(--status-blue); font-weight:bold; margin-bottom:6px;">SHOHIN STOCK [T3-T6] ($100K / Seed)</div>
-          <div class="pack-row">
-            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buySeeds(1, 1)">Plant 1x</button>
-            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buySeeds(1, 5)">Plant 5x</button>
-            <button class="btn btn-green" onclick="buySeeds(1, 10)">Plant 10x</button>
-          </div>
-        </div>
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; color:var(--status-purple); font-weight:bold; margin-bottom:6px;">IMPORTED YAMADORI [T5-T8] ($1.0M / Tree)</div>
-          <div class="pack-row">
-            <button class="btn btn-purple" onclick="buySeeds(2, 1)">Plant 1x</button>
-            <button class="btn btn-purple" onclick="buySeeds(2, 5)">Plant 5x</button>
-            <button class="btn btn-green" onclick="buySeeds(2, 10)">Plant 10x</button>
-          </div>
-        </div>
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; color:var(--status-amber); font-weight:bold; margin-bottom:6px;">IMPERIAL HEIRLOOMS [T7-T10] ($5.0M / Tree)</div>
-          <div class="pack-row">
-            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buySeeds(3, 1)">Plant 1x</button>
-            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buySeeds(3, 5)">Plant 5x</button>
-            <button class="btn btn-green" onclick="buySeeds(3, 10)">Plant 10x</button>
-          </div>
-        </div>
-      </div>
+  <!-- Top HUD -->
+  <header class="hud">
+    <div class="brand">
+      <h1>TENKEI // 天啓</h1>
+      <span>LIVING SCULPTURE</span>
     </div>
 
-    <div class="panel">
-      <div class="panel-header">Apprentice Hiring Board</div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; font-weight:bold; margin-bottom:6px;">NOVICES [T1-T4] ($5K / Hire)</div>
-          <div class="pack-row">
-            <button class="btn" onclick="buyResumes(0, 1)">Hire 1x</button>
-            <button class="btn" onclick="buyResumes(0, 5)">Hire 5x</button>
-            <button class="btn btn-green" onclick="buyResumes(0, 10)">Hire 10x</button>
+    <div class="hud-metrics">
+      <div class="metric-badge">
+        <span class="label">Treasury</span>
+        <span class="value gold" id="hud-funds">¥25,000</span>
+      </div>
+      <div class="metric-badge">
+        <span class="label">Rank</span>
+        <span class="value" id="hud-rank">Shoshinsha (Novice)</span>
+      </div>
+      <div class="metric-badge">
+        <span class="label">Season / Yr</span>
+        <span class="value bamboo" id="hud-season">Spring, Yr 1</span>
+      </div>
+      <div class="metric-badge">
+        <span class="label">Collection</span>
+        <span class="value" id="hud-trees">1 / 2</span>
+      </div>
+      <button class="god-mode-btn" id="godModeToggle" title="Open Celestial God Console">GOD MODE</button>
+    </div>
+  </header>
+
+  <!-- Notification Rack -->
+  <div id="toast-rack"></div>
+
+  <!-- Main Viewports Tabs -->
+  <main>
+    <!-- TAB 1: GARDEN BENCHES -->
+    <section id="tab-garden" class="tab-content active">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2 style="font-family: var(--font-serif); font-weight:500;">Cultivation Benches</h2>
+        <button class="btn primary" id="quickWaterAllBtn">
+          <span>Water All Plants</span>
+        </button>
+      </div>
+      <div class="bench-grid" id="garden-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 2: TOKONOMA ALCOVE (INSPECTION) -->
+    <section id="tab-tokonoma" class="tab-content">
+      <div class="tokonoma-stage">
+        <!-- Japanese Alcove Canvas Frame -->
+        <div class="alcove-frame">
+          <div class="alcove-canvas-container">
+            <canvas id="tokonomaCanvas" class="bonsai-canvas" width="400" height="400"></canvas>
           </div>
         </div>
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; color:var(--status-blue); font-weight:bold; margin-bottom:6px;">JOURNEYMEN [T3-T6] ($50K / Hire)</div>
-          <div class="pack-row">
-            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buyResumes(1, 1)">Hire 1x</button>
-            <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue);" onclick="buyResumes(1, 5)">Hire 5x</button>
-            <button class="btn btn-green" onclick="buyResumes(1, 10)">Hire 10x</button>
+
+        <!-- Tree Detailed Dossier -->
+        <div class="card" id="tokonoma-dossier">
+          <div class="card-title">
+            <span id="tok-tree-name">Kuromatsu Pine</span>
+            <span id="tok-tree-style" style="font-size:0.85rem; color:var(--gold-light);">Moyogi</span>
           </div>
-        </div>
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; color:var(--status-purple); font-weight:bold; margin-bottom:6px;">ARTISANS [T5-T8] ($250K / Hire)</div>
-          <div class="pack-row">
-            <button class="btn btn-purple" onclick="buyResumes(2, 1)">Hire 1x</button>
-            <button class="btn btn-purple" onclick="buyResumes(2, 5)">Hire 5x</button>
-            <button class="btn btn-green" onclick="buyResumes(2, 10)">Hire 10x</button>
+
+          <div style="font-size:0.8rem; color:var(--washi-muted); margin-bottom:12px; font-style:italic;" id="tok-species-botanical">
+            Pinus thunbergii
           </div>
-        </div>
-        <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px;">
-          <div style="font-size:10px; color:var(--status-amber); font-weight:bold; margin-bottom:6px;">MASTERS [T7-T10] ($1.0M / Hire)</div>
-          <div class="pack-row">
-            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buyResumes(3, 1)">Hire 1x</button>
-            <button class="btn" style="border-color:var(--status-amber); color:var(--status-amber);" onclick="buyResumes(3, 5)">Hire 5x</button>
-            <button class="btn btn-green" onclick="buyResumes(3, 10)">Hire 10x</button>
+
+          <div class="spec-grid">
+            <div class="spec-item">
+              <div class="k">Age (Jurei)</div>
+              <div class="v" id="tok-tree-age">18 yrs</div>
+            </div>
+            <div class="spec-item">
+              <div class="k">Ramification</div>
+              <div class="v" id="tok-tree-ram">32%</div>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" id="tok-ram-bar" style="width:32%"></div></div>
+            </div>
+            <div class="spec-item">
+              <div class="k">Taper & Nebari</div>
+              <div class="v" id="tok-tree-nebari">48 / 100</div>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill gold" id="tok-neb-bar" style="width:48%"></div></div>
+            </div>
+            <div class="spec-item">
+              <div class="k">Wabi-Sabi Patina</div>
+              <div class="v" id="tok-tree-wabi">24 / 100</div>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill terracotta" id="tok-wabi-bar" style="width:24%"></div></div>
+            </div>
+            <div class="spec-item">
+              <div class="k">Hydration</div>
+              <div class="v" id="tok-tree-moisture">85%</div>
+            </div>
+            <div class="spec-item">
+              <div class="k">Aesthetic Score</div>
+              <div class="v" style="color:var(--gold-light);" id="tok-tree-score">58.4</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:10px; background:var(--bg-surface); border:1px solid var(--border);">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--washi-muted); margin-bottom:6px;">Pot & Presentation</div>
+            <div id="tok-pot-desc" style="font-size:0.85rem; color:var(--washi);">Tokoname Unglazed Rectangular Tray with Cloud Feet</div>
+          </div>
+
+          <div class="btn-row" style="margin-top:14px;">
+            <button class="btn primary" onclick="switchTab('workshop')">Refine in Workshop</button>
+            <button class="btn" onclick="renameCurrentTree()">Rename Bonsai</button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
-      <div class="panel-header">
-        <span>Reservoir (Water & Soil)</span>
-        <span style="font-size:11px; font-weight:bold; color:var(--status-amber);">$<span id="fuel-price">2.80</span> / GAL</span>
-      </div>
-      <div class="fraction-row">
-        <button class="btn" onclick="buyFuelFixed(50000)">50K Gal</button>
-        <button class="btn" onclick="buyFuelFixed(250000)">250K Gal</button>
-        <button class="btn" onclick="buyFuelFixed(1000000)">1M Gal</button>
-        <button class="btn btn-green" onclick="buyFuelFixed('MAX')">Max Fill</button>
-      </div>
-    </div>
-  </div>
+    <!-- TAB 3: WORKSHOP (DISCIPLINE ACTIONS) -->
+    <section id="tab-workshop" class="tab-content">
+      <div style="display:grid; grid-template-columns: minmax(280px, 360px) 1fr; gap:16px;">
+        <div class="card" style="display:flex; flex-direction:column; align-items:center;">
+          <div style="width:100%; aspect-ratio:1/1; max-width:320px; background:#121612; border:1px solid var(--border); border-radius:6px; overflow:hidden; margin-bottom:12px;">
+            <canvas id="workshopCanvas" width="320" height="320" style="width:100%; height:100%;"></canvas>
+          </div>
+          <div style="font-family:var(--font-serif); font-size:1rem; color:var(--gold);" id="ws-tree-title">Kuromatsu</div>
+          <div style="font-size:0.75rem; color:var(--washi-muted);" id="ws-tree-subtitle">Style: Moyogi</div>
+        </div>
 
-  <!-- TAB 3: INVENTORY (STASH) -->
-  <div id="tab-fleet" class="view-tab">
-    <div class="panel">
-      <div class="panel-header">
-        <span>Garden Benches</span>
-        <div style="display:flex; gap:4px;">
-          <button class="btn btn-green" onclick="autoAssignPilots()">Auto-Assign</button>
-          <button class="btn btn-green" onclick="autoAssignRoutes()">Auto-Exhibit</button>
-          <button class="btn btn-green" onclick="dispatchAll()">Send All</button>
-          <button class="btn" onclick="maintainAll()">Prune All</button>
+        <div class="card">
+          <div class="card-title">Disciplines & Master Interventions</div>
+          <p style="font-size:0.8rem; color:var(--washi-muted); margin-bottom:14px;">
+            Shape the living wood, control vegetative energy, carve weathered deadwood, and cultivate aesthetic harmony.
+          </p>
+
+          <div class="btn-row" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+            <button class="btn primary" id="actPruneBtn" onclick="applyAction('prune')">
+              <strong>Mekiri & Sentei (Prune)</strong>
+              <span style="font-size:0.7rem; color:var(--washi-muted);">Increases ramification; shapes pads</span>
+            </button>
+            <button class="btn" id="actWireBtn" onclick="applyAction('wire')">
+              <strong>Harigane-kake (Wire)</strong>
+              <span style="font-size:0.7rem; color:var(--washi-muted);">Level pads & enforce pad angles</span>
+            </button>
+            <button class="btn" id="actCarveBtn" onclick="applyAction('carve')">
+              <strong>Carve Jin & Shari</strong>
+              <span style="font-size:0.7rem; color:var(--washi-muted);">Sculpt deadwood bleached ribbons</span>
+            </button>
+            <button class="btn" id="actRepotBtn" onclick="openRepotModal()">
+              <strong>Tekishin (Repot & Root Prune)</strong>
+              <span style="font-size:0.7rem; color:var(--washi-muted);">Upgrade container & root flare</span>
+            </button>
+            <button class="btn" id="actFertilizeBtn" onclick="applyAction('fertilize')">
+              <strong>Aburakasu (Organic Rapeseed)</strong>
+              <span style="font-size:0.7rem; color:var(--washi-muted);">Restores vigor and foliage lushness</span>
+            </button>
+            <button class="btn" id="actWaterBtn" onclick="applyAction('water')">
+              <strong>Mizuyari (Hasu Wand Water)</strong>
+              <span style="font-size:0.7rem; color:var(--washi-muted);">Hydrates roots to 100%</span>
+            </button>
+          </div>
+
+          <!-- Pot Selector Panel (Hidden unless Repotting) -->
+          <div id="repotPanel" style="display:none; margin-top:16px; padding:12px; background:var(--bg-surface); border:1px solid var(--border); border-radius:6px;">
+            <div style="font-size:0.85rem; font-weight:600; color:var(--gold); margin-bottom:8px;">Select Bonsai-Bachi (Pot / Vessel):</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px;" id="repotPotGrid">
+              <!-- Dynamically populated -->
+            </div>
+            <button class="btn" style="margin-top:10px; width:100%;" onclick="closeRepotModal()">Cancel Repot</button>
+          </div>
         </div>
       </div>
-      
-      <div class="control-bar">
-        <div class="control-group">
-          <span class="control-label">Sort:</span>
-          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('val')">VAL</button>
-          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('tier')">TIER</button>
-          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('range')">DIST</button>
-        </div>
-        <div class="control-group">
-          <span class="control-label">Style:</span>
-          <select id="fleet-role-filter" onchange="filterHangarRole(this.value)" style="padding:3px; font-size:9px; width:auto;">
-            <option value="ALL">All Styles</option>
-            <option value="CHOKKAN">Chokkan</option>
-            <option value="MOYOGI">Moyogi</option>
-            <option value="SHAKAN">Shakan</option>
-            <option value="KENGAI">Kengai</option>
-            <option value="YOSE_UE">Yose-Ue</option>
-            <option value="BUNJINGI">Bunjingi</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <span class="control-label">Tier:</span>
-          <select id="fleet-tier-filter" onchange="filterHangarTier(this.value)" style="padding:3px; font-size:9px; width:auto;">
-            <option value="ALL">All Tiers</option>
-            <option value="0">T1</option><option value="1">T2</option><option value="2">T3</option><option value="3">T4</option><option value="4">T5</option>
-            <option value="5">T6</option><option value="6">T7</option><option value="7">T8</option><option value="8">T9</option><option value="9">T10</option>
-          </select>
-        </div>
-        <button class="btn btn-green" style="padding:4px 6px; font-size:8px;" onclick="importStrain()">Import Base36</button>
+    </section>
+
+    <!-- TAB 4: TOOLS & GARDEN UPGRADES -->
+    <section id="tab-tools" class="tab-content">
+      <h2 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--gold); margin-bottom:14px;">Master Infrastructure & Equipment Upgrades</h2>
+      <div id="upgrades-container">
+        <!-- Rendered dynamically for 5 categories -->
       </div>
+    </section>
 
-      <div class="fraction-row">
-        <button class="btn btn-danger" onclick="quickSellStrains(0)">Sell T1</button>
-        <button class="btn btn-danger" onclick="quickSellStrains(1)">Sell T2&lt;</button>
-        <button class="btn btn-danger" onclick="quickSellStrains(2)">Sell T3&lt;</button>
-        <button class="btn btn-danger" onclick="quickSellStrains(3)">Sell T4&lt;</button>
+    <!-- TAB 5: SEEDLINGS & EXPEDITIONS -->
+    <section id="tab-seedlings" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--gold);">Bonsai Nursery Stock & Yamadori Expeditions</h2>
       </div>
+      <div class="nursery-market" id="species-market-grid">
+        <!-- 30+ species populated dynamically -->
+      </div>
+    </section>
 
-      <div id="fleet-list" class="fleet-grid"></div>
-    </div>
-  </div>
-  
-  <!-- TAB: GALLERY -->
-  <div id="tab-gallery" class="view-tab">
-    <div class="panel">
-      <div class="panel-header"><span>Tokonoma (Masterpiece Gallery) 🖼️</span></div>
-      <p style="font-size:10px; color:var(--silver-dim);">Lock your best phenotypes to preserve their artwork forever.</p>
-      <div id="gallery-grid" class="fleet-grid"></div>
-    </div>
-  </div>
-
-  <!-- TAB 4: COURIERS -->
-  <div id="tab-pilots" class="view-tab">
-    <div class="panel">
-      <div class="panel-header"><span>Apprentice Roster</span></div>
-      
-      <div class="control-bar">
-        <div class="control-group">
-          <span class="control-label">Sort:</span>
-          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortPilots('val')">VAL</button>
-          <button class="btn" style="padding:4px 6px; font-size:8px;" onclick="sortPilots('tier')">TIER</button>
+    <!-- TAB 6: MARKET & COMMISSIONS -->
+    <section id="tab-market" class="tab-content">
+      <div style="display:grid; grid-template-columns: minmax(280px, 340px) 1fr; gap:16px;">
+        <div class="card">
+          <div class="card-title">Offer Selected Tree for Sale</div>
+          <div style="font-size:0.85rem; margin-bottom:10px;" id="mkt-tree-name">Selected: Kuromatsu</div>
+          <div style="font-size:1.1rem; color:var(--gold); font-family:var(--font-serif); margin-bottom:12px;" id="mkt-tree-val">Estimated Valuation: ¥48,000</div>
+          <button class="btn gold-btn" style="width:100%;" onclick="sellCurrentTree()">Sell to Highest Collector Bid</button>
         </div>
-        <div class="control-group">
-          <span class="control-label">Tier:</span>
-          <select id="pilot-tier-filter" onchange="filterPilotTier(this.value)" style="padding:3px; font-size:9px; width:auto;">
-            <option value="ALL">All Tiers</option>
-            <option value="0">T1</option><option value="1">T2</option><option value="2">T3</option><option value="3">T4</option><option value="4">T5</option>
-            <option value="5">T6</option><option value="6">T7</option><option value="7">T8</option><option value="8">T9</option><option value="9">T10</option>
-          </select>
-        </div>
-        <button class="btn btn-green" style="padding:4px 6px; font-size:8px;" onclick="importCourier()">Import Base36</button>
-      </div>
 
-      <div class="fraction-row">
-        <button class="btn btn-danger" onclick="quickSellPilots(0)">Fire T1</button>
-        <button class="btn btn-danger" onclick="quickSellPilots(1)">Fire T2&lt;</button>
-        <button class="btn btn-danger" onclick="quickSellPilots(2)">Fire T3&lt;</button>
-        <button class="btn btn-danger" onclick="quickSellPilots(3)">Fire T4&lt;</button>
-      </div>
-
-      <div id="pilots-grid" class="fleet-grid"></div>
-    </div>
-  </div>
-
-  <!-- TAB 5: DELIVERY ZONES -->
-  <div id="tab-routes" class="view-tab">
-    <div class="panel">
-      <div class="panel-header">
-        <span>Exhibitions & Shows (400)</span>
-        <select id="route-cat-filter" onchange="filterRouteCategory(this.value)" style="padding:3px; font-size:9px; width:auto;">
-          <option value="ALL">All Exhibitions</option>
-          <option value="CHOKKAN">Chokkan Demand</option>
-          <option value="MOYOGI">Moyogi Demand</option>
-          <option value="SHAKAN">Shakan Demand</option>
-          <option value="KENGAI">Kengai Demand</option>
-          <option value="YOSE_UE">Yose-Ue Demand</option>
-          <option value="BUNJINGI">Bunjingi Demand</option>
-        </select>
-      </div>
-      <div id="routes-list" style="display:flex; flex-direction:column; gap:6px;"></div>
-    </div>
-  </div>
-
-  <!-- TAB 6: WHOLESALE AUCTIONS -->
-  <div id="tab-auction" class="view-tab">
-    <div class="panel">
-      <div class="panel-header"><span>Master Auction House</span><span style="color:var(--status-amber);"><span id="auction-count">0</span>/10 LANES</span></div>
-      <p style="font-size:10px; color:var(--silver-dim);">10 live bidding lanes with sniping reset and random multi-thousand-dollar bid spikes.</p>
-      
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-green" style="flex:1; padding:8px;" onclick="fillAuctions('planes')">Auto-Fill 10 Cheapest Trees</button>
-        <button class="btn btn-green" style="flex:1; padding:8px;" onclick="fillAuctions('pilots')">Auto-Fill 10 Novice Apprentices</button>
-      </div>
-
-      <div id="auction-idle" style="text-align:center; padding:16px; color:var(--silver-dim); font-size:11px;">Lanes empty. Push excess inventory to the auction house.</div>
-      <div id="auction-board" class="fleet-grid"></div>
-    </div>
-  </div>
-
-  <!-- TAB 7: BURNER PHONE -->
-  <div id="tab-checklist" class="view-tab">
-    <div class="panel">
-      <div class="panel-header">Nursery Automations</div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <div class="check-item">
-          <div><strong>Touring Schedule:</strong> Automatically sends trees to exhibitions upon return.</div>
-          <button id="chk-autoloop" class="btn" onclick="toggleAutoLoop()">ENABLE</button>
-        </div>
-        <div class="check-item">
-          <div><strong>Automated Pruning:</strong> Automatically restores health if vitality drops below 45%.</div>
-          <button id="chk-automro" class="btn" onclick="toggleAutoMRO()">ENABLE</button>
-        </div>
-        <div class="check-item">
-          <div><strong>Automated Irrigation:</strong> Buys 100K Gal when water drops below 50K.</div>
-          <button id="chk-autorefuel" class="btn" onclick="toggleAutoRefuel()">ENABLE</button>
+        <div class="card">
+          <div class="card-title">Visiting Connoisseurs & Temple Collectors</div>
+          <div id="connoisseur-dialogue" style="font-size:0.85rem; color:var(--washi); line-height:1.6; background:var(--bg-surface); padding:14px; border-radius:6px; border:1px solid var(--border);">
+            "Welcome, Artisan. Master collectors from Kyoto and Tokyo frequently inspect your benches. Cultivate high Nebari, pure Jin deadwood, and tight ramification to fetch astronomical sums."
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
-      <div class="panel-header">
-        <span>Client Commissions</span>
-        <button class="btn btn-green" style="padding:2px 6px; font-size:8px;" onclick="refreshSideMissions()">Ignore Letters</button>
+    <!-- TAB 7: EXHIBITIONS & TOURNAMENTS -->
+    <section id="tab-exhibitions" class="tab-content">
+      <h2 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--gold); margin-bottom:14px;">Prestigious Bonsai Exhibitions</h2>
+      <div id="exhibition-list">
+        <!-- 3 Exhibitions rendered dynamically -->
       </div>
-      <p style="font-size:10px; color:var(--silver-dim); margin-bottom:4px;">Exhibit targeted styles at designated shows to earn cash bounties and rare seeds.</p>
-      <div id="side-missions-list" style="display:flex; flex-direction:column; gap:6px;"></div>
-    </div>
+    </section>
+  </main>
 
-    <div class="panel">
-      <div class="panel-header">Zen Milestones</div>
-      <div id="milestone-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+  <!-- Bottom Dock Navigation -->
+  <nav class="dock">
+    <button class="dock-btn active" onclick="switchTab('garden')">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Garden</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('tokonoma')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Tokonoma</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('workshop')">
+      <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <span>Workshop</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('tools')">
+      <svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Tools</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('seedlings')">
+      <svg viewBox="0 0 24 24"><path d="M12 22v-9M12 13a5 5 0 0 1 5-5h3v3a5 5 0 0 1-5 5h-3zM12 13a5 5 0 0 0-5-5H4v3a5 5 0 0 0 5 5h3z"/></svg>
+      <span>Stock</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('market')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Market</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('exhibitions')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      <span>Exhibits</span>
+    </button>
+  </nav>
+
+  <!-- God Mode Interactive Terminal Modal -->
+  <div class="god-console-wrap" id="godModal">
+    <div class="god-terminal">
+      <div class="god-terminal-header">
+        <span>CELESTIAL GOD CONSOLE // 神の力</span>
+        <button onclick="toggleGodMode()" style="background:none; border:none; color:var(--washi-muted); font-size:1.2rem; cursor:pointer;">&times;</button>
+      </div>
+      <div class="god-body">
+        <p style="font-size:0.75rem; color:var(--washi-muted);">Directly alter botanical physics, inject nursery capital, and bend tree morphology.</p>
+        
+        <div class="god-quick-btn-grid">
+          <button class="btn gold-btn" onclick="godAddFunds()">+¥5,000,000</button>
+          <button class="btn primary" onclick="godAddAge()">+50 Yrs Age</button>
+          <button class="btn" onclick="godMaxRamification()">Max Ramification (100%)</button>
+          <button class="btn" onclick="godMaxNebari()">Max Nebari Roots</button>
+          <button class="btn" onclick="godUnlockAllPots()">Unlock All Pots</button>
+          <button class="btn" onclick="godAutoMaster()">Auto Kokufu Master</button>
+        </div>
+
+        <div style="font-size:0.8rem; font-weight:600; color:var(--gold); margin-top:8px;">Morph Active Tree Style:</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;" id="godStyleButtons">
+          <!-- 10 style morph buttons -->
+        </div>
+
+        <div style="font-size:0.8rem; font-weight:600; color:var(--gold); margin-top:8px;">Interactive Shell Terminal:</div>
+        <div class="terminal-input-row">
+          <input type="text" id="godCommandInput" class="terminal-input" placeholder="Type: add_funds 50000 | set_age 120 | max_wabi_sabi" onkeydown="if(event.key==='Enter') executeGodCommand()">
+          <button class="btn gold-btn" onclick="executeGodCommand()">Execute</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- TAB 8: MARKETING UPGRADES -->
-  <div id="tab-upgrades" class="view-tab">
-    <div class="panel">
-      <div class="panel-header">Nursery Expansion</div>
-      <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px; background:#000;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11px;">
-          <span style="font-weight:bold; color:var(--status-green);">Exhibition Prestige</span>
-          <span style="color:var(--silver-dim);">Lvl <span id="upg-mkt-lvl">0</span> (+<span id="upg-mkt-pct">0</span>%)</span>
-        </div>
-        <div style="font-size:9.5px; color:var(--silver-dim); margin-bottom:6px;">Permanently boosts base exhibition yields by +5% per level.</div>
-        <button class="btn btn-green" style="width:100%;" onclick="buyUpgrade('mkt')">Invest ($<span id="upg-mkt-cost">100000</span>)</button>
-      </div>
-      <div style="border:1px solid var(--panel-border); padding:8px; border-radius:3px; background:#000;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11px;">
-          <span style="color:var(--status-blue); font-weight:bold;">Automated Drip Lines</span>
-          <span style="color:var(--silver-dim);">Lvl <span id="upg-eng-lvl">0</span> (-<span id="upg-eng-pct">0</span>%)</span>
-        </div>
-        <div style="font-size:9.5px; color:var(--silver-dim); margin-bottom:6px;">Permanently reduces nursery-wide water consumption by 2% per level (Max 70%).</div>
-        <button class="btn" style="border-color:var(--status-blue); color:var(--status-blue); width:100%;" onclick="buyUpgrade('eng')">Invest ($<span id="upg-eng-cost">150000</span>)</button>
-      </div>
-    </div>
-  </div>
-</main>
-
-<div id="toast-rack"></div>
-
-<script>
-  /* ================= 9,600 BONSAI COMBINATIONS ================= */
-  const TREE_PREFIXES = ["Twisted","Ancient","Majestic","Delicate","Weathered","Graceful","Rugged","Serene","Whispering","Noble"]; // 10
-  const TREE_ORIGINS = ["Yamadori", "Nursery", "Cutting", "Seedling", "Imported", "Heirloom", "Wild", "Imperial"]; // 8
-  const TREE_SPECIES = ["Juniper", "Black Pine", "Red Pine", "Trident Maple", "Japanese Maple", "Chinese Elm", "Ficus", "Cedar", "Hinoki Cypress", "Cork Bark Oak", "Larch", "Satsuki Azalea", "Bougainvillea", "Jade", "Boxwood", "Hornbeam", "Ginkgo", "Olive", "Wisteria", "Hemlock"]; // 20
-  const TREE_STYLES = ["CHOKKAN", "MOYOGI", "SHAKAN", "KENGAI", "YOSE_UE", "BUNJINGI"]; // 6
-
-  const P_FIRST = ["Kenji", "Akira", "Hiro", "Mei", "Sakura", "Takeshi", "Sora", "Ren", "Yui", "Hina", "Kaito", "Satoshi", "Yoko", "Taro", "Jiro", "Hanako", "Shin", "Ryota", "Daiki", "Yoshi"];
-  const P_LAST = ["Tanaka", "Watanabe", "Ito", "Takahashi", "Kobayashi", "Yamamoto", "Nakamura", "Saito", "Kato", "Yoshida", "Yamada", "Sasaki", "Yamaguchi", "Matsumoto", "Inoue", "Kimura", "Hayashi", "Shimizu", "Yamazaki", "Mori"];
-  const P_CALL = ["'The Snipe'", "'Steady Hand'", "'Zen'", "'Rootmaster'", "'The Scissor'", "'Patience'", "'Green Thumb'", "'Bonsai Boy'"];
-  const B_TYPES = ["PRUNING","SPEED","WATER","CARE"]; 
-
-  const TIERS = [
-    { tier: 1, name: "Tier I: Seedling", color: "var(--t0-col)", baseVal: 50000 },
-    { tier: 2, name: "Tier II: Sapling", color: "var(--t1-col)", baseVal: 150000 },
-    { tier: 3, name: "Tier III: Pre-Bonsai", color: "var(--t2-col)", baseVal: 500000 },
-    { tier: 4, name: "Tier IV: Shohin", color: "var(--t3-col)", baseVal: 1500000 },
-    { tier: 5, name: "Tier V: Chuhin", color: "var(--t4-col)", baseVal: 5000000 },
-    { tier: 6, name: "Tier VI: Omono", color: "var(--t5-col)", baseVal: 15000000 },
-    { tier: 7, name: "Tier VII: Masterpiece", color: "var(--t6-col)", baseVal: 40000000 },
-    { tier: 8, name: "Tier VIII: Heritage", color: "var(--t7-col)", baseVal: 100000000 },
-    { tier: 9, name: "Tier IX: Imperial", color: "var(--t8-col)", baseVal: 250000000 },
-    { tier: 10, name: "Tier X: Nat. Treasure", color: "var(--t9-col)", baseVal: 500000000 }
-  ];
-
-  const ZONE_CAT = {
-    CHOKKAN: ["Formal Gala","Kyoto Pavilion","Emperor's Hall","National Museum"],
-    MOYOGI: ["Tokyo Garden","Spring Festival","Local Shrine","Tea House"],
-    SHAKAN: ["Windswept Ridge Show","Autumn Matsuri","Highland Estate","Zen Center"],
-    KENGAI: ["Cliffside Monastery","Mountain Retreat","Overlook Pavilion","Valley Exhibit"],
-    YOSE_UE: ["Forest Conservation Gala","Botanical Gardens","Shinjuku Gyoen","Palace Grounds"],
-    BUNJINGI: ["Literati Gathering","Scholar's Study","Poetry Reading","Minimalist Expo"]
-  };
-
-  const MILESTONES = [
-    { id: "m1", title: "First Exhibition", desc: "Send a tree to a show.", reward: 250000, req: s => s.fleet.some(p => p.status === 'IN_FLIGHT' || p.expRev > 0) },
-    { id: "m2", title: "Nursery Bench", desc: "Hold 5 or more trees in your garden.", reward: 1000000, req: s => s.fleet.length >= 5 },
-    { id: "m3", title: "The Workshop", desc: "Hire 5 or more apprentices.", reward: 750000, req: s => s.pilots.length >= 5 },
-    { id: "m4", title: "Global Stage", desc: "Unlock a show > 3,000 Miles.", reward: 2000000, req: s => s.routes.some(r => r.unlocked && r.dist >= 3000) },
-    { id: "m5", title: "The Forest", desc: "Cultivate a Yose-Ue style bonsai.", reward: 3000000, req: s => s.fleet.some(p => p.role === 'YOSE_UE') },
-    { id: "m6", title: "Chuhin Status", desc: "Acquire a Tier V or higher tree.", reward: 8000000, req: s => s.fleet.some(p => p.tierIndex >= 4) },
-    { id: "m7", title: "Artisan Hire", desc: "Hire a Tier V or higher apprentice.", reward: 4000000, req: s => s.pilots.some(p => p.tierIndex >= 4) },
-    { id: "m8", title: "Water Reserves", desc: "Accumulate over 500,000 Gal of Water.", reward: 2500000, req: s => s.fuelReserve >= 500000 },
-    { id: "m9", title: "Zen Master", desc: "Amass over $100,000,000.", reward: 20000000, req: s => s.funds >= 100000000 },
-    { id: "m10", title: "Grand Garden", desc: "Expand benches to 10 active trees.", reward: 5000000, req: s => s.fleet.length >= 10 },
-    { id: "m11", title: "Auctioneer", desc: "Sell a tree at the Master Auctions.", reward: 1500000, req: s => s.statAuctionsSold > 0 },
-    { id: "m12", title: "Pruned Away", desc: "Sell a tree locally (Compost/Remove).", reward: 1000000, req: s => s.statPlanesScrapped > 0 },
-    { id: "m13", title: "World Tour", desc: "Unlock a show > 6,500 Miles.", reward: 6000000, req: s => s.routes.some(r => r.unlocked && r.dist >= 6500) },
-    { id: "m14", title: "Council of Masters", desc: "Employ 3 or more Tier VII+ Masters.", reward: 15000000, req: s => s.pilots.filter(p => p.tierIndex >= 6).length >= 3 },
-    { id: "m15", title: "National Treasure", desc: "Acquire a Tier X tree.", reward: 50000000, req: s => s.fleet.some(p => p.tierIndex === 9) }
-  ];
-
-  const $ = id => document.getElementById(id);
-
-/* ================= 512x512 MASTER ZEN BONSAI BIO-ENGINE ================= */
-  const offscreenCanvas = document.createElement('canvas');
-  offscreenCanvas.width = 512; offscreenCanvas.height = 512;
-  const offscreenCtx = offscreenCanvas.getContext('2d');
-
-  function Mulberry32(a) {
-    return function() {
-      var t = a += 0x6D2B79F5;
-      t = Math.imul(t ^ t >>> 15, t | 1);
-      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  <!-- SCRIPT ENGINE -->
+  <script>
+    /* ==========================================================================
+       1. PSEUDO-RANDOM NUMBER GENERATOR (Mulberry32)
+       ========================================================================== */
+    function mulberry32(a) {
+      return function() {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
     }
-  }
 
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function lerpCol(c1, c2, t) {
-    return [
-      Math.round(lerp(c1[0], c2[0], t)),
-      Math.round(lerp(c1[1], c2[1], t)),
-      Math.round(lerp(c1[2], c2[2], t))
+    /* ==========================================================================
+       2. DATABASE: 30+ BOTANICAL SPECIES
+       ========================================================================== */
+    const SPECIES_DATABASE = [
+      // Conifers
+      { id: "kuromatsu", name: "Japanese Black Pine", botanical: "Pinus thunbergii", category: "conifer", foliage: "pine", bark: "cork", leafColor: "#1b4d2e", price: 12000, desc: "The king of bonsai. Rugged fissured cork bark and intense needle vigor." },
+      { id: "goyomatsu", name: "Japanese White Pine", botanical: "Pinus parviflora", category: "conifer", foliage: "pine", bark: "smooth", leafColor: "#2a523e", price: 15000, desc: "Delicate five-needle clusters with gentle blue-green foliage." },
+      { id: "shimpaku", name: "Shimpaku Juniper", botanical: "Juniperus chinensis var. sargentii", category: "conifer", foliage: "juniper", bark: "stringy", leafColor: "#2e604f", price: 18000, desc: "Legendary for sinuous deadwood shari and tight billowy foliage clouds." },
+      { id: "tosho", name: "Needle Juniper", botanical: "Juniperus rigida", category: "conifer", foliage: "juniper", bark: "stringy", leafColor: "#224e39", price: 14000, desc: "Sharp, prickly needles with rigid structural lines." },
+      { id: "ezo_spruce", name: "Ezo Spruce", botanical: "Picea jezoensis", category: "conifer", foliage: "pine", bark: "cork", leafColor: "#143924", price: 16000, desc: "Northern alpine monarch with dense tiny needles and deep fissures." },
+      { id: "dawn_redwood", name: "Dawn Redwood", botanical: "Metasequoia glyptostroboides", category: "conifer", foliage: "broadleaf", bark: "stringy", leafColor: "#3e7b39", price: 9000, desc: "Ancient living fossil with feathery deciduous needles and fluted base." },
+
+      // Deciduous
+      { id: "momiji", name: "Japanese Mountain Maple", botanical: "Acer palmatum", category: "deciduous", foliage: "palmate", bark: "smooth", leafColor: "#387834", price: 11000, desc: "Delicate palmate hand-shaped leaves with blazing scarlet autumn display." },
+      { id: "bloodgood", name: "Bloodgood Red Maple", botanical: "Acer palmatum atropurpureum", category: "deciduous", foliage: "palmate", bark: "smooth", leafColor: "#801826", price: 13500, desc: "Deep imperial burgundy foliage lasting through spring and summer." },
+      { id: "arakawa", name: "Arakawa Rough-Bark Maple", botanical: "Acer palmatum 'Arakawa'", category: "deciduous", foliage: "palmate", bark: "cork", leafColor: "#42823b", price: 17500, desc: "Unique mutation producing deeply furrowed, cracked cork bark." },
+      { id: "kaede", name: "Trident Maple", botanical: "Acer buergerianum", category: "deciduous", foliage: "palmate", bark: "cork", leafColor: "#4c8f38", price: 10500, desc: "Massive nebari root flare and extreme tolerance for root carving." },
+      { id: "chinese_elm", name: "Chinese Elm", botanical: "Ulmus parvifolia", category: "deciduous", foliage: "broadleaf", bark: "cork", leafColor: "#2a662e", price: 6500, desc: "Rapid ramification and exfoliating puzzle-like bark patterns." },
+      { id: "zelkova", name: "Japanese Zelkova", botanical: "Zelkova serrata", category: "deciduous", foliage: "broadleaf", bark: "smooth", leafColor: "#3c7a33", price: 8500, desc: "The definitive broom-style bonsai with perfect upward fan ramification." },
+      { id: "beech", name: "Japanese Mountain Beech", botanical: "Fagus crenata", category: "deciduous", foliage: "broadleaf", bark: "smooth", leafColor: "#498539", price: 16000, desc: "Silvery-white muscular bark holding dried bronze leaves into winter." },
+      { id: "ginkgo", name: "Ginkgo Biloba", botanical: "Ginkgo biloba", category: "deciduous", foliage: "broadleaf", bark: "cork", leafColor: "#599932", price: 13000, desc: "Primitive fan-shaped leaves that turn incandescent golden-yellow." },
+      { id: "hornbeam", name: "Korean Hornbeam", botanical: "Carpinus coreana", category: "deciduous", foliage: "broadleaf", bark: "smooth", leafColor: "#397334", price: 12500, desc: "Fine twigging, tiny leaves, and stunning orange-yellow fall color." },
+
+      // Flowering & Fruiting
+      { id: "satsuki", name: "Satsuki Azalea", botanical: "Rhododendron indicum", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#e63980", price: 15000, desc: "Explosive late-spring blossoms in shades of vivid magenta and blush." },
+      { id: "sakura", name: "Flowering Cherry", botanical: "Prunus serrulata", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#f7b2cb", price: 21000, desc: "The ethereal symbol of ephemeral beauty with soft pink springtime blossoms." },
+      { id: "chojubai", name: "Dwarf Flowering Quince", botanical: "Chaenomeles speciosa 'Chojubai'", category: "flower", foliage: "flower", bark: "cork", leafColor: "#d92b2b", price: 14500, desc: "Coveted for scarlet blossoms that emerge directly from ancient craggy trunks." },
+      { id: "crabapple", name: "Japanese Crabapple", botanical: "Malus halliana", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#f07a9e", price: 13500, desc: "Pendant rose blossoms giving way to luminous ruby fruit clusters in autumn." },
+      { id: "pomegranate", name: "Nejikan Pomegranate", botanical: "Punica granatum", category: "flower", foliage: "flower", bark: "stringy", leafColor: "#e65124", price: 15500, desc: "Trunks naturally twist like wetted ropes with fiery orange flowers." },
+      { id: "wisteria", name: "Japanese Wisteria", botanical: "Wisteria floribunda", category: "flower", foliage: "flower", bark: "stringy", leafColor: "#8b66c9", price: 19000, desc: "Spectacular weeping cascades of fragrant lavender and violet racemes." },
+      { id: "ume", name: "Japanese Flowering Apricot", botanical: "Prunus mume", category: "flower", foliage: "flower", bark: "cork", leafColor: "#f5e1e8", price: 17000, desc: "Braves the snow to blossom in late winter upon ancient, hollow trunks." },
+      { id: "camellia", name: "Camellia Japonica", botanical: "Camellia japonica", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#c92440", price: 12000, desc: "Glossy evergreen leaves framed by bold crimson winter flowers." },
+
+      // Tropical & Penjing
+      { id: "ficus_retusa", name: "Tiger Bark Ficus", botanical: "Ficus retusa", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#22662c", price: 5000, desc: "Vigorous aerial banyan roots with distinctive striped bark markings." },
+      { id: "dwarf_jade", name: "Dwarf Jade (Portulacaria)", botanical: "Portulacaria afra", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#4f8c36", price: 4000, desc: "Succulent jade-green leaves, fleshy trunks, and unmatched drought resilience." },
+      { id: "brazilian_raintree", name: "Brazilian Raintree", botanical: "Chloroleucon tortum", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#397d34", price: 14000, desc: "Contorted spiny branches with compound leaves that fold together at night." },
+      { id: "chinese_banyan", name: "Chinese Banyan", botanical: "Ficus microcarpa", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#1e5e29", price: 5500, desc: "Classic banyan penjing specimen capable of dramatic aerial root framing." },
+      { id: "buttonwood", name: "Buttonwood", botanical: "Conocarpus erectus", category: "tropical", foliage: "broadleaf", bark: "stringy", leafColor: "#386b49", price: 16500, desc: "Tropical yamadori shoreline wood with wild natural deadwood grain." },
+      { id: "bougainvillea", name: "Paperflower Bougainvillea", botanical: "Bougainvillea glabra", category: "tropical", foliage: "flower", bark: "stringy", leafColor: "#d92582", price: 8000, desc: "Brilliant fuchsia bracts wrapping twisted, aged thorn trunks." }
     ];
-  }
-  function rgb(c) { return `rgb(${c[0]},${c[1]},${c[2]})`; }
-  function rgba(c, a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
 
-  function drawRoundedRect(c, x, y, w, h, r) {
-    c.beginPath();
-    c.moveTo(x + r, y);
-    c.lineTo(x + w - r, y);
-    c.quadraticCurveTo(x + w, y, x + w, y + r);
-    c.lineTo(x + w, y + h - r);
-    c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    c.lineTo(x + r, y + h);
-    c.quadraticCurveTo(x, y + h, x, y + h - r);
-    c.lineTo(x, y + r);
-    c.quadraticCurveTo(x, y, x + r, y);
-    c.closePath();
-  }
-
-  function generateBonsaiImage(seedInt, role, tierIdx, sp) {
-    const ctx = offscreenCtx;
-    ctx.clearRect(0, 0, 512, 512);
-    const rng = Mulberry32(seedInt);
-
-    // --- 1. BOTANICAL PALETTE DEFINITIONS ---
-    let foliage = {
-      base: [18, 44, 22], mid: [34, 76, 38], high: [64, 128, 68], bloom: null
+    /* ==========================================================================
+       3. DATABASE: 10 CLASSIC BONSAI MORPHOLOGICAL STYLES
+       ========================================================================== */
+    const BONSAI_STYLES = {
+      chokkan: { id: "chokkan", name: "Chokkan", kanji: "直幹", label: "Formal Upright", desc: "Rigid vertical trunk with natural taper and balanced horizontal pads." },
+      moyogi: { id: "moyogi", name: "Moyogi", kanji: "模様木", label: "Informal Upright", desc: "Graceful S-curves with foliage pads blossoming from outer bends." },
+      shakan: { id: "shakan", name: "Shakan", kanji: "斜幹", label: "Slanted", desc: "Dynamic 45-60 degree slant counterbalanced by muscular anchor roots." },
+      kengai: { id: "kengai", name: "Kengai", kanji: "懸崖", label: "Full Cascade", desc: "Trunk plunges deep below the base of a tall cascade pot." },
+      han_kengai: { id: "han_kengai", name: "Han-Kengai", kanji: "半懸崖", label: "Semi-Cascade", desc: "Trunk sweeps horizontally, hovering right at the rim of the pot." },
+      bunjingi: { id: "bunjingi", name: "Bunjingi", kanji: "文人木", label: "Literati", desc: "Ethereal, minimalist, undulating trunk with minimal apex foliage." },
+      fukinagashi: { id: "fukinagashi", name: "Fukinagashi", kanji: "吹流し", label: "Windswept", desc: "Branches and apex whipped in a single direction by coastal gales." },
+      sokan: { id: "sokan", name: "Sokan", kanji: "双幹", label: "Twin Trunk", desc: "Two harmonious trunks rising from a unified root base: Father & Child." },
+      yose_ue: { id: "yose_ue", name: "Yose-ue", kanji: "寄せ植え", label: "Forest Planting", desc: "Multiple coordinated trunks creating deep perspective on a stone slab." },
+      ishitsuki: { id: "ishitsuki", name: "Ishitsuki", kanji: "石付き", label: "Root-Over-Rock", desc: "Muscular surface roots clasping craggy mountain stone before reaching soil." }
     };
 
-    if (sp.includes("Maple") || sp.includes("Ginkgo")) {
-      // Momiji Autumn Scarlet & Amber Gold
-      foliage = { base: [68, 16, 6], mid: [160, 42, 12], high: [228, 96, 18], bloom: [248, 168, 24] };
-    } else if (sp.includes("Azalea") || sp.includes("Bougainvillea")) {
-      // Satsuki Flowering Petals
-      foliage = { base: [22, 48, 26], mid: [42, 88, 48], high: [210, 52, 142], bloom: [248, 118, 188] };
-    } else if (sp.includes("Pine") || sp.includes("Juniper") || sp.includes("Cedar")) {
-      // Deep Evergreen Needles
-      foliage = { base: [8, 26, 12], mid: [20, 50, 26], high: [42, 94, 52], bloom: null };
-    } else if (sp.includes("Wisteria")) {
-      // Cascading Purple Racemes
-      foliage = { base: [34, 10, 64], mid: [74, 22, 134], high: [164, 102, 238], bloom: [224, 162, 248] };
-    } else if (sp.includes("Oak") || sp.includes("Elm") || sp.includes("Hornbeam")) {
-      // Deciduous Broadleaf Summer
-      foliage = { base: [24, 52, 24], mid: [52, 104, 46], high: [92, 158, 74], bloom: null };
-    }
+    /* ==========================================================================
+       4. DATABASE: POTS & DISPLAY CONTAINERS
+       ========================================================================== */
+    const POT_DATABASE = [
+      { id: "tokoname_rect", name: "Tokoname Rectangular", type: "rect", color: "#66331a", rimColor: "#4d2613", desc: "Unglazed red-brown clay with classic cloud feet." },
+      { id: "celadon_oval", name: "Celadon Glazed Oval", type: "oval", color: "#588574", rimColor: "#416557", desc: "Soft pale celadon crackle glaze with gentle beveled lip." },
+      { id: "cobalt_oval", name: "Imperial Cobalt Oval", type: "oval", color: "#1d3557", rimColor: "#13233a", desc: "Vibrant deep cobalt glaze suitable for deciduous autumn hues." },
+      { id: "cascade_deep", name: "Kengai Hexagonal Cascade", type: "cascade", color: "#382c26", rimColor: "#271e1a", desc: "Tall, slender hexagonal vessel for plunging cascade lines." },
+      { id: "nanban_rustic", name: "Rustic Nanban Round", type: "nanban", color: "#473b33", rimColor: "#332a24", desc: "Hand-pinched, unrefined primitive pit-fired volcanic clay." },
+      { id: "kurama_slab", name: "Kurama Stone Slab", type: "slab", color: "#2d3330", rimColor: "#1d211f", desc: "Jagged natural charcoal-slate slab rock with mossy margins." }
+    ];
 
-    // --- 2. ATMOSPHERIC SHADOW & BACKGROUND ---
-    const bgGrad = ctx.createRadialGradient(256, 210, 40, 256, 256, 310);
-    bgGrad.addColorStop(0, "#0d100d");
-    bgGrad.addColorStop(0.7, "#050705");
-    bgGrad.addColorStop(1, "#020302");
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 512, 512);
+    /* ==========================================================================
+       5. DATABASE: 5 UPGRADE CATEGORIES (4 TIERS EACH)
+       ========================================================================== */
+    const UPGRADE_DATABASE = {
+      tools: [
+        { tier: 1, name: "Household Shears", cost: 0, desc: "Crude scissors. Leaves ragged wounds and scars easily." },
+        { tier: 2, name: "Forged Carbon Concave Cutters", cost: 18000, desc: "Hollow circular cuts heal flush without bulbous calluses." },
+        { tier: 3, name: "Spherical Knob Cutters & Jin Pliers", cost: 45000, desc: "Master carving deadwood with precision fibers." },
+        { tier: 4, name: "Masakuni Master Damascus Cutlery", cost: 120000, desc: "Razor-honed surgical steel. Doubled pruning efficiency & zero rot." }
+      ],
+      wire: [
+        { tier: 1, name: "Craft Store Aluminum", cost: 0, desc: "Thin wire that springs back on mature branches." },
+        { tier: 2, name: "Anodized Bonsai Aluminum (Gauge 1-5)", cost: 12000, desc: "Supple training wire with reliable holding tension." },
+        { tier: 3, name: "Annealed Traditional Copper Wire", cost: 35000, desc: "Work-hardens around pine branches for legendary hold." },
+        { tier: 4, name: "Raffia Wraps & Heavy Turnbuckles", cost: 90000, desc: "Enables extreme trunk bending without fiber breakage." }
+      ],
+      soil: [
+        { tier: 1, name: "Garden Potting Soil", cost: 0, desc: "Compacts readily, suffocating delicate feeder roots." },
+        { tier: 2, name: "Sifted Pumice & Pine Bark Blend", cost: 10000, desc: "Greatly improved aeration and micro-drainage." },
+        { tier: 3, name: "Double-Red-Line Hard Akadama & Kiryu", cost: 32000, desc: "Supreme volcanic clay from Tochigi. Unmatched CEC." },
+        { tier: 4, name: "4-Part Custom Sifted + Mycorrhizae", cost: 85000, desc: "Akadama/Kanuma/Hyuga/Lava inoculated with symbiotic fungi." }
+      ],
+      water: [
+        { tier: 1, name: "Kitchen Water Jug", cost: 0, desc: "Inconsistent volume disturbs surface moss cushions." },
+        { tier: 2, name: "Hasu Copper Watering Wand", cost: 8000, desc: "Fine rain spray gentle on sensitive surface root hairs." },
+        { tier: 3, name: "Automated Micro-Mist Hygrometer Benches", cost: 28000, desc: "Prevents trees from ever desiccating below 50% hydration." },
+        { tier: 4, name: "Pure Rainwater Bio-Filtration Benches", cost: 75000, desc: "Optimal pH rainwater promoting lush emerald Yamagoke moss." }
+      ],
+      facility: [
+        { tier: 1, name: "Apartment Balcony Shelf (2 Stands)", cost: 0, capacity: 2, desc: "Modest space allowing cultivation of up to 2 trees." },
+        { tier: 2, name: "Backyard Cedar Bonsai Bench (6 Stands)", cost: 25000, capacity: 6, desc: "Elevated cedar stands sheltered from ground pests." },
+        { tier: 3, name: "Traditional Tsubo-niwa Courtyard (16 Stands)", cost: 80000, capacity: 16, desc: "Serene courtyard garden with morning mist exposure." },
+        { tier: 4, name: "Omiya Heritage Bonsai-en (40 Stands)", cost: 250000, capacity: 40, desc: "World-class traditional nursery with formal Tokonoma alcove." }
+      ]
+    };
 
-    // Subtle Shoji Paper Light Wash
-    ctx.fillStyle = "rgba(74, 222, 128, 0.015)";
-    ctx.beginPath();
-    ctx.moveTo(140, 0); ctx.lineTo(372, 0); ctx.lineTo(512, 512); ctx.lineTo(0, 512);
-    ctx.closePath();
-    ctx.fill();
+    /* ==========================================================================
+       6. DATABASE: EXHIBITIONS & TOURNAMENTS
+       ========================================================================== */
+    const EXHIBITIONS_DATA = [
+      { id: "prefectural", name: "Prefectural Autumn Bonsai Show", minScore: 55, entryFee: 5000, reward: 25000, rep: "Chuken (Artisan)" },
+      { id: "taikan_ten", name: "Taikan-ten Kyoto Winter Exhibition", minScore: 75, entryFee: 20000, reward: 120000, rep: "Meijin (Master)" },
+      { id: "kokufu_ten", name: "The Kokufu-ten (Tokyo Metropolitan Art Museum)", minScore: 90, entryFee: 60000, reward: 500000, rep: "Toshi (Grandmaster)" }
+    ];
 
-    // --- 3. YAKISUGI DISPLAY STAND ---
-    const standY = 478;
-    const standH = 22;
-    const standW = role === 'KENGAI' ? 220 : 340;
-    const standX = 256 - standW * 0.5;
+    /* ==========================================================================
+       7. GLOBAL GAME STATE & INITIALIZATION
+       ========================================================================== */
+    const GAME = {
+      funds: 25000,
+      seasonIndex: 0, // 0: Spring, 1: Summer, 2: Autumn, 3: Winter
+      year: 1,
+      rank: "Shoshinsha (Novice)",
+      trees: [],
+      selectedTreeId: null,
+      upgrades: {
+        tools: 1,
+        wire: 1,
+        soil: 1,
+        water: 1,
+        facility: 1
+      },
+      exhibitionWins: {},
+      godMode: false
+    };
 
-    // Dark Rosewood Base
-    ctx.fillStyle = "#0a0807";
-    ctx.fillRect(standX - 10, standY, standW + 20, standH);
+    const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
 
-    // Beveled Top Highlight & Carved Line
-    ctx.fillStyle = "rgba(48, 34, 26, 0.85)";
-    ctx.fillRect(standX - 8, standY + 2, standW + 16, 5);
-    ctx.strokeStyle = "rgba(18, 14, 12, 0.95)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(standX - 10, standY, standW + 20, standH);
-
-    // Carved Feet
-    ctx.fillStyle = "#060504";
-    ctx.fillRect(standX - 2, standY + standH, 20, 8);
-    ctx.fillRect(standX + standW - 18, standY + standH, 20, 8);
-
-    // --- 4. TOKONAME POTTERY & SLABS ---
-    let potY = standY - 2;
-    let potH = 28;
-    let potW = 108;
-    let potColor = [42, 52, 62]; // Glazed Celadon / Slate
-
-    if (role === 'KENGAI') {
-      potW = 48; potH = 112; potY = standY - 106; // Tall Cascade Vessel
-      potColor = [72, 48, 38]; // Unglazed Red Clay
-    } else if (role === 'YOSE_UE') {
-      potW = 172; potH = 12; potY = standY - 4; // Flat Granite Tray
-      potColor = [48, 52, 48];
-    }
-
-    const potX = 256 - potW;
-
-    // Ambient Grounding Shadow
-    const shGrad = ctx.createRadialGradient(256, potY + potH, 8, 256, potY + potH + 4, potW * 1.35);
-    shGrad.addColorStop(0, "rgba(0, 0, 0, 0.95)");
-    shGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.fillStyle = shGrad;
-    ctx.fillRect(potX - 30, potY + potH - 4, potW * 2 + 60, 14);
-
-    // Ceramic Vessel Body
-    ctx.fillStyle = rgb(potColor);
-    drawRoundedRect(ctx, potX, potY, potW * 2, potH, 3);
-    ctx.fill();
-
-    // Glaze Lighting & Shading
-    const potHighlight = ctx.createLinearGradient(potX, potY, potX + potW * 2, potY);
-    potHighlight.addColorStop(0, "rgba(0, 0, 0, 0.55)");
-    potHighlight.addColorStop(0.18, "rgba(255, 255, 255, 0.14)");
-    potHighlight.addColorStop(0.5, "rgba(255, 255, 255, 0.0)");
-    potHighlight.addColorStop(0.85, "rgba(0, 0, 0, 0.35)");
-    potHighlight.addColorStop(1, "rgba(0, 0, 0, 0.75)");
-    ctx.fillStyle = potHighlight;
-    drawRoundedRect(ctx, potX, potY, potW * 2, potH, 3);
-    ctx.fill();
-
-    // Raised Outer Lip
-    ctx.fillStyle = rgb(lerpCol(potColor, [10, 10, 10], 0.3));
-    ctx.fillRect(potX - 3, potY, potW * 2 + 6, 6);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
-    ctx.fillRect(potX - 3, potY + 1, potW * 2 + 6, 1.5);
-
-    // --- 5. PEAT SOIL, NEBARI ROOTS & MOSS ---
-    const soilY = potY + 1;
-    const soilW = potW - 5;
-    ctx.fillStyle = "#22160f"; // Rich Akadama
-    ctx.beginPath();
-    ctx.ellipse(256, soilY, soilW, 14, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Velvet Moss Cushions
-    const mossColor = [38, 80, 30];
-    for (let m = 0; m < 55; m++) {
-      const mx = 256 + (rng() - 0.5) * soilW * 1.65;
-      const my = soilY + (rng() - 0.5) * 13;
-      const mr = 4 + rng() * 7;
-      ctx.fillStyle = rgba(lerpCol(mossColor, [88, 155, 48], rng() * 0.45), 0.88);
-      ctx.beginPath();
-      ctx.arc(mx, my, mr, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Suiseki Miniature Accent Stone
-    ctx.fillStyle = "#383431";
-    ctx.beginPath();
-    ctx.ellipse(256 - soilW * 0.45, soilY + 3, 14, 6, 0.15, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#242220";
-    ctx.beginPath();
-    ctx.ellipse(256 - soilW * 0.45, soilY + 3, 10, 4, 0.12, 0, Math.PI * 2);
-    ctx.fill();
-
-    // --- 6. GNARLED BRANCHING ENGINE ---
-    function drawSinuousBranch(startX, startY, angle, maxSteps, baseWidth, isTrunk = false) {
-      const points = [];
-      let cx = startX;
-      let cy = startY;
-      let ca = angle;
-
-      const variance = (role === 'MOYOGI') ? 0.36 : 0.18;
-
-      for (let s = 0; s <= maxSteps; s++) {
-        const t = s / maxSteps;
-        const width = baseWidth * Math.pow(1 - t * 0.75, 1.15);
-
-        let sway = Math.sin(t * Math.PI * 3.5 + seedInt) * variance;
-        if (role === 'CHOKKAN' && isTrunk) sway = (rng() - 0.5) * 0.04;
-        if (role === 'SHAKAN' && isTrunk) ca = -Math.PI * 0.42 + Math.sin(t * Math.PI) * 0.08;
-        if (role === 'KENGAI' && isTrunk) {
-          if (t < 0.15) {
-            ca = -Math.PI * 0.46;
-          } else if (t < 0.45) {
-            ca = lerp(-Math.PI * 0.46, Math.PI * 0.48, (t - 0.15) / 0.3);
-            cx -= 0.65;
-          } else {
-            ca = Math.PI * 0.42;
-            cx -= 1.15;
-          }
+    // Initialize state or load from localStorage
+    function loadSave() {
+      const saved = localStorage.getItem("tenkei_save_v1");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          Object.assign(GAME, parsed);
+        } catch (e) {
+          console.warn("Could not load save, creating new garden.", e);
         }
-        if (role === 'BUNJINGI' && isTrunk) {
-          sway = Math.sin(t * Math.PI * 6.5 + seedInt) * 0.42;
-        }
-
-        ca += sway;
-
-        const stepLen = isTrunk ? 7.6 : 4.6;
-        cx += Math.cos(ca) * stepLen;
-        cy += Math.sin(ca) * stepLen;
-
-        points.push({ x: cx, y: cy, r: width, step: s });
       }
+      if (!GAME.trees || GAME.trees.length === 0) {
+        // Create starter tree: Kuromatsu
+        const starter = createTreeInstance("kuromatsu", "moyogi");
+        starter.name = "First Pine (Hajime)";
+        starter.age = 15;
+        starter.ramification = 30;
+        starter.taperScore = 40;
+        starter.nebariScore = 45;
+        starter.wabiSabiScore = 20;
+        GAME.trees = [starter];
+      }
+      GAME.selectedTreeId = GAME.trees[0].id;
+    }
 
-      // Draw Wood Cross-Sections with 3D Core Bark Shading
-      for (let i = 0; i < points.length; i++) {
-        const p = points[i];
-        const r = Math.max(0.6, p.r);
+    function saveState() {
+      try {
+        localStorage.setItem("tenkei_save_v1", JSON.stringify(GAME));
+      } catch (e) {
+        console.error("Save error", e);
+      }
+    }
 
-        ctx.fillStyle = "#2c1c15";
+    function createTreeInstance(speciesId, styleId = "moyogi") {
+      const species = SPECIES_DATABASE.find(s => s.id === speciesId) || SPECIES_DATABASE[0];
+      const style = BONSAI_STYLES[styleId] ? styleId : "moyogi";
+      return {
+        id: "tree_" + Date.now() + "_" + Math.floor(Math.random() * 10000),
+        name: species.name,
+        speciesId: species.id,
+        styleId: style,
+        potId: style === "kengai" ? "cascade_deep" : (style === "yose_ue" || style === "ishitsuki" ? "kurama_slab" : "tokoname_rect"),
+        age: Math.floor(4 + Math.random() * 8),
+        ramification: 15,
+        taperScore: 25,
+        nebariScore: 30,
+        wabiSabiScore: 10,
+        moisture: 90,
+        vigor: 95,
+        wired: false,
+        jinCount: 0,
+        shariCount: 0,
+        seed: Math.floor(Math.random() * 1000000)
+      };
+    }
+
+    /* ==========================================================================
+       8. PROCEDURAL 2D CANVAS BONSAI ART ENGINE
+       ========================================================================== */
+    function renderBonsaiOnCanvas(canvas, tree) {
+      if (!canvas || !tree) return;
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width;
+      const H = canvas.height;
+      const rng = mulberry32(tree.seed);
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Tokonoma Alcove Background
+      ctx.fillStyle = "#161b17";
+      ctx.fillRect(0, 0, W, H);
+
+      // Tatami & Washi alcove frame
+      ctx.fillStyle = "#272e27";
+      ctx.fillRect(0, H - 35, W, 35);
+      ctx.fillStyle = "#1e241e";
+      ctx.fillRect(0, H - 38, W, 3);
+
+      // Hanging Scroll (Kakejiku) background silhouette
+      ctx.fillStyle = "#1b211c";
+      ctx.fillRect(W * 0.72, 20, W * 0.18, H * 0.45);
+      ctx.fillStyle = "#272f28";
+      ctx.fillRect(W * 0.74, 25, W * 0.14, H * 0.38);
+
+      const species = SPECIES_DATABASE.find(s => s.id === tree.speciesId) || SPECIES_DATABASE[0];
+      const pot = POT_DATABASE.find(p => p.id === tree.potId) || POT_DATABASE[0];
+
+      // Pot geometry constants
+      const potWidth = W * 0.52;
+      const potHeight = pot.type === "cascade" ? H * 0.28 : H * 0.11;
+      const potX = W * 0.5 - potWidth / 2;
+      const potY = pot.type === "cascade" ? H * 0.62 : H * 0.76;
+
+      // Draw Root-Over-Rock (Ishitsuki) stone if applicable
+      if (tree.styleId === "ishitsuki") {
+        ctx.fillStyle = "#3a413c";
         ctx.beginPath();
-        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.moveTo(potX + potWidth * 0.35, potY + 4);
+        ctx.lineTo(potX + potWidth * 0.45, potY - H * 0.18);
+        ctx.lineTo(potX + potWidth * 0.6, potY - H * 0.15);
+        ctx.lineTo(potX + potWidth * 0.68, potY + 4);
+        ctx.closePath();
         ctx.fill();
-
-        if (r > 1.8) {
-          // Left-Side Highlight Ridge
-          ctx.fillStyle = "rgba(108, 78, 54, 0.45)";
-          ctx.beginPath();
-          ctx.arc(p.x - r * 0.25, p.y - r * 0.15, r * 0.65, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Right-Side Deep Crevice Shadow
-          ctx.fillStyle = "rgba(20, 10, 6, 0.65)";
-          ctx.beginPath();
-          ctx.arc(p.x + r * 0.35, p.y + r * 0.25, r * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Ancient Bleached Deadwood (Jin / Shari)
-          if (tierIdx >= 5 && isTrunk && i > points.length * 0.22 && i < points.length * 0.62 && (i % 3 === 0)) {
-            ctx.fillStyle = "#dfd9ce";
-            ctx.fillRect(p.x - r * 0.6, p.y, r * 0.32, r * 1.5);
-          }
-        }
+        ctx.strokeStyle = "#272c28";
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
 
-      return points;
+      // Draw Trunk(s)
+      const basePoint = { x: W * 0.5, y: potY + 2 };
+      if (tree.styleId === "yose_ue") {
+        // Multi-trunk forest: draw 5 coordinated trunks
+        const offsets = [-0.18, -0.09, 0.02, 0.12, 0.22];
+        offsets.forEach((off, idx) => {
+          const tH = (0.35 + (idx % 3) * 0.08) * H;
+          const trunkW = 6 - (idx % 2) * 2;
+          drawSingleTrunk(ctx, rng, { x: basePoint.x + off * W, y: basePoint.y }, tH, trunkW, tree, species, "chokkan", 0.6);
+        });
+      } else if (tree.styleId === "sokan") {
+        // Twin Trunk: Father and Child
+        drawSingleTrunk(ctx, rng, { x: basePoint.x - 12, y: basePoint.y }, H * 0.46, 12, tree, species, "moyogi", 1.0, -0.2);
+        drawSingleTrunk(ctx, rng, { x: basePoint.x + 10, y: basePoint.y }, H * 0.34, 8, tree, species, "moyogi", 0.8, 0.25);
+      } else {
+        // Single dominant trunk
+        const trunkBaseWidth = Math.min(22, 10 + (tree.nebariScore / 100) * 12);
+        drawSingleTrunk(ctx, rng, basePoint, H * 0.52, trunkBaseWidth, tree, species, tree.styleId, 1.0);
+      }
+
+      // Draw Ceramic Bonsai Pot (Bachi)
+      drawPot(ctx, pot, potX, potY, potWidth, potHeight);
     }
 
-    // --- 7. ORGANIC FOLIAGE PAD SHADER ---
-    function drawOrganicFoliagePad(cx, cy, pw, ph) {
-      const steps = 300;
+    function drawPot(ctx, pot, x, y, w, h) {
       ctx.save();
 
-      for (let f = 0; f < steps; f++) {
-        const u = rng() - 0.5;
-        const v = rng() - 0.5;
-        const d = Math.hypot(u, v);
-
-        if (d <= 0.5) {
-          const fx = cx + u * pw * 2.1;
-          const fy = cy + v * ph * 2.1;
-          const fr = 2.4 + rng() * 3.6;
-
-          let rgbColor = [...foliage.mid];
-          const layerProg = rng();
-
-          if (layerProg < 0.3) rgbColor = [...foliage.base];
-          else if (layerProg > 0.72) rgbColor = [...foliage.high];
-
-          if (foliage.bloom && rng() < 0.16) {
-            rgbColor = [...foliage.bloom];
-          }
-
-          // Tier VII+ Golden Zenith Pollen / Imperial Radiance
-          if (tierIdx >= 6 && rng() < 0.05) {
-            rgbColor = [248, 218, 110];
-          }
-
-          ctx.fillStyle = rgba(rgbColor, 0.74);
-          ctx.beginPath();
-          ctx.ellipse(fx, fy, fr, fr * 0.65, -0.15, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      // Pot Feet (Kumo-ashi)
+      ctx.fillStyle = pot.rimColor;
+      if (pot.type === "cascade") {
+        ctx.fillRect(x + w * 0.15, y + h, w * 0.15, 8);
+        ctx.fillRect(x + w * 0.7, y + h, w * 0.15, 8);
+      } else {
+        ctx.fillRect(x + w * 0.08, y + h, 14, 6);
+        ctx.fillRect(x + w * 0.92 - 14, y + h, 14, 6);
       }
+
+      // Pot Vessel Body
+      ctx.fillStyle = pot.color;
+      ctx.strokeStyle = pot.rimColor;
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      if (pot.type === "oval") {
+        ctx.ellipse(x + w/2, y + h/2, w/2, h/2, 0, 0, Math.PI * 2);
+      } else if (pot.type === "cascade") {
+        ctx.moveTo(x + w * 0.1, y);
+        ctx.lineTo(x + w * 0.9, y);
+        ctx.lineTo(x + w * 0.8, y + h);
+        ctx.lineTo(x + w * 0.2, y + h);
+        ctx.closePath();
+      } else if (pot.type === "slab") {
+        ctx.moveTo(x, y + h * 0.4);
+        ctx.lineTo(x + w, y + h * 0.4);
+        ctx.lineTo(x + w * 0.95, y + h);
+        ctx.lineTo(x + w * 0.05, y + h);
+        ctx.closePath();
+      } else {
+        // Classic rectangular tray
+        ctx.roundRect(x, y, w, h, [2, 2, 4, 4]);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      // Rim Highlight
+      ctx.fillStyle = pot.rimColor;
+      ctx.fillRect(x - 2, y, w + 4, 4);
+
+      // Soil & Moss Mound (Yamagoke & Akadama)
+      ctx.fillStyle = "#33261a"; // Akadama soil
+      ctx.beginPath();
+      ctx.ellipse(x + w/2, y + 2, w * 0.46, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Velvet Moss Cushions
+      ctx.fillStyle = "#3e6e34";
+      for (let i = 0; i < 7; i++) {
+        const mx = x + w * 0.18 + i * (w * 0.09);
+        const my = y + 2 + Math.sin(i * 1.5) * 2;
+        ctx.beginPath();
+        ctx.arc(mx, my, 7 + (i % 3) * 2, 0, Math.PI, true);
+        ctx.fill();
+      }
+
       ctx.restore();
     }
 
-    // --- 8. COMPOSING TREE BY STYLE ---
-    const trunkRootY = soilY - 2;
-    const trunkRootX = 256;
+    function drawSingleTrunk(ctx, rng, base, height, baseRadius, tree, species, style, scale = 1.0, angleBias = 0) {
+      ctx.save();
 
-    if (role === 'YOSE_UE') {
-      // Yose-Ue Forest Grove (5 Distinct Tapered Trunks)
-      const forestTrunks = [
-        { offset: -72, depth: 14, h: 40, scale: 5.6 },
-        { offset: -26, depth: -10, h: 48, scale: 7.0 },
-        { offset: 14, depth: 8, h: 56, scale: 9.2 }, // Dominant Master Tree
-        { offset: 50, depth: -12, h: 44, scale: 6.4 },
-        { offset: 80, depth: 10, h: 36, scale: 5.0 }
-      ];
+      // Calculate trunk Bézier control points according to style morphology
+      let p0 = { x: base.x, y: base.y };
+      let p1 = { x: base.x, y: base.y - height * 0.5 };
+      let p2 = { x: base.x, y: base.y - height };
 
-      forestTrunks.forEach(ft => {
-        const trunkPts = drawSinuousBranch(
-          trunkRootX + ft.offset,
-          trunkRootY + ft.depth,
-          -Math.PI * 0.51,
-          ft.h,
-          ft.scale,
-          true
-        );
+      if (style === "moyogi") {
+        p1.x += (rng() > 0.5 ? 40 : -40) * scale + angleBias * 50;
+        p2.x += (rng() > 0.5 ? -18 : 18) * scale;
+      } else if (style === "shakan") {
+        p1.x += 45 * scale;
+        p2.x += 80 * scale;
+      } else if (style === "bunjingi") {
+        // Literati: thin, exaggerated sinuous curves
+        p1.x += 50 * (rng() - 0.5);
+        p2.x += 35 * (rng() - 0.5);
+        height *= 1.25;
+        baseRadius *= 0.65;
+      } else if (style === "kengai") {
+        // Cascade: plunges down
+        p1 = { x: base.x + 35 * scale, y: base.y - height * 0.2 };
+        p2 = { x: base.x + 40 * scale, y: base.y + height * 0.45 };
+      } else if (style === "han_kengai") {
+        // Semi-cascade: sweeps horizontally
+        p1 = { x: base.x + 40 * scale, y: base.y - height * 0.35 };
+        p2 = { x: base.x + 75 * scale, y: base.y + 10 };
+      } else if (style === "fukinagashi") {
+        // Windswept
+        p1.x += 40 * scale;
+        p2.x += 90 * scale;
+      }
 
-        for (let j = trunkPts.length - 12; j < trunkPts.length; j += 4) {
-          const pt = trunkPts[j];
-          drawOrganicFoliagePad(pt.x, pt.y - 10, 32, 14);
+      // Root Flare (Nebari)
+      ctx.fillStyle = getBarkColor(species.bark);
+      ctx.beginPath();
+      ctx.moveTo(p0.x - baseRadius * 1.8, p0.y);
+      ctx.quadraticCurveTo(p0.x - baseRadius, p0.y - 12, p0.x - baseRadius * 0.7, p0.y - 20);
+      ctx.lineTo(p0.x + baseRadius * 0.7, p0.y - 20);
+      ctx.quadraticCurveTo(p0.x + baseRadius, p0.y - 12, p0.x + baseRadius * 1.8, p0.y);
+      ctx.closePath();
+      ctx.fill();
+
+      // Render Trunk Taper via Segments
+      const steps = 24;
+      let prevPt = { x: p0.x, y: p0.y };
+
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        const pt = getBezierPoint(p0, p1, p2, t);
+        const radius = Math.max(2, baseRadius * (1 - 0.82 * t));
+
+        ctx.strokeStyle = getBarkColor(species.bark, t);
+        ctx.lineWidth = radius * 2;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(prevPt.x, prevPt.y);
+        ctx.lineTo(pt.x, pt.y);
+        ctx.stroke();
+
+        // Shari (Sinuous deadwood vein)
+        if (tree.shariCount > 0 && i > 4 && i < 16 && (i % 2 === 0)) {
+          ctx.strokeStyle = "#e8e5dc"; // Lime-sulfur bleached tone
+          ctx.lineWidth = Math.max(1.5, radius * 0.5);
+          ctx.beginPath();
+          ctx.moveTo(prevPt.x + radius * 0.2, prevPt.y);
+          ctx.lineTo(pt.x + radius * 0.2, pt.y);
+          ctx.stroke();
+        }
+
+        // Branch emergence at outer curve bends
+        if (i > 6 && i % 4 === 0) {
+          const dir = (pt.x >= prevPt.x) ? 1 : -1;
+          const branchLength = (height * 0.35) * (1 - t * 0.5) * scale;
+          const bTarget = {
+            x: pt.x + (style === "fukinagashi" ? 1 : dir) * branchLength,
+            y: pt.y - 5 + (style === "kengai" ? 18 : (rng() * 10 - 5))
+          };
+
+          drawBranchAndPad(ctx, rng, pt, bTarget, radius * 0.6, tree, species, t);
+        }
+
+        prevPt = pt;
+      }
+
+      // Apex Deadwood Jin Spike if carved
+      if (tree.jinCount > 0) {
+        ctx.strokeStyle = "#f3efe6";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(prevPt.x, prevPt.y);
+        ctx.lineTo(prevPt.x + (rng() * 12 - 6), prevPt.y - 18);
+        ctx.stroke();
+      }
+
+      // Apex Crown Pad
+      drawFoliagePad(ctx, rng, prevPt.x, prevPt.y - 8, 22 * scale, 12 * scale, tree, species);
+
+      ctx.restore();
+    }
+
+    function getBezierPoint(p0, p1, p2, t) {
+      const inv = 1 - t;
+      return {
+        x: inv * inv * p0.x + 2 * inv * t * p1.x + t * t * p2.x,
+        y: inv * inv * p0.y + 2 * inv * t * p1.y + t * t * p2.y
+      };
+    }
+
+    function getBarkColor(barkType, t = 0) {
+      if (barkType === "cork") return `rgb(${60 + t * 20}, ${45 + t * 15}, ${35 + t * 10})`;
+      if (barkType === "stringy") return `rgb(${85 + t * 15}, ${42 + t * 10}, ${30 + t * 10})`;
+      // Smooth muscular beech/maple
+      return `rgb(${75 + t * 25}, ${78 + t * 20}, ${72 + t * 18})`;
+    }
+
+    function drawBranchAndPad(ctx, rng, start, end, width, tree, species, heightRatio) {
+      ctx.save();
+      ctx.strokeStyle = getBarkColor(species.bark, heightRatio);
+      ctx.lineWidth = Math.max(1.8, width);
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      const cp = { x: (start.x + end.x) / 2, y: Math.min(start.y, end.y) - 6 };
+      ctx.quadraticCurveTo(cp.x, cp.y, end.x, end.y);
+      ctx.stroke();
+
+      // Pad size corresponds to tree's ramification score
+      const padW = 20 + (tree.ramification / 100) * 26;
+      const padH = 10 + (tree.ramification / 100) * 14;
+      drawFoliagePad(ctx, rng, end.x, end.y, padW, padH, tree, species);
+
+      ctx.restore();
+    }
+
+    function drawFoliagePad(ctx, rng, x, y, radiusX, radiusY, tree, species) {
+      ctx.save();
+
+      // Seasonal Color Shift
+      let foliageColor = species.leafColor;
+      if (species.category === "deciduous") {
+        if (GAME.seasonIndex === 2) foliageColor = "#b8321d"; // Autumn Blaze Crimson
+        else if (GAME.seasonIndex === 3) foliageColor = "rgba(120,100,80,0.25)"; // Bare Winter Twigs
+      } else if (species.category === "flower") {
+        if (GAME.seasonIndex === 0) foliageColor = species.leafColor; // Spring full blossom
+        else foliageColor = "#2b5e32"; // Post-bloom summer foliage
+      }
+
+      // Foliage Underside Shadow (Depth)
+      ctx.fillStyle = "rgba(10, 20, 12, 0.7)";
+      ctx.beginPath();
+      ctx.ellipse(x, y + 3, radiusX * 0.9, radiusY * 0.7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Botanical Foliage Modes
+      if (species.foliage === "pine") {
+        // Radiating Needle Tufts (Matsuba)
+        ctx.strokeStyle = foliageColor;
+        ctx.lineWidth = 1.3;
+        const count = 14 + Math.floor(tree.ramification / 8);
+        for (let i = 0; i < count; i++) {
+          const angle = (Math.PI / count) * i;
+          const len = radiusX * 0.8 + (rng() * 4);
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + Math.cos(angle) * len * (rng() > 0.5 ? 1 : -1), y - Math.sin(angle) * radiusY);
+          ctx.stroke();
+        }
+      } else if (species.foliage === "juniper") {
+        // Tight Cloud-like Billowing Tufts
+        ctx.fillStyle = foliageColor;
+        for (let i = 0; i < 6; i++) {
+          const ox = (rng() - 0.5) * radiusX * 1.2;
+          const oy = (rng() - 0.5) * radiusY * 1.1;
+          const r = 5 + rng() * 6;
+          ctx.beginPath();
+          ctx.arc(x + ox, y + oy, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (species.foliage === "palmate") {
+        // Palmate Maple Stars
+        ctx.fillStyle = foliageColor;
+        const leaves = 8 + Math.floor(tree.ramification / 10);
+        for (let i = 0; i < leaves; i++) {
+          const lx = x + (rng() - 0.5) * radiusX * 1.4;
+          const ly = y + (rng() - 0.5) * radiusY * 1.2;
+          ctx.beginPath();
+          ctx.ellipse(lx, ly, 4, 7, rng() * Math.PI, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (species.foliage === "flower") {
+        // Pastel Flowering Clusters
+        ctx.fillStyle = foliageColor;
+        for (let i = 0; i < 9; i++) {
+          const fx = x + (rng() - 0.5) * radiusX * 1.2;
+          const fy = y + (rng() - 0.5) * radiusY;
+          ctx.beginPath();
+          ctx.arc(fx, fy, 4, 0, Math.PI * 2);
+          ctx.fill();
+          // Blossom center pistil
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(fx - 0.5, fy - 0.5, 1, 1);
+          ctx.fillStyle = foliageColor;
+        }
+      } else {
+        // Dense micro-leaved broadleaf canopy
+        ctx.fillStyle = foliageColor;
+        ctx.beginPath();
+        ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Highlight rim on top canopy
+        ctx.fillStyle = "rgba(255,255,255,0.18)";
+        ctx.beginPath();
+        ctx.ellipse(x, y - radiusY * 0.4, radiusX * 0.7, radiusY * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    /* ==========================================================================
+       9. AESTHETIC SCORING & VALUATION ALGORITHM
+       ========================================================================== */
+    function calculateTreeMetrics(tree) {
+      const species = SPECIES_DATABASE.find(s => s.id === tree.speciesId) || SPECIES_DATABASE[0];
+      
+      // Balance factor from ramification and root nebari
+      const ramScore = Math.min(100, tree.ramification);
+      const nebari = Math.min(100, tree.nebariScore);
+      const taper = Math.min(100, tree.taperScore);
+      const wabi = Math.min(100, tree.wabiSabiScore + tree.jinCount * 12 + tree.shariCount * 14);
+
+      // Pot harmony multiplier
+      let potHarmony = 1.0;
+      if (tree.styleId === "kengai" && tree.potId === "cascade_deep") potHarmony = 1.25;
+      if ((tree.styleId === "yose_ue" || tree.styleId === "ishitsuki") && tree.potId === "kurama_slab") potHarmony = 1.25;
+
+      // Overall Kokufu aesthetic index (0 - 100)
+      const overallScore = Math.min(100, ((ramScore * 0.3) + (nebari * 0.25) + (taper * 0.25) + (wabi * 0.2)) * potHarmony);
+
+      // Valuation (Yen)
+      const baseSpeciesVal = species.price;
+      const ageMultiplier = 1 + (tree.age * 0.08);
+      const scoreMultiplier = Math.pow(overallScore / 30, 2);
+      const valuation = Math.floor(baseSpeciesVal * ageMultiplier * scoreMultiplier);
+
+      return {
+        overallScore: Math.round(overallScore * 10) / 10,
+        valuation: Math.max(2000, valuation)
+      };
+    }
+
+    /* ==========================================================================
+       10. CULTIVATION DISCIPLINES & WORKSHOP ACTIONS
+       ========================================================================== */
+    function applyAction(actionType) {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+
+      const toolLevel = GAME.upgrades.tools;
+      const wireLevel = GAME.upgrades.wire;
+
+      if (actionType === "prune") {
+        const boost = 5 + toolLevel * 3;
+        tree.ramification = Math.min(100, tree.ramification + boost);
+        tree.taperScore = Math.min(100, tree.taperScore + 2);
+        showToast(`Pruned with precision! Ramification +${boost}%.`);
+      } else if (actionType === "wire") {
+        const boost = 4 + wireLevel * 4;
+        tree.ramification = Math.min(100, tree.ramification + 3);
+        tree.taperScore = Math.min(100, tree.taperScore + boost);
+        tree.wired = true;
+        showToast(`Structural wire applied. Pad alignment perfected.`);
+      } else if (actionType === "carve") {
+        if (toolLevel < 2) {
+          showToast("Requires Tier 2+ Forged Cutters to carve deadwood!", true);
+          return;
+        }
+        if (Math.random() > 0.5) {
+          tree.jinCount++;
+          showToast("Sculpted bleached Jin spike on upper branch!");
+        } else {
+          tree.shariCount++;
+          showToast("Carved flowing Shari deadwood ribbon along trunk vein!");
+        }
+        tree.wabiSabiScore = Math.min(100, tree.wabiSabiScore + 12);
+      } else if (actionType === "fertilize") {
+        tree.vigor = 100;
+        tree.ramification = Math.min(100, tree.ramification + 4);
+        showToast("Applied organic Aburakasu rapeseed cakes. Vigor restored.");
+      } else if (actionType === "water") {
+        tree.moisture = 100;
+        showToast("Thoroughly saturated root ball with Hasu copper wand.");
+      }
+
+      saveState();
+      updateAllUI();
+    }
+
+    function openRepotModal() {
+      const repotPanel = document.getElementById("repotPanel");
+      const grid = document.getElementById("repotPotGrid");
+      grid.innerHTML = "";
+
+      POT_DATABASE.forEach(pot => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.innerHTML = `<strong>${pot.name}</strong><span style="font-size:0.65rem; color:var(--washi-muted);">${pot.desc}</span>`;
+        btn.onclick = () => selectRepotPot(pot.id);
+        grid.appendChild(btn);
+      });
+
+      repotPanel.style.display = "block";
+    }
+
+    function closeRepotModal() {
+      document.getElementById("repotPanel").style.display = "none";
+    }
+
+    function selectRepotPot(potId) {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+      tree.potId = potId;
+      tree.nebariScore = Math.min(100, tree.nebariScore + 10);
+      tree.moisture = 95;
+      showToast(`Repotted into ${POT_DATABASE.find(p=>p.id===potId).name}! Nebari flare boosted.`);
+      closeRepotModal();
+      saveState();
+      updateAllUI();
+    }
+
+    function renameCurrentTree() {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+      const newName = prompt("Enter new name for this Bonsai sculpture:", tree.name);
+      if (newName && newName.trim().length > 0) {
+        tree.name = newName.trim();
+        saveState();
+        updateAllUI();
+      }
+    }
+
+    /* ==========================================================================
+       11. SALES, AUCTIONS & VISITING CONNOISSEURS
+       ========================================================================== */
+    function sellCurrentTree() {
+      if (GAME.trees.length <= 1) {
+        showToast("Cannot sell your last remaining bonsai!", true);
+        return;
+      }
+      const treeIdx = GAME.trees.findIndex(t => t.id === GAME.selectedTreeId);
+      if (treeIdx === -1) return;
+
+      const tree = GAME.trees[treeIdx];
+      const { valuation, overallScore } = calculateTreeMetrics(tree);
+
+      if (!confirm(`Sell "${tree.name}" to collector for ¥${valuation.toLocaleString()}?`)) return;
+
+      GAME.funds += valuation;
+      GAME.trees.splice(treeIdx, 1);
+      GAME.selectedTreeId = GAME.trees[0].id;
+
+      showToast(`Sold "${tree.name}" for ¥${valuation.toLocaleString()}!`);
+      generateCollectorDialogue(overallScore);
+      saveState();
+      updateAllUI();
+      switchTab("garden");
+    }
+
+    function generateCollectorDialogue(score) {
+      const box = document.getElementById("connoisseur-dialogue");
+      if (!box) return;
+      if (score >= 90) {
+        box.innerHTML = `"Astonishing! The masterwork is worthy of the Kokufu-ten imperial hall. The balance between nebari and deadwood shari reflects profound Zen enlightenment." — Connoisseur from Ueno`;
+      } else if (score >= 70) {
+        box.innerHTML = `"A very commendable specimen. The ramification is dense and pads are well separated. With another decade of leaf pinching, this will win top honors." — Kyoto Temple Curator`;
+      } else {
+        box.innerHTML = `"A promising juvenile tree. The trunk line shows good intention, though the root flare still needs deeper Akadama development." — Traveling Collector`;
+      }
+    }
+
+    /* ==========================================================================
+       12. TIME STEPPING & SEASONAL SIMULATION TICKS
+       ========================================================================== */
+    function progressSeason() {
+      GAME.seasonIndex = (GAME.seasonIndex + 1) % 4;
+      if (GAME.seasonIndex === 0) {
+        GAME.year++;
+        // Annual growth for all trees
+        GAME.trees.forEach(t => {
+          t.age++;
+          t.nebariScore = Math.min(100, t.nebariScore + 2);
+          t.taperScore = Math.min(100, t.taperScore + 1);
+        });
+        showToast(`A new year dawns. Year ${GAME.year}! Trees age +1 year.`);
+      } else {
+        showToast(`The season turns to ${SEASONS[GAME.seasonIndex]}.`);
+      }
+
+      // Evaporation & natural vegetative growth
+      const mistUpgrade = GAME.upgrades.water >= 3;
+      GAME.trees.forEach(t => {
+        if (!mistUpgrade) {
+          t.moisture = Math.max(10, t.moisture - 25);
+        } else {
+          t.moisture = Math.max(60, t.moisture - 10);
+        }
+        if (t.moisture > 30) {
+          t.ramification = Math.min(100, t.ramification + 2);
         }
       });
 
-    } else {
-      // Solitary Specimen Bonsai
-      let trunkLen = 42;
-      let initAngle = -Math.PI * 0.48;
-      let startWidth = 15;
+      saveState();
+      updateAllUI();
+    }
 
-      if (role === 'KENGAI') {
-        trunkLen = 64; startWidth = 14; initAngle = -Math.PI * 0.55;
-      } else if (role === 'BUNJINGI') {
-        trunkLen = 56; startWidth = 6.2; initAngle = -Math.PI * 0.52;
-      } else if (role === 'SHAKAN') {
-        trunkLen = 44; startWidth = 13.5; initAngle = -Math.PI * 0.42;
+    // Auto seasonal advance every 60 seconds
+    setInterval(progressSeason, 60000);
+
+    /* ==========================================================================
+       13. EXHIBITIONS & PRESTIGE TOURNAMENTS
+       ========================================================================== */
+    function enterExhibition(exhibitId) {
+      const exhibit = EXHIBITIONS_DATA.find(e => e.id === exhibitId);
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!exhibit || !tree) return;
+
+      if (GAME.funds < exhibit.entryFee) {
+        showToast(`Insufficient funds! Entry requires ¥${exhibit.entryFee.toLocaleString()}`, true);
+        return;
       }
 
-      const trunkPts = drawSinuousBranch(trunkRootX, trunkRootY, initAngle, trunkLen, startWidth, true);
+      GAME.funds -= exhibit.entryFee;
+      const { overallScore } = calculateTreeMetrics(tree);
 
-      // Branching Scaffold
-      const startBranchingIndex = Math.floor(trunkPts.length * 0.28);
-      for (let i = startBranchingIndex; i < trunkPts.length; i++) {
-        const t = i / trunkPts.length;
-        const angleFlip = (i % 2 === 0) ? 1 : -1;
-
-        let subBranchAngle = -Math.PI * 0.51 + angleFlip * (0.35 + rng() * 0.45);
-        if (role === 'KENGAI') {
-          subBranchAngle = Math.PI * 0.12 - rng() * 0.45;
-        }
-
-        if (i % 6 === 0 || i === trunkPts.length - 1) {
-          const pt = trunkPts[i];
-          const bBranch = drawSinuousBranch(pt.x, pt.y, subBranchAngle, 12, pt.r * 0.65);
-
-          const lastPt = bBranch[bBranch.length - 1];
-          const padWidth = 48 * (1 - t * 0.45);
-          const padHeight = 16 * (1 - t * 0.45);
-          drawOrganicFoliagePad(lastPt.x, lastPt.y, padWidth, padHeight);
-
-          if (bBranch.length > 5 && rng() < 0.45) {
-            const midPt = bBranch[Math.floor(bBranch.length * 0.55)];
-            drawOrganicFoliagePad(midPt.x, midPt.y, padWidth * 0.75, padHeight * 0.75);
-          }
-        }
-      }
-    }
-
-    return offscreenCanvas.toDataURL('image/png');
-  }  /* ================= STATE ================= */
-  let State = {
-    funds: 50000000, 
-    fuelReserve: 250000, // Water
-    fuelSpotPrice: 2.85,
-    buyMode: 1, 
-    sortHangarMode: 'val',
-    filterHangarRole: 'ALL',
-    filterHangarTier: 'ALL',
-    sortPilotsMode: 'val',
-    filterPilotTier: 'ALL',
-    filterRouteCat: 'ALL',
-    fleet: [], pilots: [], routes: [], auctions: [], marketCars: [],
-    gallery: [], 
-    marketTimer: 10.0,
-    upgrades: { mkt: 0, eng: 0 },
-    automation: { autoDispatch: false, autoMRO: false, autoRefuel: false },
-    claimedMilestones: [],
-    sideMissions: [],
-    statAuctionsSold: 0,
-    statPlanesScrapped: 0
-  };
-  let globalInterval = null;
-  let needsFleetRender = false;
-
-  /* ================= UTILITY & BASE36 ================= */
-  function fmt(n) {
-    if (n >= 1e12) return (n / 1e12).toFixed(2) + "T";
-    if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
-    if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
-    if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
-    return Math.floor(n).toLocaleString();
-  }
-  function toast(msg) {
-    const r = $('toast-rack'); const e = document.createElement('div');
-    e.className = 'toast'; e.innerHTML = msg; r.appendChild(e);
-    setTimeout(() => e.remove(), 2800);
-  }
-  function updateHUD() {
-    if($('hud-funds')) $('hud-funds').innerText = `$${fmt(State.funds)}`;
-    if($('hud-fleet-count')) $('hud-fleet-count').innerText = State.fleet.length;
-    if($('hud-pilot-count')) $('hud-pilot-count').innerText = State.pilots.length;
-    if($('hud-fuel')) $('hud-fuel').innerText = fmt(State.fuelReserve);
-  }
-  
-  function saveGame() { 
-    let s = JSON.parse(JSON.stringify(State));
-    s.fleet.forEach(p => delete p.imgData);
-    s.marketCars.forEach(p => delete p.imgData);
-    s.gallery.forEach(g => delete g.imgData);
-    s.auctions.forEach(a => { if(a.item.imgData) delete a.item.imgData; });
-    localStorage.setItem('blissfulBonsaiV1', JSON.stringify(s)); 
-    toast("Nursery Saved."); 
-  }
-  
-  function loadGame() {
-    let s = localStorage.getItem('blissfulBonsaiV1');
-    if (s) {
-      State = JSON.parse(s);
-      if(!State.gallery) State.gallery = [];
-      if(!State.routes || State.routes.length < 400) State.routes = generateRoutes();
-      
-      State.fleet.forEach(p => p.imgData = generateBonsaiImage(p.seedInt, p.role, p.tierIndex, TREE_SPECIES[p.mIdx]));
-      State.marketCars.forEach(p => p.imgData = generateBonsaiImage(p.seedInt, p.role, p.tierIndex, TREE_SPECIES[p.mIdx]));
-      State.gallery.forEach(g => g.imgData = generateBonsaiImage(g.seedInt, g.role, g.tierIdx, TREE_SPECIES[g.mIdx]));
-      State.auctions.forEach(a => { if(a.type==='plane') a.item.imgData = generateBonsaiImage(a.item.seedInt, a.item.role, a.item.tierIndex, TREE_SPECIES[a.item.mIdx]); });
-
-      State.fleet.forEach(p => { p.status = 'READY'; p.flightEnd = 0; p.flightStart = 0; });
-      updateHUD(); setTab('market');
-      toast("Garden Restored.");
-    } else {
-      toast("No saved nursery found.");
-    }
-  }
-
-  function setBuyMode(val) {
-      State.buyMode = val;
-      ['buy-1','buy-0.25','buy-0.5','buy-1.0'].forEach(id => { if($(id)) $(id).classList.remove('active'); });
-      let sel = val===1?'buy-1':val===0.25?'buy-0.25':val===0.5?'buy-0.5':'buy-1.0';
-      if($(sel)) $(sel).classList.add('active');
-  }
-
-  /* BASE36 FOR COURIERS */
-  function exportCourier(uid) {
-    let p = State.pilots.find(x => x.uid===uid); if(!p) return;
-    let codeInt = p.fIdx * 160 + p.lIdx * 8 + p.cIdx;
-    prompt("Copy Apprentice Trade Code:", "CR-" + codeInt.toString(36).toUpperCase());
-  }
-  function importCourier() {
-    let str = prompt("Enter Apprentice Trade Code (CR-XXX):"); if(!str) return;
-    str = str.replace('CR-', '').trim();
-    let codeInt = parseInt(str, 36); if(isNaN(codeInt) || codeInt < 0) { toast("Invalid code."); return; }
-    let cIdx = codeInt % 8; codeInt = Math.floor(codeInt / 8);
-    let lIdx = codeInt % 20; codeInt = Math.floor(codeInt / 20);
-    let fIdx = codeInt % 20;
-    let tIdx = Math.floor(Math.random() * 10);
-    let bIdx = Math.floor(Math.random() * 4);
-    State.pilots.push(hireCourier(fIdx, lIdx, cIdx, tIdx, bIdx)); 
-    updateHUD(); renderPilots(); toast("Apprentice hired via Trade Code!");
-  }
-
-  /* BASE36 FOR TREES */
-  function exportStrain(uid) {
-    let p = State.fleet.find(x => x.uid===uid); if(!p) return;
-    let codeInt = p.pIdx * 960 + p.bIdx * 120 + p.mIdx * 6 + p.rIdx;
-    prompt("Copy Bonsai Trade Code:", "BB-" + codeInt.toString(36).toUpperCase());
-  }
-  function importStrain() {
-    let str = prompt("Enter Bonsai Trade Code (BB-XXX):"); if(!str) return;
-    str = str.replace('BB-', '').trim();
-    let codeInt = parseInt(str, 36); if(isNaN(codeInt) || codeInt < 0) { toast("Invalid code."); return; }
-    let rIdx = codeInt % 6; codeInt = Math.floor(codeInt / 6);
-    let mIdx = codeInt % 20; codeInt = Math.floor(codeInt / 20);
-    let bIdx = codeInt % 8; codeInt = Math.floor(codeInt / 8);
-    let pIdx = codeInt % 10;
-    let tIdx = Math.floor(Math.random() * 10);
-    
-    let tD = TIERS[tIdx];
-    let val = Math.floor(tD.baseVal * 1.0); 
-    let cost = Math.max(50000, Math.floor(val * 0.8)); 
-    let cap = Math.floor(5 + (tIdx * 45)); // Age
-    let rnge = Math.floor(1000 + (tIdx * 900));
-    let burn = Math.floor(20 + (tIdx * 15)); // Water
-    let seedInt = (pIdx * 960 + bIdx * 120 + mIdx * 6 + rIdx) * 31 + tIdx;
-    let sp = TREE_SPECIES[mIdx];
-
-    let importedTree = {
-      uid: 'T' + Math.floor(100+Math.random()*899) + 'BB',
-      pIdx, bIdx, mIdx, rIdx, tierIndex: tIdx,
-      seedInt: seedInt,
-      imgData: generateBonsaiImage(seedInt, TREE_STYLES[rIdx % TREE_STYLES.length], tIdx, sp),
-      name: `${TREE_PREFIXES[pIdx]} ${TREE_ORIGINS[bIdx]} ${sp}`,
-      role: TREE_STYLES[rIdx % TREE_STYLES.length], tierName: tD.name, tierColor: tD.color,
-      value: val, cost: cost, capacity: cap, range: rnge, fuelBurn: burn,
-      condition: 100, status: 'READY', assignedRoute: null, assignedPilot: null
-    };
-    
-    State.fleet.push(importedTree);
-    updateHUD(); renderFleet(); toast("Bonsai acquired via Trade Code!");
-  }
-
-  function generateRoutes() {
-    let rts = [];
-    let roles = TREE_STYLES;
-    let used = new Set();
-    let idCounter = 0;
-
-    roles.forEach(role => {
-      let pool = ZONE_CAT[role] || ZONE_CAT["CHOKKAN"];
-      let count = role === "CHOKKAN" || role === "MOYOGI" ? 80 : 60; // 400 total
-      for(let i=0; i<count; i++) {
-        let a1, a2, pair;
-        let attempts = 0;
-        do {
-          a1 = pool[Math.floor(Math.random() * pool.length)];
-          a2 = pool[Math.floor(Math.random() * pool.length)];
-          pair = `${a1}-${a2}-${role}`;
-          attempts++;
-        } while((a1 === a2 || used.has(pair)) && attempts < 50);
-        
-        used.add(pair);
-        let dist = role === 'BUNJINGI' ? Math.floor(1200 + Math.random() * 7500) : Math.floor(350 + Math.random() * 8500);
-        
-        rts.push({
-          id: "rt_" + (idCounter++),
-          name: `${a1} ↔ ${a2}`, role: role, dist: dist,
-          cost: Math.ceil((100000 + (Math.pow(dist, 1.38) * 32)) / 10000) * 10000,
-          unlocked: idCounter === 1,
-          minTier: dist > 6500 ? "Global" : dist > 4000 ? "National" : dist > 1500 ? "Regional" : "Local"
-        });
-      }
-    });
-
-    rts.sort((a,b) => a.dist - b.dist);
-    rts[0].unlocked = true;
-    return rts;
-  }
-
-  function harvestStrain(tIdx) {
-    let pIdx = Math.floor(Math.random() * TREE_PREFIXES.length);
-    let bIdx = Math.floor(Math.random() * TREE_ORIGINS.length);
-    let mIdx = Math.floor(Math.random() * TREE_SPECIES.length);
-    let rIdx = Math.floor(Math.random() * TREE_STYLES.length);
-    let tD = TIERS[tIdx];
-    let sp = TREE_SPECIES[mIdx];
-
-    let fluct = 1.0 + (Math.random() * 0.4 - 0.2); 
-    let val = Math.floor(tD.baseVal * fluct);
-    let seedInt = Math.floor(Math.random() * 9999999);
-
-    return {
-      uid: 'T' + Math.floor(100+Math.random()*899) + 'BB',
-      pIdx, bIdx, mIdx, rIdx, tierIndex: tIdx, seedInt: seedInt,
-      imgData: generateBonsaiImage(seedInt, TREE_STYLES[rIdx], tIdx, sp),
-      name: `${TREE_PREFIXES[pIdx]} ${TREE_ORIGINS[bIdx]} ${sp}`,
-      role: TREE_STYLES[rIdx], tierName: tD.name, tierColor: tD.color,
-      value: val, cost: Math.max(50000, Math.floor(val * 0.8)), 
-      capacity: Math.floor(5 + (tIdx * 45) * fluct), // Age
-      range: Math.floor(1000 + (tIdx * 900) * fluct), 
-      fuelBurn: Math.floor(20 + (tIdx * 15)), // Water
-      condition: 100, status: 'READY', assignedRoute: null, assignedPilot: null
-    };
-  }
-
-  function hireCourier(fIdx, lIdx, cIdx, tIdx, bIdx) {
-    let rawPow = [6,25,100,300,1000,2500,6000,15000,35000,66666][tIdx];
-    return {
-      uid: Date.now()+Math.random().toString(36).substring(2,8), fIdx, lIdx, cIdx, tIdx, bIdx,
-      name: `${P_FIRST[fIdx]} ${P_CALL[cIdx]} ${P_LAST[lIdx]}`,
-      tierIndex: tIdx, tierName: TIERS[tIdx].name, tierColor: TIERS[tIdx].color,
-      bType: B_TYPES[bIdx], bonus: rawPow, value: Math.floor(TIERS[tIdx].baseVal / 10),
-      locked: false, assignedTo: null
-    };
-  }
-
-  /* ================= MARKETS & NURSERY ================= */
-  function refreshMarket() {
-    State.marketCars = [];
-    for(let i=0; i<5; i++) {
-      let r = Math.random()*100; let tI = r>99.9?9 : r>99?8 : r>95?7 : r>85?6 : r>70?5 : r>50?4 : r>30?3 : r>15?2 : r>5?1 : 0;
-      State.marketCars.push(harvestStrain(tI));
-    }
-    renderMarket();
-  }
-
-  function renderMarket() {
-    const grid = $('market-grid'); if(!grid) return; grid.innerHTML = '';
-    State.marketCars.forEach((c, idx) => {
-      let rCol = c.role === 'CHOKKAN' ? '#a855f7' : c.role === 'MOYOGI' ? '#f59e0b' : c.role === 'SHAKAN' ? '#22c55e' : c.role === 'KENGAI' ? '#ec4899' : c.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
-      grid.innerHTML += `
-        <div class="strain-card" style="border-color:${c.tierColor};">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:${c.tierColor}; font-weight:bold; font-size:10px;">[${c.tierName}]</span>
-            <span class="badge" style="color:${rCol}; border-color:${rCol};">${c.role}</span>
-          </div>
-          <div class="bud-art-container">
-            <img class="bud-pixel-canvas" src="${c.imgData}">
-            <div style="flex:1;">
-              <div style="font-size:12px; font-weight:900; color:#fff;">${c.name}</div>
-              <div style="font-size:9px; color:var(--silver-dim); margin-top:2px;">Style: ${c.role}</div>
-            </div>
-          </div>
-          <div class="spec-grid">
-            <div><span>AGE:</span> ${c.capacity} YRS</div>
-            <div><span>DIST:</span> ${c.range.toLocaleString()} MILES</div>
-            <div><span>WTR:</span> ${c.fuelBurn} gal/sh</div>
-            <div><span>VAL:</span> $${fmt(c.value)}</div>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-            <div>
-              <div style="font-size:9px; color:var(--silver-dim);">Est Val: $${fmt(c.value)}</div>
-              <div style="font-size:12px; color:var(--status-green); font-weight:bold; font-family:monospace;">Price: $${fmt(c.cost)}</div>
-            </div>
-            <button class="btn btn-green" onclick="buyMarketStrain(${idx})">BUY</button>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  function buyMarketStrain(idx) {
-    let c = State.marketCars[idx]; if(!c) return;
-    if(State.funds < c.cost) { toast("Insufficient cash."); return; }
-    State.funds -= c.cost; State.fleet.push(c); State.marketCars.splice(idx, 1);
-    toast(`Benched: ${c.name}`); updateHUD(); renderMarket();
-  }
-
-  function buySeeds(bIdx, count) {
-    let costs = [10000, 100000, 1000000, 5000000];
-    let c = State.buyMode === 1 ? count : Math.max(1, Math.floor(Math.floor(State.funds/costs[bIdx]) * State.buyMode));
-    let cost = costs[bIdx] * c;
-    if(State.funds < cost) { toast("Insufficient cash."); return; }
-    State.funds -= cost;
-    let tArr = bIdx===0?[0,1,2,3]:bIdx===1?[2,3,4,5]:bIdx===2?[4,5,6,7]:[6,7,8,9];
-    for(let i=0; i<c; i++) {
-      let r = Math.random()*100; let tI = r>95?tArr[3]:r>80?tArr[2]:r>50?tArr[1]:tArr[0];
-      State.fleet.push(harvestStrain(tI));
-    }
-    updateHUD(); toast(`Cultivated ${c}x Bonsai.`);
-  }
-
-  function buyResumes(bIdx, count) {
-    let costs = [5000, 50000, 250000, 1000000];
-    let c = State.buyMode === 1 ? count : Math.max(1, Math.floor(Math.floor(State.funds/costs[bIdx]) * State.buyMode));
-    let cost = costs[bIdx] * c;
-    if(State.funds < cost) { toast("Insufficient cash."); return; }
-    State.funds -= cost;
-    let tArr = bIdx===0?[0,1,2,3]:bIdx===1?[2,3,4,5]:bIdx===2?[4,5,6,7]:[6,7,8,9];
-    for(let i=0; i<c; i++) {
-      let r = Math.random()*100; let tI = r>95?tArr[3]:r>80?tArr[2]:r>50?tArr[1]:tArr[0];
-      State.pilots.push(hireCourier(Math.floor(Math.random()*20), Math.floor(Math.random()*20), Math.floor(Math.random()*8), tI, Math.floor(Math.random()*4)));
-    }
-    updateHUD(); toast(`Hired ${c}x Apprentices.`);
-  }
-
-  function buyFuelFixed(amount) {
-    let unit = State.fuelSpotPrice;
-    let gal = amount === 'MAX' ? Math.floor(State.funds / unit) : amount;
-    if(gal <= 0) { toast("Insufficient cash."); return; }
-    let cost = gal * unit;
-    if(State.funds < cost) { toast("Insufficient cash."); return; }
-    State.funds -= cost; State.fuelReserve += gal;
-    toast(`Bought ${fmt(gal)} Gal Water.`); updateHUD();
-  }
-
-  /* ================= INVENTORY (BENCHES) ================= */
-  function sortHangar(mode) { State.sortHangarMode = mode; renderFleet(); }
-  function filterHangarRole(val) { State.filterHangarRole = val; renderFleet(); }
-  function filterHangarTier(val) { State.filterHangarTier = val; renderFleet(); }
-  
-  function assignRoute(pUid, rId) { const p = State.fleet.find(x=>x.uid===pUid); if(p) p.assignedRoute = rId; }
-  function assignPilot(pUid, piUid) {
-    const p = State.fleet.find(x=>x.uid===pUid); if(!p) return;
-    if(p.assignedPilot) { let o = State.pilots.find(x=>x.uid===p.assignedPilot); if(o) o.assignedTo = null; }
-    if(piUid==="") p.assignedPilot = null; 
-    else { p.assignedPilot=piUid; let n=State.pilots.find(x=>x.uid===piUid); if(n) n.assignedTo=pUid; }
-    renderFleet();
-  }
-
-  function autoAssignPilots() {
-    let unassigned = State.fleet.filter(p => !p.assignedPilot && p.status === 'READY');
-    let freeCouriers = State.pilots.filter(p => !p.assignedTo && !p.locked).sort((a,b) => b.bonus - a.bonus);
-    if(unassigned.length === 0 || freeCouriers.length === 0) {
-      toast("No idle trees or available apprentices."); return;
-    }
-    let paired = 0;
-    unassigned.forEach(p => {
-      if(freeCouriers.length > 0) {
-        let pilot = freeCouriers.shift();
-        p.assignedPilot = pilot.uid;
-        pilot.assignedTo = p.uid;
-        paired++;
-      }
-    });
-    toast(`Assigned apprentices to ${paired} trees.`); renderFleet(); renderPilots();
-  }
-
-  function autoAssignRoutes() {
-    let unrouted = State.fleet.filter(p => !p.assignedRoute && p.status === 'READY');
-    let uRts = State.routes.filter(r => r.unlocked);
-    if(unrouted.length === 0 || uRts.length === 0) {
-      toast("No idle trees or unlocked exhibitions."); return;
-    }
-    let routedCnt = 0;
-    unrouted.forEach(p => {
-      let valid = uRts.filter(r => (r.role === p.role || r.role === 'CHOKKAN') && r.dist <= p.range);
-      if(valid.length > 0) {
-        valid.sort((a,b) => b.dist - a.dist);
-        p.assignedRoute = valid[0].id;
-        routedCnt++;
-      }
-    });
-    toast(`Auto-Assigned ${routedCnt} trees to furthest shows.`);
-    renderFleet();
-  }
-
-  function renderFleet() {
-    const list = $('fleet-list'); if(!list) return; list.innerHTML = '';
-    let filtered = [...State.fleet];
-    if(State.filterHangarRole !== 'ALL') filtered = filtered.filter(p => p.role === State.filterHangarRole);
-    if(State.filterHangarTier !== 'ALL') filtered = filtered.filter(p => p.tierIndex === parseInt(State.filterHangarTier));
-    
-    if(filtered.length===0) { list.innerHTML=`<div style="text-align:center; padding:20px; color:var(--silver-dim); font-size:11px;">No trees match current filters.</div>`; return; }
-
-    if(State.sortHangarMode==='val') filtered.sort((a,b)=>b.value-a.value);
-    if(State.sortHangarMode==='tier') filtered.sort((a,b)=>b.tierIndex-a.tierIndex);
-    if(State.sortHangarMode==='range') filtered.sort((a,b)=>b.range-a.range);
-
-    const uRts = State.routes.filter(r => r.unlocked);
-    
-    let routeOptionsCache = {};
-    TREE_STYLES.forEach(role => {
-        let opts = `<option value="">-- Assign Exhibition (${role}) --</option>`;
-        uRts.filter(r => r.role === role || r.role === 'CHOKKAN').forEach(r => {
-            opts += `<option value="${r.id}">${r.name} [${r.role}] (${r.dist} MI)</option>`;
-        });
-        routeOptionsCache[role] = opts;
-    });
-
-    let pilotOpts = `<option value="">-- Assign Apprentice --</option>`;
-    State.pilots.forEach(pl => { 
-        if(!pl.assignedTo) pilotOpts += `<option value="${pl.uid}">${pl.name} [${pl.bType}: +${fmt(pl.bonus)}%]</option>`; 
-    });
-
-    filtered.forEach(p => {
-      let rCol = p.role === 'CHOKKAN' ? '#a855f7' : p.role === 'MOYOGI' ? '#f59e0b' : p.role === 'SHAKAN' ? '#22c55e' : p.role === 'KENGAI' ? '#ec4899' : p.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
-      
-      let pOpts = routeOptionsCache[p.role];
-      if(p.assignedRoute) pOpts = pOpts.replace(`value="${p.assignedRoute}"`, `value="${p.assignedRoute}" selected`);
-      let rtSel = `<select ${p.status==='IN_FLIGHT'?'disabled':''} onchange="assignRoute('${p.uid}', this.value)">${pOpts}</select>`;
-
-      let pPilotOpts = pilotOpts;
-      if(p.assignedPilot) {
-          let pl = State.pilots.find(x=>x.uid === p.assignedPilot);
-          if(pl) pPilotOpts += `<option value="${pl.uid}" selected>${pl.name}</option>`;
-      }
-      let piSel = `<select ${p.status==='IN_FLIGHT'?'disabled':''} onchange="assignPilot('${p.uid}', this.value)">${pPilotOpts}</select>`;
-
-      list.innerHTML += `
-        <div class="strain-card ${p.status==='IN_FLIGHT'?'in-flight':p.condition<50?'damaged':''}" style="border-color:${p.tierColor};">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <span style="color:${p.tierColor}; font-weight:bold; font-size:10px;">[${p.tierName}]</span>
-              <span style="font-size:12px; font-weight:900; color:#fff; margin-left:3px;">${p.name}</span>
-            </div>
-            <span class="badge" style="color:${rCol}; border-color:${rCol};">${p.role}</span>
-          </div>
-          
-          <div class="bud-art-container">
-            <img class="bud-pixel-canvas" src="${p.imgData}">
-            <div style="flex:1;">
-              <div style="font-size:10px; font-weight:bold; color:var(--silver-bright);">Style: ${p.role}</div>
-              <div style="font-size:9px; color:var(--silver-dim);">Val: $${fmt(p.value)}</div>
-            </div>
-            <button class="btn btn-purple" style="padding:4px 6px; font-size:9px;" onclick="snapGalleryPic('${p.uid}')">📸 Snap</button>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; font-size:8.5px; font-family:monospace; color:var(--silver-dim);">
-            <span>VITALITY: ${p.condition.toFixed(0)}%</span>
-            <span id="st-${p.uid}">STATUS: <strong style="color:#fff;">${p.status}</strong></span>
-          </div>
-          
-          <div style="display:flex; flex-direction:column; gap:3px;">${rtSel}${piSel}</div>
-          ${p.status==='IN_FLIGHT'?`<div class="flight-bar-bg"><div id="bar-${p.uid}" class="flight-bar-fill"></div></div>`:''}
-          
-          <div style="display:flex; justify-content:space-between; margin-top:3px;">
-            <div style="display:flex; gap:3px;">
-              <button class="btn btn-purple" style="padding:3px 5px; font-size:8px;" ${p.status==='IN_FLIGHT'?'disabled':''} onclick="initAuction('${p.uid}', 'plane')">Auction</button>
-              <button class="btn btn-danger" style="padding:3px 5px; font-size:8px;" ${p.status==='IN_FLIGHT'?'disabled':''} onclick="consumeStrain('${p.uid}')">Sell Local</button>
-            </div>
-            <div style="display:flex; gap:3px;">
-              <button class="btn" style="padding:3px 6px; font-size:8px;" ${p.status==='IN_FLIGHT'?'disabled':''} onclick="maintainAirframe('${p.uid}')">Prune</button>
-              <button class="btn btn-green" style="padding:4px 8px; font-size:8.5px;" ${p.status==='IN_FLIGHT'||!p.assignedRoute||!p.assignedPilot?'disabled':''} onclick="dispatchFlight('${p.uid}')">Exhibit</button>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  function consumeStrain(uid) {
-    let i = State.fleet.findIndex(x=>x.uid===uid); if(i===-1) return;
-    let val = Math.floor(State.fleet[i].value * 0.5); State.funds+=val;
-    if(State.fleet[i].assignedPilot) { let p=State.pilots.find(x=>x.uid===State.fleet[i].assignedPilot); if(p) p.assignedTo=null; }
-    State.fleet.splice(i,1); State.statPlanesScrapped++;
-    toast(`Sold locally. Yielded $${fmt(val)}.`); updateHUD(); renderFleet();
-  }
-
-  function quickSellStrains(maxT) {
-    let t = State.fleet.filter(s=>s.tierIndex<=maxT && s.status==='READY');
-    if(t.length===0){toast("No eligible trees in tier bracket.");return;}
-    let tot=0; t.forEach(s=>{
-      tot+=Math.floor(s.value*0.5);
-      if(s.assignedPilot) { let p=State.pilots.find(x=>x.uid===s.assignedPilot); if(p) p.assignedTo=null; }
-      State.statPlanesScrapped++;
-    });
-    State.fleet = State.fleet.filter(s=>s.tierIndex>maxT || s.status!=='READY');
-    State.funds+=tot; toast(`Sold ${t.length} trees locally for $${fmt(tot)}.`); updateHUD(); renderFleet(); renderPilots();
-  }
-
-  /* ================= GALLERY (TOKONOMA) ================= */
-  function snapGalleryPic(uid) {
-    let p = State.fleet.find(x => x.uid === uid);
-    if(!p) return;
-    
-    State.gallery.push({
-      gid: "gal_" + Date.now() + Math.floor(Math.random()*1000),
-      seedInt: p.seedInt, mIdx: p.mIdx, role: p.role, tierIdx: p.tierIndex,
-      name: p.name, tierName: p.tierName, tierColor: p.tierColor,
-      locked: true, imgData: p.imgData
-    });
-    
-    toast(`📸 Snap saved to Tokonoma!`);
-    if($('tab-gallery').classList.contains('active')) renderGallery();
-  }
-
-  function toggleGalleryLock(gid) {
-    let g = State.gallery.find(x => x.gid === gid);
-    if(g) { g.locked = !g.locked; renderGallery(); }
-  }
-
-  function deleteGalleryPic(gid) {
-    let idx = State.gallery.findIndex(x => x.gid === gid);
-    if(idx > -1) {
-       State.gallery.splice(idx, 1);
-       toast(`Photo Removed from Tokonoma.`);
-       renderGallery();
-    }
-  }
-
-  function renderGallery() {
-    const list = $('gallery-grid'); if(!list) return; list.innerHTML = '';
-    
-    if(State.gallery.length === 0) { 
-        list.innerHTML=`<div style="text-align:center; padding:20px; color:var(--silver-dim); font-size:11px;">Your Tokonoma is empty. Snap some pics from your benches!</div>`; 
-        return; 
-    }
-
-    State.gallery.forEach(g => {
-      let rCol = g.role === 'CHOKKAN' ? '#a855f7' : g.role === 'MOYOGI' ? '#f59e0b' : g.role === 'SHAKAN' ? '#22c55e' : g.role === 'KENGAI' ? '#ec4899' : g.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
-      
-      list.innerHTML += `
-        <div class="strain-card" style="border-color:${g.locked ? 'var(--status-green)' : g.tierColor};">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:${g.tierColor}; font-weight:bold; font-size:10px;">[${g.tierName}]</span>
-            <span class="badge" style="color:${rCol}; border-color:${rCol};">${g.role}</span>
-          </div>
-          <div style="display:flex; justify-content:center; padding:10px 0;">
-             <img src="${g.imgData}" style="width:96px; height:96px; image-rendering:pixelated; background:#000; border:1px solid #142014; border-radius:4px;" />
-          </div>
-          <div style="text-align:center; font-size:14px; font-weight:900; color:#fff;">${g.name}</div>
-          <div style="text-align:center; font-size:9px; color:var(--silver-dim); margin-bottom: 8px;">Masterpiece Record</div>
-          <div style="display:flex; justify-content:space-between; gap: 4px;">
-            <button class="btn" style="flex:1;" onclick="toggleGalleryLock('${g.gid}')">${g.locked ? 'UNLOCK 🔓' : 'LOCK 🔒'}</button>
-            <button class="btn btn-danger" style="flex:1;" ${g.locked ? 'disabled' : ''} onclick="deleteGalleryPic('${g.gid}')">REMOVE</button>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  /* ================= COURIERS ROSTER ================= */
-  function sortPilots(mode) { State.sortPilotsMode = mode; renderPilots(); }
-  function filterPilotTier(val) { State.filterPilotTier = val; renderPilots(); }
-
-  function renderPilots() {
-    const grid = $('pilots-grid'); if(!grid) return; grid.innerHTML = '';
-    
-    let filtered = [...State.pilots];
-    if(State.filterPilotTier !== 'ALL') filtered = filtered.filter(p => p.tierIndex === parseInt(State.filterPilotTier));
-    if(filtered.length===0) { grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--silver-dim); font-size:11px;">No apprentices match filter criteria.</div>`; return; }
-
-    if(State.sortPilotsMode==='val') filtered.sort((a,b)=>b.value-a.value);
-    if(State.sortPilotsMode==='tier') filtered.sort((a,b)=>b.tierIndex-a.tierIndex);
-    
-    filtered.forEach(p => {
-      grid.innerHTML += `
-        <div class="strain-card" style="border-color:${p.tierColor};">
-          <div class="stat-block" style="display:flex; justify-content:space-between;">
-            <span style="color:${p.tierColor}; font-weight:bold; font-size:9.5px;">${p.tierName}</span>
-            <span style="color:var(--status-green); font-size:9.5px;">[${p.bType}] +${fmt(p.bonus)}%</span>
-          </div>
-          <div style="font-size:12px; font-weight:900; color:#fff;">${p.name} ${p.locked?'[🔒]':''}</div>
-          <div style="font-size:9px; color:var(--silver-dim);">${p.assignedTo ? `Caring for: ${p.assignedTo}` : 'Standby / Unassigned'}</div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-            <span class="stat-block" style="font-size:10px; color:var(--silver-bright); font-weight:bold;">VAL: $${fmt(p.value)}</span>
-            <div style="display:flex; flex-wrap:wrap; gap:3px; justify-content:flex-end;">
-              <button class="btn" style="padding:3px 5px; font-size:8px;" onclick="exportCourier('${p.uid}')">Trade</button>
-              <button class="btn" style="padding:3px 5px; font-size:8px;" onclick="togglePilotLock('${p.uid}')">${p.locked?'Unlock':'Lock'}</button>
-              ${!p.assignedTo&&!p.locked?`<button class="btn btn-purple" style="padding:3px 5px; font-size:8px;" onclick="initAuction('${p.uid}', 'pilot')">Auction</button><button class="btn btn-danger" style="padding:3px 5px; font-size:8px;" onclick="sellPilot('${p.uid}')">Fire</button>`:''}
-            </div>
-          </div>
-        </div>
-      `;
-    });
-  }
-  function togglePilotLock(uid) { let p=State.pilots.find(x=>x.uid===uid); if(p){p.locked=!p.locked; renderPilots();} }
-  function sellPilot(uid) {
-    let idx = State.pilots.findIndex(s=>s.uid===uid);
-    if(idx>-1) { let v=Math.floor(State.pilots[idx].value*0.5); State.funds+=v; State.pilots.splice(idx,1); toast(`Fired. Severance recovered $${fmt(v)}.`); updateHUD(); renderPilots(); renderFleet(); }
-  }
-  function quickSellPilots(maxT) {
-    let ts = State.pilots.filter(s=>s.tierIndex<=maxT && !s.assignedTo && !s.locked);
-    if(ts.length===0){toast("No eligible apprentices.");return;}
-    let tot=0; ts.forEach(s=>tot+=Math.floor(s.value*0.5));
-    State.pilots = State.pilots.filter(s=>s.tierIndex>maxT || s.assignedTo || s.locked);
-    State.funds+=tot; toast(`Fired ${ts.length} apprentices. Recovered $${fmt(tot)}.`); updateHUD(); renderPilots();
-  }
-
-  /* ================= ROUTES ================= */
-  function filterRouteCategory(val) { State.filterRouteCat = val; renderRoutes(); }
-
-  function renderRoutes() {
-    const list = $('routes-list'); if(!list) return; list.innerHTML = '';
-    let filtered = State.filterRouteCat === 'ALL' ? State.routes : State.routes.filter(r => r.role === State.filterRouteCat);
-
-    filtered.forEach(r => {
-      let rCol = r.role === 'CHOKKAN' ? '#a855f7' : r.role === 'MOYOGI' ? '#f59e0b' : r.role === 'SHAKAN' ? '#22c55e' : r.role === 'KENGAI' ? '#ec4899' : r.role === 'YOSE_UE' ? '#fbbf24' : '#06b6d4';
-      let yieldM = 1.0 + (State.upgrades.mkt*0.05);
-      let baseYield = r.dist * 165 * yieldM;
-      let fuelCost = ((r.dist * 0.22) * (1 - Math.min(0.7, State.upgrades.eng*0.02))) * State.fuelSpotPrice;
-      let netProfit = baseYield - fuelCost;
-
-      list.innerHTML += `
-        <div class="route-row">
-          <div style="flex:1;">
-            <div style="font-weight:900; color:#fff;">${r.name} <span class="badge" style="margin-left:4px; color:${rCol}; border-color:${rCol};">${r.role}</span></div>
-            <div style="font-size:9px; color:var(--silver-dim); font-family:monospace; margin-top:2px;">
-              ${r.dist.toLocaleString()} MILES // Area: ${r.minTier}
-            </div>
-            <div style="font-size:9px; color:var(--silver-dim); font-family:monospace; margin-top:2px;">
-              Revenue: $${fmt(baseYield)} | Water/Travel: -$${fmt(fuelCost)}
-            </div>
-            <div style="font-size:10px; color:var(--status-green); font-weight:bold; font-family:monospace; margin-top:2px;">
-              Est. Net Profit: ~$${fmt(netProfit)}
-            </div>
-          </div>
-          <div>
-            ${r.unlocked?`<span style="color:var(--status-green); font-weight:bold; font-family:monospace;">ZONED ✓</span>`:`<button class="btn btn-green" onclick="unlockRoute('${r.id}')">Expand ($${fmt(r.cost)})</button>`}
-          </div>
-        </div>
-      `;
-    });
-  }
-  function unlockRoute(rId) { const r=State.routes.find(x=>x.id===rId); if(!r)return; if(State.funds<r.cost){toast("Insufficient Cash.");return;} State.funds-=r.cost; r.unlocked=true; updateHUD(); renderRoutes(); renderFleet(); }
-
-  /* ================= AUTOMATIONS & COMMISSIONS ================= */
-  function toggleAutoLoop() {
-    State.automation.autoDispatch = !State.automation.autoDispatch;
-    toast(`Touring Schedule: ${State.automation.autoDispatch ? 'ON' : 'OFF'}`);
-    updateAutomationUI();
-  }
-  function toggleAutoMRO() {
-    State.automation.autoMRO = !State.automation.autoMRO;
-    toast(`Auto Pruning: ${State.automation.autoMRO ? 'ON' : 'OFF'}`);
-    updateAutomationUI();
-  }
-  function toggleAutoRefuel() {
-    State.automation.autoRefuel = !State.automation.autoRefuel;
-    toast(`Auto Irrigation: ${State.automation.autoRefuel ? 'ON' : 'OFF'}`);
-    updateAutomationUI();
-  }
-  function updateAutomationUI() {
-    if($('chk-autoloop'))$('chk-autoloop').innerText = State.automation.autoDispatch ? 'ACTIVE' : 'ENABLE';
-    if($('chk-automro'))$('chk-automro').innerText = State.automation.autoMRO ? 'ACTIVE' : 'ENABLE';
-    if($('chk-autorefuel'))$('chk-autorefuel').innerText = State.automation.autoRefuel ? 'ACTIVE' : 'ENABLE';
-    renderMilestones();
-    renderSideMissions();
-  }
-
-  function generateSideMissions() {
-    let unlocked = State.routes.filter(r => r.unlocked);
-    if(unlocked.length === 0) unlocked = State.routes; 
-    
-    State.sideMissions = [];
-    for(let i=0; i<3; i++) {
-        let rt = unlocked[Math.floor(Math.random() * unlocked.length)];
-        State.sideMissions.push({
-            id: "sm_" + Date.now() + i,
-            title: `Commission: ${rt.name}`,
-            desc: `Master, please exhibit a fine ${rt.role} at ${rt.name}.`,
-            reqRoute: rt.id, reqRole: rt.role, readyToClaim: false,
-            rewardCash: Math.floor(rt.dist * 500) + 1000000,
-            rewardTier: Math.min(9, Math.floor(rt.dist / 1000))
-        });
-    }
-  }
-
-  function refreshSideMissions() {
-    generateSideMissions();
-    renderSideMissions();
-    toast("Commissions refreshed.");
-  }
-
-  function renderSideMissions() {
-    const list = $('side-missions-list'); if(!list) return; list.innerHTML = '';
-    State.sideMissions.forEach((m, idx) => {
-      let isReady = m.readyToClaim;
-      let rText = `+$${fmt(m.rewardCash)} & Free T${m.rewardTier+1} Seeds`;
-      list.innerHTML += `
-        <div class="check-item ${isReady ? 'done' : ''}">
-          <div>
-            <div style="font-weight:bold; color:#fff;">${m.title}</div>
-            <div style="font-size:9.5px; color:var(--silver-dim);">${m.desc}</div>
-            <div style="font-size:9.5px; color:var(--status-green); font-weight:bold; margin-top:2px;">Payout: ${rText}</div>
-          </div>
-          <div>
-            <button class="btn btn-green" ${isReady ? '' : 'disabled'} onclick="claimSideMission(${idx})">COLLECT</button>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  function claimSideMission(idx) {
-    let m = State.sideMissions[idx];
-    if(!m || !m.readyToClaim) return;
-    
-    State.funds += m.rewardCash;
-    let bonusStrain = harvestStrain(m.rewardTier); 
-    State.fleet.push(bonusStrain);
-    toast(`Client Paid! +$${fmt(m.rewardCash)} & ${bonusStrain.name} acquired!`);
-
-    State.sideMissions.splice(idx, 1);
-    
-    let unlocked = State.routes.filter(r => r.unlocked);
-    if(unlocked.length === 0) unlocked = State.routes;
-    let rt = unlocked[Math.floor(Math.random() * unlocked.length)];
-    State.sideMissions.push({
-        id: "sm_" + Date.now(),
-        title: `Commission: ${rt.name}`,
-        desc: `Master, please exhibit a fine ${rt.role} at ${rt.name}.`,
-        reqRoute: rt.id, reqRole: rt.role, readyToClaim: false,
-        rewardCash: Math.floor(rt.dist * 500) + 1000000,
-        rewardTier: Math.min(9, Math.floor(rt.dist / 1000))
-    });
-
-    updateHUD(); renderSideMissions();
-  }
-
-  function renderMilestones() {
-    const list = $('milestone-list'); if(!list) return; list.innerHTML = '';
-    MILESTONES.forEach(m => {
-      let isClaimed = State.claimedMilestones.includes(m.id);
-      let canClaim = !isClaimed && m.req(State);
-      list.innerHTML += `
-        <div class="check-item ${isClaimed ? 'done' : ''}">
-          <div>
-            <div style="font-weight:bold; color:${isClaimed ? 'var(--status-green)' : '#fff'};">${isClaimed ? '✓ ' : ''}${m.title}</div>
-            <div style="font-size:9.5px; color:var(--silver-dim);">${m.desc}</div>
-            <div style="font-size:9.5px; color:var(--status-amber); font-weight:bold; margin-top:1px;">Reward: +$${fmt(m.reward)}</div>
-          </div>
-          <div>
-            ${isClaimed 
-              ? `<span style="color:var(--status-green); font-weight:bold; font-size:9px;">CLAIMED</span>` 
-              : `<button class="btn btn-green" ${canClaim ? '' : 'disabled'} onclick="claimMilestone('${m.id}')">CLAIM</button>`
-            }
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  function claimMilestone(mId) {
-    let m = MILESTONES.find(x => x.id === mId);
-    if(!m || State.claimedMilestones.includes(mId) || !m.req(State)) return;
-    State.claimedMilestones.push(mId);
-    State.funds += m.reward;
-    toast(`Milestone Achieved: +$${fmt(m.reward)}`);
-    updateHUD(); renderMilestones();
-  }
-
-  /* ================= UPGRADES ================= */
-  function getUpgCost(type, lvl) { return type==='mkt' ? Math.floor(100000*Math.pow(1.5,lvl)) : Math.floor(150000*Math.pow(1.6,lvl)); }
-  function renderUpgrades() {
-    let mC = getUpgCost('mkt', State.upgrades.mkt); let eC = getUpgCost('eng', State.upgrades.eng);
-    if($('upg-mkt-lvl'))$('upg-mkt-lvl').innerText=State.upgrades.mkt; 
-    if($('upg-mkt-pct'))$('upg-mkt-pct').innerText=State.upgrades.mkt*5; 
-    if($('upg-mkt-cost'))$('upg-mkt-cost').innerText=fmt(mC);
-    
-    if($('upg-eng-lvl'))$('upg-eng-lvl').innerText=State.upgrades.eng; 
-    if($('upg-eng-pct'))$('upg-eng-pct').innerText=Math.min(70, State.upgrades.eng*2); 
-    if($('upg-eng-cost'))$('upg-eng-cost').innerText=fmt(eC);
-  }
-  function buyUpgrade(type) {
-    let cost = getUpgCost(type, State.upgrades[type]);
-    if(State.funds < cost) { toast("Insufficient Cash."); return; }
-    State.funds -= cost; State.upgrades[type]++;
-    updateHUD(); renderUpgrades(); toast("Nursery expanded.");
-  }
-
-  /* ================= EXHIBITION DISPATCH ================= */
-  function dispatchFlight(pUid) {
-    const p = State.fleet.find(x=>x.uid===pUid); if(!p||p.status==='IN_FLIGHT'||!p.assignedRoute||!p.assignedPilot)return;
-    const r = State.routes.find(x=>x.id===p.assignedRoute); const pl = State.pilots.find(x=>x.uid===p.assignedPilot); if(!r||!pl)return;
-    
-    if(p.condition < 45) {
-      if(State.automation.autoMRO && State.funds >= Math.floor((100-p.condition)*2500)) {
-        maintainAirframe(p.uid);
+      if (overallScore >= exhibit.minScore) {
+        GAME.funds += exhibit.reward;
+        GAME.exhibitionWins[exhibit.id] = true;
+        GAME.rank = exhibit.rep;
+        showToast(`VICTORY! "${tree.name}" won the ${exhibit.name}! Awarded ¥${exhibit.reward.toLocaleString()}!`);
       } else {
-        toast("[WILTED] Vitality critical. Must Prune & Water."); return;
+        showToast(`Judged Unplaced. Score was ${overallScore} / Required ${exhibit.minScore}. Keep cultivating.`, true);
       }
+
+      saveState();
+      updateAllUI();
     }
 
-    let yieldM = 1.0 + (State.upgrades.mkt*0.05); let speedD = 1.0; let fuelD = 1.0; let safeD = 1.0;
-    if(pl.bType==='PRUNING') yieldM *= (1 + pl.bonus/100);
-    if(pl.bType==='SPEED') speedD = 1 + pl.bonus/100; 
-    if(pl.bType==='WATER') fuelD = 1 + pl.bonus/100;
-    if(pl.bType==='CARE') safeD = 1 + pl.bonus/100;
+    /* ==========================================================================
+       14. UPGRADE PROGRESSION SYSTEM
+       ========================================================================== */
+    function purchaseUpgrade(category, nextTier) {
+      const upg = UPGRADE_DATABASE[category][nextTier - 1];
+      if (!upg) return;
 
-    let baseMs = Math.max(5000, Math.min(90000, (r.dist/8000)*90000));
-    let msTime = Math.max(1000, baseMs / speedD); 
+      if (GAME.funds < upg.cost) {
+        showToast("Insufficient treasury capital for this upgrade!", true);
+        return;
+      }
 
-    let fBurn = Math.floor((r.dist * 0.22) * (1 - Math.min(0.7, State.upgrades.eng*0.02)) / fuelD);
-    
-    if(State.fuelReserve < fBurn) {
-      if(State.automation.autoRefuel && State.funds >= 100000 * State.fuelSpotPrice) {
-        State.funds -= 100000 * State.fuelSpotPrice;
-        State.fuelReserve += 100000;
+      GAME.funds -= upg.cost;
+      GAME.upgrades[category] = nextTier;
+      showToast(`Installed: ${upg.name}!`);
+      saveState();
+      updateAllUI();
+    }
+
+    /* ==========================================================================
+       15. SEEDLINGS & EXPEDITIONS STORE
+       ========================================================================== */
+    function purchaseSpeciesStock(speciesId) {
+      const spec = SPECIES_DATABASE.find(s => s.id === speciesId);
+      if (!spec) return;
+
+      const maxTrees = UPGRADE_DATABASE.facility[GAME.upgrades.facility - 1].capacity;
+      if (GAME.trees.length >= maxTrees) {
+        showToast(`Garden benches full (${GAME.trees.length}/${maxTrees})! Upgrade facility first.`, true);
+        return;
+      }
+
+      if (GAME.funds < spec.price) {
+        showToast("Insufficient nursery capital!", true);
+        return;
+      }
+
+      // Pick random complementary style
+      const styles = Object.keys(BONSAI_STYLES);
+      const chosenStyle = styles[Math.floor(Math.random() * styles.length)];
+
+      GAME.funds -= spec.price;
+      const newTree = createTreeInstance(spec.id, chosenStyle);
+      GAME.trees.push(newTree);
+      GAME.selectedTreeId = newTree.id;
+
+      showToast(`Acquired raw ${spec.name} stock! Added to benches.`);
+      saveState();
+      updateAllUI();
+      switchTab("workshop");
+    }
+
+    /* ==========================================================================
+       16. GOD MODE CHEATS & COMMAND TERMINAL
+       ========================================================================== */
+    function toggleGodMode() {
+      const modal = document.getElementById("godModal");
+      modal.classList.toggle("active");
+    }
+
+    function godAddFunds() {
+      GAME.funds += 5000000;
+      showToast("Celestial Bounty: +¥5,000,000 added.");
+      saveState();
+      updateAllUI();
+    }
+
+    function godAddAge() {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+      tree.age += 50;
+      tree.wabiSabiScore = Math.min(100, tree.wabiSabiScore + 25);
+      showToast(`Time warp: ${tree.name} aged +50 years!`);
+      saveState();
+      updateAllUI();
+    }
+
+    function godMaxRamification() {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+      tree.ramification = 100;
+      showToast(`Infinite density: Ramification set to 100%!`);
+      saveState();
+      updateAllUI();
+    }
+
+    function godMaxNebari() {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+      tree.nebariScore = 100;
+      tree.taperScore = 100;
+      showToast("Nebari and Taper maximized!");
+      saveState();
+      updateAllUI();
+    }
+
+    function godUnlockAllPots() {
+      showToast("All pots and stone slabs unlocked.");
+      openRepotModal();
+    }
+
+    function godAutoMaster() {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree) return;
+      tree.age = 120;
+      tree.ramification = 100;
+      tree.nebariScore = 100;
+      tree.taperScore = 100;
+      tree.wabiSabiScore = 95;
+      tree.jinCount = 2;
+      tree.shariCount = 3;
+      showToast("Ascended tree into legendary Kokufu Masterpiece!");
+      saveState();
+      updateAllUI();
+    }
+
+    function godMorphStyle(styleKey) {
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+      if (!tree || !BONSAI_STYLES[styleKey]) return;
+      tree.styleId = styleKey;
+      if (styleKey === "kengai") tree.potId = "cascade_deep";
+      if (styleKey === "yose_ue" || styleKey === "ishitsuki") tree.potId = "kurama_slab";
+      showToast(`Tree morphed into ${BONSAI_STYLES[styleKey].name}!`);
+      saveState();
+      updateAllUI();
+    }
+
+    function executeGodCommand() {
+      const input = document.getElementById("godCommandInput");
+      const cmd = input.value.trim();
+      input.value = "";
+      if (!cmd) return;
+
+      const parts = cmd.split(" ");
+      const action = parts[0].toLowerCase();
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
+
+      if (action === "add_funds") {
+        const amt = parseInt(parts[1]) || 100000;
+        GAME.funds += amt;
+        showToast(`God Shell: +¥${amt.toLocaleString()} added.`);
+      } else if (action === "set_age" && tree) {
+        const yrs = parseInt(parts[1]) || 50;
+        tree.age = yrs;
+        showToast(`God Shell: Tree age set to ${yrs} years.`);
+      } else if (action === "max_wabi_sabi" && tree) {
+        tree.wabiSabiScore = 100;
+        tree.jinCount = 3;
+        tree.shariCount = 3;
+        showToast("God Shell: Max Wabi-Sabi deadwood carved.");
+      } else if (action === "auto_master") {
+        godAutoMaster();
       } else {
-        toast("Insufficient Water."); return;
+        showToast(`Unknown command: ${cmd}`, true);
       }
+
+      saveState();
+      updateAllUI();
     }
-    State.fuelReserve -= fBurn;
 
-    let bRev = r.dist * 165 * yieldM;
-    
-    p.status='IN_FLIGHT'; p.flightStart=Date.now(); p.flightDuration=msTime; p.flightEnd=p.flightStart+msTime; p.expRev=bRev; p.wear=10/safeD;
-    
-    State.sideMissions.forEach(m => {
-        if(!m.readyToClaim && p.assignedRoute === m.reqRoute && p.role === m.reqRole) {
-            m.readyToClaim = true;
-            toast(`Client Happy: ${m.title}`);
-            if($('tab-checklist').classList.contains('active')) renderSideMissions();
-        }
-    });
+    /* ==========================================================================
+       17. UI RENDERING & TAB NAVIGATION
+       ========================================================================== */
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".dock-btn").forEach(el => el.classList.remove("active"));
 
-    needsFleetRender = true; updateHUD();
-  }
-  function dispatchAll() { State.fleet.filter(p=>p.status==='READY'&&p.assignedRoute&&p.assignedPilot).forEach(p=>dispatchFlight(p.uid)); }
-  function maintainAirframe(pUid) { const p=State.fleet.find(x=>x.uid===pUid); if(!p||p.status==='IN_FLIGHT')return; let c=Math.floor((100-p.condition)*2500); if(State.funds<c)return; State.funds-=c; p.condition=100; updateHUD(); needsFleetRender = true; }
-  function maintainAll() { let c=0; State.fleet.filter(p=>p.condition<90&&p.status!=='IN_FLIGHT').forEach(p=>c+=Math.floor((100-p.condition)*2500)); if(c===0||State.funds<c)return; State.funds-=c; State.fleet.forEach(p=>p.condition=100); updateHUD(); renderFleet(); }
+      const target = document.getElementById("tab-" + tabId);
+      if (target) target.classList.add("active");
 
-  /* ================= 10-LANE WHOLESALE AUCTIONS ================= */
-  function initAuction(uid, type) {
-    if(State.auctions.length>=10){toast("Auction house full.");return;}
-    let item;
-    if(type==='plane') { let i=State.fleet.findIndex(x=>x.uid===uid); if(i===-1)return; item=State.fleet[i]; if(item.assignedPilot){ let px=State.pilots.find(x=>x.uid===item.assignedPilot); if(px)px.assignedTo=null; } State.fleet.splice(i,1); }
-    if(type==='pilot') { let i=State.pilots.findIndex(x=>x.uid===uid); if(i===-1)return; item=State.pilots[i]; State.pilots.splice(i,1); }
-    
-    State.auctions.push({ item:item, type:type, baseVal:item.value, timer:20.0, currentBid:Math.floor(item.value*0.9), log:[] });
-    updateHUD(); renderAuctions(); renderFleet(); renderPilots(); toast("Moved to Master Auctions.");
-  }
-  
-  function fillAuctions(type) {
-    let a=10-State.auctions.length; if(a<=0) { toast("Auction house full."); return; }
-    
-    let c = type==='planes' 
-      ? State.fleet.filter(p=>p.status==='READY'&&!p.assignedPilot).sort((x,y)=>x.value-y.value) 
-      : State.pilots.filter(p=>!p.assignedTo&&!p.locked).sort((x,y)=>x.value-y.value);
-        
-    if(c.length===0){toast("No eligible trees/staff available.");return;}
-    
-    let loaded = 0;
-    c.slice(0,a).forEach(item=>{ 
-      if(type==='planes'){ let i=State.fleet.findIndex(x=>x.uid===item.uid); State.fleet.splice(i,1); }
-      if(type==='pilots'){ let i=State.pilots.findIndex(x=>x.uid===item.uid); State.pilots.splice(i,1); }
-      State.auctions.push({item:item, type:type, baseVal:item.value, timer:20.0, currentBid:Math.floor(item.value*0.9), log:[]}); 
-      loaded++;
-    });
-    
-    updateHUD(); renderPilots(); renderFleet(); renderAuctions(); 
-    toast(`Loaded ${loaded} lots to Auction.`);
-  }
+      // Match dock button highlight
+      const btns = Array.from(document.querySelectorAll(".dock-btn"));
+      const map = ["garden", "tokonoma", "workshop", "tools", "seedlings", "market", "exhibitions"];
+      const idx = map.indexOf(tabId);
+      if (idx !== -1 && btns[idx]) btns[idx].classList.add("active");
 
-  function renderAuctions() {
-    const b=$('auction-board'); if(!b)return; $('auction-count').innerText=State.auctions.length; b.innerHTML='';$('auction-idle').style.display = State.auctions.length===0 ? 'block' : 'none';
-    State.auctions.forEach((a) => {
-      let hLog = a.log.map(l=>`<div>${l}</div>`).join('');
-      let col = a.item.tierColor || '#fff';
-      
-      b.innerHTML+=`
-        <div class="auction-slot">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-            <div style="display:flex; gap:8px; align-items:center;">
-              ${a.type === 'plane' ? `<img src="${a.item.imgData}" style="width:40px; height:40px; image-rendering:pixelated; background:#000; border:1px solid #142014;" />` : ''}
-              <div>
-                <div style="font-size:12px;font-weight:bold;color:${col};">${a.item.name}</div>
-                <div class="stat-block" style="font-size:9px;">VAL: $${fmt(a.baseVal)}</div>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div id="auc-timer-${a.item.uid}" style="font-size:8.5px;color:var(--silver-dim);font-weight:bold;">TIME [${a.timer.toFixed(1)}s]</div>
-              <div id="auc-bid-${a.item.uid}" style="font-size:14px;font-weight:bold;color:var(--status-green);font-family:monospace;">$${fmt(a.currentBid)}</div>
-            </div>
+      updateAllUI();
+    }
+
+    function showToast(msg, isError = false) {
+      const rack = document.getElementById("toast-rack");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      if (isError) toast.style.borderLeftColor = "var(--vermilion)";
+      toast.textContent = msg;
+      rack.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function selectTree(treeId) {
+      GAME.selectedTreeId = treeId;
+      updateAllUI();
+      switchTab("tokonoma");
+    }
+
+    function updateAllUI() {
+      // HUD
+      document.getElementById("hud-funds").textContent = `¥${GAME.funds.toLocaleString()}`;
+      document.getElementById("hud-rank").textContent = GAME.rank;
+      document.getElementById("hud-season").textContent = `${SEASONS[GAME.seasonIndex]}, Yr ${GAME.year}`;
+      const capacity = UPGRADE_DATABASE.facility[GAME.upgrades.facility - 1].capacity;
+      document.getElementById("hud-trees").textContent = `${GAME.trees.length} / ${capacity}`;
+
+      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId) || GAME.trees[0];
+      if (!tree) return;
+      const species = SPECIES_DATABASE.find(s => s.id === tree.speciesId) || SPECIES_DATABASE[0];
+      const style = BONSAI_STYLES[tree.styleId] || BONSAI_STYLES.moyogi;
+      const { overallScore, valuation } = calculateTreeMetrics(tree);
+
+      // Tokonoma dossier
+      document.getElementById("tok-tree-name").textContent = tree.name;
+      document.getElementById("tok-tree-style").textContent = `${style.name} (${style.kanji})`;
+      document.getElementById("tok-species-botanical").textContent = species.botanical;
+      document.getElementById("tok-tree-age").textContent = `${tree.age} yrs`;
+      document.getElementById("tok-tree-ram").textContent = `${tree.ramification}%`;
+      document.getElementById("tok-ram-bar").style.width = `${tree.ramification}%`;
+      document.getElementById("tok-tree-nebari").textContent = `${tree.nebariScore} / 100`;
+      document.getElementById("tok-neb-bar").style.width = `${tree.nebariScore}%`;
+      document.getElementById("tok-tree-wabi").textContent = `${tree.wabiSabiScore} / 100`;
+      document.getElementById("tok-wabi-bar").style.width = `${tree.wabiSabiScore}%`;
+      document.getElementById("tok-tree-moisture").textContent = `${tree.moisture}%`;
+      document.getElementById("tok-tree-score").textContent = overallScore.toFixed(1);
+
+      const pot = POT_DATABASE.find(p => p.id === tree.potId) || POT_DATABASE[0];
+      document.getElementById("tok-pot-desc").textContent = `${pot.name} — ${pot.desc}`;
+
+      // Market tab info
+      document.getElementById("mkt-tree-name").textContent = `Selected: ${tree.name} (${species.name})`;
+      document.getElementById("mkt-tree-val").textContent = `Estimated Valuation: ¥${valuation.toLocaleString()}`;
+
+      // Workshop tab title
+      document.getElementById("ws-tree-title").textContent = tree.name;
+      document.getElementById("ws-tree-subtitle").textContent = `${style.name} // ${species.name}`;
+
+      // Render Active Canvases
+      renderBonsaiOnCanvas(document.getElementById("tokonomaCanvas"), tree);
+      renderBonsaiOnCanvas(document.getElementById("workshopCanvas"), tree);
+
+      // Render Garden Grid
+      renderGardenGrid();
+
+      // Render Upgrades
+      renderUpgrades();
+
+      // Render Species Nursery Market
+      renderNurseryStock();
+
+      // Render Exhibitions
+      renderExhibitions();
+    }
+
+    function renderGardenGrid() {
+      const grid = document.getElementById("garden-grid");
+      grid.innerHTML = "";
+
+      GAME.trees.forEach(t => {
+        const card = document.createElement("div");
+        card.className = "tree-mini-card" + (t.id === GAME.selectedTreeId ? " selected" : "");
+        card.onclick = () => selectTree(t.id);
+
+        const canvasWrap = document.createElement("div");
+        canvasWrap.className = "mini-canvas-wrap";
+        const miniCan = document.createElement("canvas");
+        miniCan.width = 180;
+        miniCan.height = 180;
+        canvasWrap.appendChild(miniCan);
+        renderBonsaiOnCanvas(miniCan, t);
+
+        const { overallScore, valuation } = calculateTreeMetrics(t);
+        const spec = SPECIES_DATABASE.find(s => s.id === t.speciesId) || SPECIES_DATABASE[0];
+
+        card.appendChild(canvasWrap);
+        card.innerHTML += `
+          <div style="font-family:var(--font-serif); font-weight:600; font-size:0.95rem; color:var(--washi);">${t.name}</div>
+          <div style="font-size:0.75rem; color:var(--washi-muted); margin-bottom:6px;">${spec.name} // ${t.age} yrs</div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-top:auto;">
+            <span style="color:var(--gold-light);">Score: ${overallScore}</span>
+            <span style="color:var(--bamboo-light);">¥${valuation.toLocaleString()}</span>
           </div>
-          <div class="auction-timer-bg"><div id="auc-bar-${a.item.uid}" class="auction-timer-bar" style="width:${(a.timer/20)*100}%;"></div></div>
-          <div class="auction-log">${hLog}</div>
-        </div>
-      `;
-    });
-  }
+        `;
 
-  /* ================= GAME LOOP ================= */
-  const FACTIONS = ["Kyoto Syndicate","Wealthy Patron","Imperial Collector","Local Master"];
-  function gameTick() {
-    let n = Date.now();
-    let auctionChanged = false;
-    
-    // Market Timer
-    State.marketTimer -= 0.1;
-    let mT = $('market-timer'); if(mT) mT.innerText = Math.max(0, State.marketTimer).toFixed(1);
-    if(State.marketTimer <= 0) { State.marketTimer = 10.0; refreshMarket(); }
-
-    // Exhibitions
-    State.fleet.forEach(p => {
-      if(p.status==='IN_FLIGHT') {
-        let pct = ((n-p.flightStart)/p.flightDuration)*100;
-        if(pct>=100) { 
-          p.status='READY'; State.funds+=p.expRev; p.condition=Math.max(10, p.condition-p.wear); updateHUD(); 
-          let st=$(`st-${p.uid}`); if(st) st.innerHTML=`STATUS: <strong style="color:#fff;">READY</strong>`; 
-          let b=$(`bar-${p.uid}`); if(b){b.style.width='0%'; b.parentElement.style.display='none';} 
-          
-          if(State.automation.autoDispatch && p.assignedRoute && p.assignedPilot) {
-            setTimeout(() => dispatchFlight(p.uid), 200);
-          } else {
-            needsFleetRender = true; 
-          }
-        } 
-        else { let b=$(`bar-${p.uid}`); if(b) b.style.width=pct+'%'; }
-      }
-    });
-
-    if(needsFleetRender) {
-      if($('tab-fleet').classList.contains('active')) renderFleet();
-      needsFleetRender = false;
+        grid.appendChild(card);
+      });
     }
 
-    // Auctions
-    if(State.auctions.length>0) {
-      for(let i=State.auctions.length-1; i>=0; i--) {
-        let a=State.auctions[i]; a.timer-=0.1; 
-        
-        let uiT = $(`auc-timer-${a.item.uid}`);
-        let uiB = $(`auc-bar-${a.item.uid}`);
-        let uiBid = $(`auc-bid-${a.item.uid}`);
+    function renderUpgrades() {
+      const container = document.getElementById("upgrades-container");
+      container.innerHTML = "";
 
-        if(a.timer>0 && Math.random()<0.10) {
-          let f=FACTIONS[Math.floor(Math.random()*FACTIONS.length)]; let m=1.05+(Math.random()*0.10);
-          if(Math.random()<0.015) { m=2.0+(Math.random()*18.0); a.log.push(`<span style="color:var(--status-amber);">[BID WAR] Spike!</span>`); }
-          let nB=Math.floor(a.currentBid*m); if(nB<=a.currentBid) nB=a.currentBid+1; a.currentBid=nB;
-          a.log.push(`<span style="color:var(--silver-bright);">[${f}] bids $${fmt(a.currentBid)}</span>`);
-          if(a.log.length>3) a.log.shift();
-          if(a.timer<=1.0){ a.timer=3.0; a.log.push(`<span style="color:var(--status-red);">[OVERTIME] Reset to 3s!</span>`); }
-          if(uiBid) uiBid.innerText = "$" + fmt(a.currentBid);
-          auctionChanged = true;
-        } else {
-          if(uiT) uiT.innerText = `TIME [${Math.max(0, a.timer).toFixed(1)}s]`;
-          if(uiB) { uiB.style.width = ((a.timer/20)*100) + '%'; uiB.style.background = a.timer <= 3 ? 'var(--status-red)' : 'var(--status-green)'; }
-        }
+      Object.keys(UPGRADE_DATABASE).forEach(catKey => {
+        const cat = UPGRADE_DATABASE[catKey];
+        const currentTier = GAME.upgrades[catKey];
 
-        if(a.timer<=0){ 
-          State.funds+=a.currentBid; State.statAuctionsSold++;
-          toast(`SOLD for $${fmt(a.currentBid)}!`); 
-          State.auctions.splice(i,1); updateHUD(); 
-          auctionChanged = true;
-        }
-      }
-      
-      if(auctionChanged && $('tab-auction').classList.contains('active')) renderAuctions();
+        const section = document.createElement("div");
+        section.className = "upgrade-category";
+
+        const title = document.createElement("div");
+        title.style.fontFamily = "var(--font-serif)";
+        title.style.fontSize = "1rem";
+        title.style.color = "var(--washi)";
+        title.style.textTransform = "capitalize";
+        title.textContent = `${catKey} Infrastructure (Current: Level ${currentTier})`;
+        section.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.className = "upgrade-tier-grid";
+
+        cat.forEach(tierObj => {
+          const box = document.createElement("div");
+          const isPurchased = tierObj.tier <= currentTier;
+          const isNext = tierObj.tier === currentTier + 1;
+
+          box.className = "upgrade-box" + (isPurchased ? " purchased" : (isNext ? " current" : ""));
+          box.innerHTML = `
+            <div>
+              <div style="font-size:0.7rem; color:var(--gold-light); text-transform:uppercase;">Tier ${tierObj.tier}</div>
+              <div style="font-weight:600; font-size:0.9rem; margin:2px 0 6px 0;">${tierObj.name}</div>
+              <div style="font-size:0.75rem; color:var(--washi-muted); line-height:1.4;">${tierObj.desc}</div>
+            </div>
+            <div style="margin-top:12px;">
+              ${isPurchased ? 
+                '<span style="font-size:0.75rem; color:var(--bamboo-light); font-weight:600;">ACTIVE</span>' : 
+                `<button class="btn primary" style="width:100%;" ${!isNext ? "disabled" : ""} onclick="purchaseUpgrade('${catKey}', ${tierObj.tier})">
+                   Upgrade ¥${tierObj.cost.toLocaleString()}
+                 </button>`
+              }
+            </div>
+          `;
+          grid.appendChild(box);
+        });
+
+        section.appendChild(grid);
+        container.appendChild(section);
+      });
     }
-  }
 
-  /* ================= INIT & NAVIGATION ================= */
-  function setTab(tabId) {
-    document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); if(b.getAttribute('onclick').includes(tabId)) b.classList.add('active'); });
-    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-    const target = $('tab-'+tabId); if(target) target.classList.add('active');
+    function renderNurseryStock() {
+      const grid = document.getElementById("species-market-grid");
+      grid.innerHTML = "";
 
-    if(tabId==='fleet') renderFleet();
-    if(tabId==='auction') renderAuctions();
-    if(tabId==='gallery') renderGallery();
-  }
-  function godMode() {
-    State.funds += 2000000000; State.fuelReserve += 10000000;
-    State.fleet.forEach(p => p.condition = 100);
-    toast("GRANDMASTER: +$2B Cash, +10M Gal Water, Benches Restored.");
-    updateHUD(); renderFleet();
-  }
+      SPECIES_DATABASE.forEach(s => {
+        const item = document.createElement("div");
+        item.className = "seedling-item";
+        item.innerHTML = `
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+              <span class="tag ${s.category}">${s.category}</span>
+              <span style="font-family:var(--font-serif); font-size:1rem; color:var(--gold-light);">¥${s.price.toLocaleString()}</span>
+            </div>
+            <div style="font-family:var(--font-serif); font-weight:600; font-size:1rem; margin-top:6px;">${s.name}</div>
+            <div style="font-size:0.75rem; color:var(--washi-muted); font-style:italic; margin-bottom:6px;">${s.botanical}</div>
+            <div style="font-size:0.75rem; color:var(--washi); line-height:1.4;">${s.desc}</div>
+          </div>
+          <button class="btn gold-btn" style="margin-top:12px;" onclick="purchaseSpeciesStock('${s.id}')">
+            Acquire Specimen
+          </button>
+        `;
+        grid.appendChild(item);
+      });
+    }
 
-  function initUI() {
-    if(!State.gallery) State.gallery = [];
-    if(!State.routes || State.routes.length < 400) State.routes = generateRoutes();
-    updateHUD(); refreshMarket();
-    if(globalInterval) clearInterval(globalInterval); globalInterval = setInterval(gameTick, 100);
-  }
-  initUI();
-</script>
+    function renderExhibitions() {
+      const list = document.getElementById("exhibition-list");
+      list.innerHTML = "";
+
+      EXHIBITIONS_DATA.forEach(ex => {
+        const won = GAME.exhibitionWins[ex.id];
+        const card = document.createElement("div");
+        card.className = "exhibition-tier" + (won ? " passed" : "");
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <div style="font-family:var(--font-serif); font-size:1.1rem; color:var(--gold);">${ex.name}</div>
+            <span style="font-size:0.8rem; color:${won ? "var(--gold-light)" : "var(--washi-muted)"};">
+              ${won ? "★ MEDAL CONQUERED" : `Entry Fee: ¥${ex.entryFee.toLocaleString()}`}
+            </span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--washi-muted);">
+            Minimum Aesthetic Score Required: <strong style="color:var(--washi);">${ex.minScore} / 100</strong> | Prize Purse: <strong style="color:var(--bamboo-light);">¥${ex.reward.toLocaleString()}</strong>
+          </div>
+          <button class="btn ${won ? "gold-btn" : "primary"}" style="align-self:flex-start; min-width:180px;" onclick="enterExhibition('${ex.id}')">
+            ${won ? "Compete Again for Purse" : "Submit Selected Bonsai"}
+          </button>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // Populate God Mode Style Morph Buttons
+    function initGodStyleButtons() {
+      const container = document.getElementById("godStyleButtons");
+      container.innerHTML = "";
+      Object.keys(BONSAI_STYLES).forEach(key => {
+        const style = BONSAI_STYLES[key];
+        const b = document.createElement("button");
+        b.className = "btn";
+        b.style.fontSize = "0.7rem";
+        b.style.padding = "4px 8px";
+        b.textContent = `${style.name} (${style.kanji})`;
+        b.onclick = () => godMorphStyle(key);
+        container.appendChild(b);
+      });
+    }
+
+    // Quick water all benches
+    document.getElementById("quickWaterAllBtn").onclick = () => {
+      GAME.trees.forEach(t => t.moisture = 100);
+      showToast("All cultivation benches hydrated.");
+      saveState();
+      updateAllUI();
+    };
+
+    document.getElementById("godModeToggle").onclick = toggleGodMode;
+
+    // Boot engine on load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadSave();
+      initGodStyleButtons();
+      updateAllUI();
+    });
+  </script>
 </body>
 </html>
