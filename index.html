@@ -2,28 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TENKEI: Living Sculpture // Traditional Japanese Bonsai Cultivation</title>
+  <title>Bonsai Master - Pixel Cultivation & Nursery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     :root {
-      --bg-dark: #0a0d0a;
-      --bg-surface: #121713;
-      --bg-card: #19201a;
-      --bg-elevated: #222b23;
-      --border: #2d382e;
-      --border-light: #3e4d3f;
-      --washi: #f4f6f0;
-      --washi-muted: #a3ab9f;
-      --terracotta: #a0522d;
-      --terracotta-light: #c86a3d;
-      --bamboo: #3d8b41;
-      --bamboo-light: #57b55c;
-      --gold: #d4af37;
-      --gold-light: #f5d76e;
-      --vermilion: #c23b22;
-      --celadon: #709782;
-      --font-serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --bg-dark: #121714;
+      --bg-panel: #1b241e;
+      --bg-card: #243028;
+      --border-color: #3b4e41;
+      --accent-gold: #d4a34b;
+      --accent-green: #5a8e63;
+      --accent-red: #a84343;
+      --accent-blue: #4a7a8c;
+      --text-main: #e8ede9;
+      --text-muted: #8ca392;
+      --pixel-scale: 3px;
     }
 
     * {
@@ -32,2065 +27,2352 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
+      touch-action: manipulation;
+      font-family: -apple-system, BlinkMacSystemFont, "Courier New", Courier, monospace;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
     }
 
     body {
       background-color: var(--bg-dark);
-      color: var(--washi);
-      font-family: var(--font-sans);
-      min-height: 100vh;
+      color: var(--text-main);
+      height: 100vh;
+      height: -webkit-fill-available;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
-      font-size: 14px;
+      overflow: hidden;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* Scrollbars */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-dark); }
-    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
-
-    /* Top HUD */
-    header.hud {
+    /* TOP BAR / STATS */
+    #top-bar {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 16px;
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 6px 12px;
+      background: var(--bg-panel);
+      border-bottom: 2px solid var(--border-color);
+      font-size: 13px;
+      height: 44px;
+      z-index: 10;
     }
-
-    .brand {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-
-    .brand h1 {
-      font-family: var(--font-serif);
-      font-size: 1.25rem;
-      letter-spacing: 0.15em;
-      color: var(--gold);
-      font-weight: 600;
-    }
-
-    .brand span {
-      font-size: 0.75rem;
-      color: var(--washi-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .hud-metrics {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .metric-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .metric-badge .label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--washi-muted);
-    }
-
-    .metric-badge .value {
-      font-family: var(--font-serif);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--washi);
-    }
-
-    .metric-badge .value.gold { color: var(--gold-light); }
-    .metric-badge .value.bamboo { color: var(--bamboo-light); }
-
-    .god-mode-btn {
-      background: transparent;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      padding: 4px 10px;
+    .hud-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 3px 8px;
       border-radius: 4px;
-      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hud-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
       cursor: pointer;
-      transition: all 0.2s ease;
-      letter-spacing: 0.05em;
+    }
+    .hud-btn:active { background: var(--accent-gold); color: #000; }
+
+    /* BENCH NAVIGATOR */
+    #bench-bar {
+      display: flex;
+      background: #161e18;
+      border-bottom: 1px solid var(--border-color);
+      padding: 4px 8px;
+      gap: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .slot-btn {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 3px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .slot-btn.active {
+      background: var(--accent-green);
+      color: #fff;
+      border-color: #79be84;
     }
 
-    .god-mode-btn:hover, .god-mode-btn.active {
-      background: var(--gold);
-      color: var(--bg-dark);
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
-    }
-
-    /* Main Layout */
-    main {
+    /* MAIN VIEWPORT (CANVAS) */
+    #canvas-container {
       flex: 1;
       display: flex;
       flex-direction: column;
-      max-width: 1400px;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: radial-gradient(circle at center, #232c25 0%, #121714 85%);
+      overflow: hidden;
+    }
+    #game-canvas {
+      width: min(85vw, 320px);
+      height: min(85vw, 320px);
+      max-width: 340px;
+      max-height: 340px;
+      border: 2px solid var(--border-color);
+      background-color: #171f1a;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      image-rendering: pixelated;
+    }
+
+    /* PLANT VITALS PANEL */
+    #vitals-panel {
       width: 100%;
-      margin: 0 auto;
-      padding: 16px;
-      margin-bottom: 70px;
+      padding: 6px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
     }
-
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.25s ease forwards;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Bottom Navigation Bar */
-    nav.dock {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(18, 23, 19, 0.95);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: space-around;
-      border-top: 1px solid var(--border);
-      padding: 6px 4px;
-      z-index: 1000;
-    }
-
-    .dock-btn {
-      background: transparent;
-      border: none;
-      color: var(--washi-muted);
+    .vital-bar {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      padding: 6px 10px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-radius: 6px;
-      min-width: 58px;
+      gap: 2px;
     }
-
-    .dock-btn svg {
-      width: 20px;
-      height: 20px;
-      stroke: currentColor;
-      stroke-width: 1.7;
-      fill: none;
-    }
-
-    .dock-btn.active {
-      color: var(--gold);
-      background: rgba(212, 175, 55, 0.08);
-    }
-
-    /* Tokonoma & Viewport Styles */
-    .tokonoma-stage {
-      display: grid;
-      grid-template-columns: minmax(300px, 460px) 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    @media (max-width: 860px) {
-      .tokonoma-stage { grid-template-columns: 1fr; }
-    }
-
-    .alcove-frame {
-      background: #141713;
-      border: 8px solid #231c16;
-      border-bottom: 14px solid #1a1511;
-      border-radius: 4px;
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.7);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-    }
-
-    .alcove-canvas-container {
-      position: relative;
+    .vital-track {
       width: 100%;
-      aspect-ratio: 1/1;
-      max-width: 440px;
+      height: 7px;
+      background: #0f1311;
+      border: 1px solid var(--border-color);
+      position: relative;
     }
-
-    canvas.bonsai-canvas {
-      width: 100%;
+    .vital-fill {
       height: 100%;
-      display: block;
-      image-rendering: auto;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    }
-
-    .card-title {
-      font-family: var(--font-serif);
-      font-size: 1.15rem;
-      color: var(--gold);
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 6px;
-    }
-
-    .spec-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .spec-item {
-      background: var(--bg-surface);
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-    }
-
-    .spec-item .k {
-      font-size: 0.65rem;
-      color: var(--washi-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 2px;
-    }
-
-    .spec-item .v {
-      font-family: var(--font-serif);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--washi);
-    }
-
-    .progress-bar-wrap {
-      margin-top: 4px;
-      height: 5px;
-      background: var(--bg-dark);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--bamboo);
+      width: 50%;
+      background: var(--accent-green);
       transition: width 0.3s ease;
     }
 
-    .progress-bar-fill.gold { background: var(--gold); }
-    .progress-bar-fill.terracotta { background: var(--terracotta-light); }
-
-    /* Action buttons & toolbars */
-    .btn-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    button.btn {
-      background: var(--bg-elevated);
-      color: var(--washi);
-      border: 1px solid var(--border-light);
-      padding: 10px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
+    /* BOTTOM TABS & CONTROLS */
+    #action-drawer {
+      background: var(--bg-panel);
+      border-top: 2px solid var(--border-color);
       display: flex;
       flex-direction: column;
+    }
+    #sub-actions {
+      display: flex;
+      gap: 6px;
+      padding: 8px 10px;
+      overflow-x: auto;
+      min-height: 52px;
       align-items: center;
-      gap: 4px;
-      transition: all 0.2s ease;
-      text-align: center;
     }
-
-    button.btn:hover:not(:disabled) {
-      background: var(--border-light);
-      border-color: var(--gold);
-      color: #fff;
-      transform: translateY(-1px);
-    }
-
-    button.btn:active:not(:disabled) {
-      transform: translateY(1px);
-    }
-
-    button.btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    button.btn.primary {
-      background: #2a3a2c;
-      border-color: var(--bamboo);
-      color: var(--washi);
-    }
-
-    button.btn.primary:hover:not(:disabled) {
-      background: var(--bamboo);
-      color: #fff;
-    }
-
-    button.btn.gold-btn {
-      background: #3a3219;
-      border-color: var(--gold);
-      color: var(--gold-light);
-    }
-
-    button.btn.gold-btn:hover:not(:disabled) {
-      background: var(--gold);
-      color: var(--bg-dark);
-    }
-
-    /* Garden Tree Carousel & Grid */
-    .bench-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .tree-mini-card {
+    .action-btn {
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      min-height: 44px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      position: relative;
     }
-
-    .tree-mini-card:hover {
-      border-color: var(--gold);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    .action-btn:active {
+      background: var(--accent-gold);
+      color: #000;
     }
-
-    .tree-mini-card.selected {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.4);
-    }
-
-    .mini-canvas-wrap {
-      width: 100%;
-      aspect-ratio: 1/1;
-      background: #111411;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    /* Upgrade Trees & Grid */
-    .upgrade-category {
-      margin-bottom: 24px;
-    }
-
-    .upgrade-tier-grid {
+    #tab-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-top: 8px;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--border-color);
+      background: #111613;
+    }
+    .tab-btn {
+      padding: 10px 0;
+      font-size: 11px;
+      color: var(--text-muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      text-align: center;
+      min-height: 44px;
+    }
+    .tab-btn.active {
+      color: var(--accent-gold);
+      border-bottom: 2px solid var(--accent-gold);
+      font-weight: bold;
     }
 
-    .upgrade-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .upgrade-box.purchased {
-      border-color: var(--bamboo);
-      background: rgba(61, 139, 65, 0.08);
-    }
-
-    .upgrade-box.current {
-      border-color: var(--gold);
-      background: rgba(212, 175, 55, 0.1);
-    }
-
-    /* Seedlings & Yamadori Market */
-    .nursery-market {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
-    }
-
-    .seedling-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .tag {
-      font-size: 0.65rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-    }
-    .tag.conifer { background: #1c3826; color: #72cf93; }
-    .tag.deciduous { background: #3b2c1b; color: #e8a75e; }
-    .tag.flower { background: #401b2a; color: #f289b7; }
-    .tag.tropical { background: #1b393b; color: #62d9dc; }
-
-    /* God Mode Overlay Terminal */
-    .god-console-wrap {
+    /* MODAL WINDOWS */
+    .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(5,7,5,0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      padding: 20px 14px;
+      flex-direction: column;
     }
-
-    .god-console-wrap.active {
-      display: flex;
-    }
-
-    .god-terminal {
-      background: #0d120e;
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      width: 100%;
-      max-width: 650px;
-      max-height: 80vh;
+    .modal.active { display: flex; }
+    .modal-card {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+      max-height: 90vh;
+      overflow: hidden;
     }
-
-    .god-terminal-header {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
+    .modal-header {
+      padding: 10px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: var(--font-serif);
-      color: var(--gold);
     }
-
-    .god-body {
-      padding: 16px;
+    .modal-body {
+      padding: 12px;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .god-quick-btn-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 8px;
-    }
-
-    .terminal-input-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .terminal-input {
+      font-size: 13px;
+      line-height: 1.4;
       flex: 1;
-      background: #060906;
-      border: 1px solid var(--border-light);
-      border-radius: 4px;
-      padding: 8px 12px;
-      color: #92ec9b;
-      font-family: monospace;
-      font-size: 0.9rem;
-      outline: none;
-    }
-    .terminal-input:focus {
-      border-color: var(--gold);
-    }
-
-    /* Toast system */
-    #toast-rack {
-      position: fixed;
-      top: 64px;
-      right: 16px;
-      z-index: 3000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
-    }
-
-    .toast {
-      background: var(--bg-surface);
-      border-left: 4px solid var(--gold);
-      color: var(--washi);
-      padding: 10px 16px;
-      border-radius: 4px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      font-size: 0.85rem;
-      animation: slideIn 0.25s ease forwards;
-      pointer-events: auto;
-      max-width: 320px;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* Exhibition Cards */
-    .exhibition-tier {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px;
-      margin-bottom: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    .exhibition-tier.passed {
-      border-color: var(--gold);
-      background: rgba(212, 175, 55, 0.05);
+    .close-btn {
+      background: var(--accent-red);
+      color: #fff;
+      border: none;
+      padding: 4px 8px;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+
+    /* GOD MODE CONSOLE DRAWER */
+    #god-console {
+      font-family: monospace;
+      font-size: 11px;
+    }
+    .god-group {
+      border: 1px dashed var(--border-color);
+      padding: 8px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .god-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top HUD -->
-  <header class="hud">
-    <div class="brand">
-      <h1>TENKEI // 天啓</h1>
-      <span>LIVING SCULPTURE</span>
+  <!-- TOP BAR -->
+  <header id="top-bar">
+    <div class="hud-chip">
+      <span id="display-season">🌸 Spring</span>
+      <span id="display-day">D1</span>
     </div>
-
-    <div class="hud-metrics">
-      <div class="metric-badge">
-        <span class="label">Treasury</span>
-        <span class="value gold" id="hud-funds">¥25,000</span>
-      </div>
-      <div class="metric-badge">
-        <span class="label">Rank</span>
-        <span class="value" id="hud-rank">Shoshinsha (Novice)</span>
-      </div>
-      <div class="metric-badge">
-        <span class="label">Season / Yr</span>
-        <span class="value bamboo" id="hud-season">Spring, Yr 1</span>
-      </div>
-      <div class="metric-badge">
-        <span class="label">Collection</span>
-        <span class="value" id="hud-trees">1 / 2</span>
-      </div>
-      <button class="god-mode-btn" id="godModeToggle" title="Open Celestial God Console">GOD MODE</button>
+    <div class="hud-chip">
+      <span style="color:var(--accent-gold);">🪙</span>
+      <span id="display-coins">350</span>
+    </div>
+    <div style="display:flex; gap:4px;">
+      <button class="hud-btn" onclick="UI.toggleModal('modal-shop')">Store</button>
+      <button class="hud-btn" onclick="UI.toggleModal('modal-manual')">Guide</button>
+      <button class="hud-btn" onclick="UI.toggleModal('modal-god')">God</button>
+      <button class="hud-btn" onclick="UI.toggleModal('modal-save')">Save</button>
     </div>
   </header>
 
-  <!-- Notification Rack -->
-  <div id="toast-rack"></div>
-
-  <!-- Main Viewports Tabs -->
-  <main>
-    <!-- TAB 1: GARDEN BENCHES -->
-    <section id="tab-garden" class="tab-content active">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h2 style="font-family: var(--font-serif); font-weight:500;">Cultivation Benches</h2>
-        <button class="btn primary" id="quickWaterAllBtn">
-          <span>Water All Plants</span>
-        </button>
-      </div>
-      <div class="bench-grid" id="garden-grid">
-        <!-- Rendered dynamically -->
-      </div>
-    </section>
-
-    <!-- TAB 2: TOKONOMA ALCOVE (INSPECTION) -->
-    <section id="tab-tokonoma" class="tab-content">
-      <div class="tokonoma-stage">
-        <!-- Japanese Alcove Canvas Frame -->
-        <div class="alcove-frame">
-          <div class="alcove-canvas-container">
-            <canvas id="tokonomaCanvas" class="bonsai-canvas" width="400" height="400"></canvas>
-          </div>
-        </div>
-
-        <!-- Tree Detailed Dossier -->
-        <div class="card" id="tokonoma-dossier">
-          <div class="card-title">
-            <span id="tok-tree-name">Kuromatsu Pine</span>
-            <span id="tok-tree-style" style="font-size:0.85rem; color:var(--gold-light);">Moyogi</span>
-          </div>
-
-          <div style="font-size:0.8rem; color:var(--washi-muted); margin-bottom:12px; font-style:italic;" id="tok-species-botanical">
-            Pinus thunbergii
-          </div>
-
-          <div class="spec-grid">
-            <div class="spec-item">
-              <div class="k">Age (Jurei)</div>
-              <div class="v" id="tok-tree-age">18 yrs</div>
-            </div>
-            <div class="spec-item">
-              <div class="k">Ramification</div>
-              <div class="v" id="tok-tree-ram">32%</div>
-              <div class="progress-bar-wrap"><div class="progress-bar-fill" id="tok-ram-bar" style="width:32%"></div></div>
-            </div>
-            <div class="spec-item">
-              <div class="k">Taper & Nebari</div>
-              <div class="v" id="tok-tree-nebari">48 / 100</div>
-              <div class="progress-bar-wrap"><div class="progress-bar-fill gold" id="tok-neb-bar" style="width:48%"></div></div>
-            </div>
-            <div class="spec-item">
-              <div class="k">Wabi-Sabi Patina</div>
-              <div class="v" id="tok-tree-wabi">24 / 100</div>
-              <div class="progress-bar-wrap"><div class="progress-bar-fill terracotta" id="tok-wabi-bar" style="width:24%"></div></div>
-            </div>
-            <div class="spec-item">
-              <div class="k">Hydration</div>
-              <div class="v" id="tok-tree-moisture">85%</div>
-            </div>
-            <div class="spec-item">
-              <div class="k">Aesthetic Score</div>
-              <div class="v" style="color:var(--gold-light);" id="tok-tree-score">58.4</div>
-            </div>
-          </div>
-
-          <div class="card" style="margin-top:10px; background:var(--bg-surface); border:1px solid var(--border);">
-            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--washi-muted); margin-bottom:6px;">Pot & Presentation</div>
-            <div id="tok-pot-desc" style="font-size:0.85rem; color:var(--washi);">Tokoname Unglazed Rectangular Tray with Cloud Feet</div>
-          </div>
-
-          <div class="btn-row" style="margin-top:14px;">
-            <button class="btn primary" onclick="switchTab('workshop')">Refine in Workshop</button>
-            <button class="btn" onclick="renameCurrentTree()">Rename Bonsai</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: WORKSHOP (DISCIPLINE ACTIONS) -->
-    <section id="tab-workshop" class="tab-content">
-      <div style="display:grid; grid-template-columns: minmax(280px, 360px) 1fr; gap:16px;">
-        <div class="card" style="display:flex; flex-direction:column; align-items:center;">
-          <div style="width:100%; aspect-ratio:1/1; max-width:320px; background:#121612; border:1px solid var(--border); border-radius:6px; overflow:hidden; margin-bottom:12px;">
-            <canvas id="workshopCanvas" width="320" height="320" style="width:100%; height:100%;"></canvas>
-          </div>
-          <div style="font-family:var(--font-serif); font-size:1rem; color:var(--gold);" id="ws-tree-title">Kuromatsu</div>
-          <div style="font-size:0.75rem; color:var(--washi-muted);" id="ws-tree-subtitle">Style: Moyogi</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Disciplines & Master Interventions</div>
-          <p style="font-size:0.8rem; color:var(--washi-muted); margin-bottom:14px;">
-            Shape the living wood, control vegetative energy, carve weathered deadwood, and cultivate aesthetic harmony.
-          </p>
-
-          <div class="btn-row" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-            <button class="btn primary" id="actPruneBtn" onclick="applyAction('prune')">
-              <strong>Mekiri & Sentei (Prune)</strong>
-              <span style="font-size:0.7rem; color:var(--washi-muted);">Increases ramification; shapes pads</span>
-            </button>
-            <button class="btn" id="actWireBtn" onclick="applyAction('wire')">
-              <strong>Harigane-kake (Wire)</strong>
-              <span style="font-size:0.7rem; color:var(--washi-muted);">Level pads & enforce pad angles</span>
-            </button>
-            <button class="btn" id="actCarveBtn" onclick="applyAction('carve')">
-              <strong>Carve Jin & Shari</strong>
-              <span style="font-size:0.7rem; color:var(--washi-muted);">Sculpt deadwood bleached ribbons</span>
-            </button>
-            <button class="btn" id="actRepotBtn" onclick="openRepotModal()">
-              <strong>Tekishin (Repot & Root Prune)</strong>
-              <span style="font-size:0.7rem; color:var(--washi-muted);">Upgrade container & root flare</span>
-            </button>
-            <button class="btn" id="actFertilizeBtn" onclick="applyAction('fertilize')">
-              <strong>Aburakasu (Organic Rapeseed)</strong>
-              <span style="font-size:0.7rem; color:var(--washi-muted);">Restores vigor and foliage lushness</span>
-            </button>
-            <button class="btn" id="actWaterBtn" onclick="applyAction('water')">
-              <strong>Mizuyari (Hasu Wand Water)</strong>
-              <span style="font-size:0.7rem; color:var(--washi-muted);">Hydrates roots to 100%</span>
-            </button>
-          </div>
-
-          <!-- Pot Selector Panel (Hidden unless Repotting) -->
-          <div id="repotPanel" style="display:none; margin-top:16px; padding:12px; background:var(--bg-surface); border:1px solid var(--border); border-radius:6px;">
-            <div style="font-size:0.85rem; font-weight:600; color:var(--gold); margin-bottom:8px;">Select Bonsai-Bachi (Pot / Vessel):</div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px;" id="repotPotGrid">
-              <!-- Dynamically populated -->
-            </div>
-            <button class="btn" style="margin-top:10px; width:100%;" onclick="closeRepotModal()">Cancel Repot</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 4: TOOLS & GARDEN UPGRADES -->
-    <section id="tab-tools" class="tab-content">
-      <h2 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--gold); margin-bottom:14px;">Master Infrastructure & Equipment Upgrades</h2>
-      <div id="upgrades-container">
-        <!-- Rendered dynamically for 5 categories -->
-      </div>
-    </section>
-
-    <!-- TAB 5: SEEDLINGS & EXPEDITIONS -->
-    <section id="tab-seedlings" class="tab-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <h2 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--gold);">Bonsai Nursery Stock & Yamadori Expeditions</h2>
-      </div>
-      <div class="nursery-market" id="species-market-grid">
-        <!-- 30+ species populated dynamically -->
-      </div>
-    </section>
-
-    <!-- TAB 6: MARKET & COMMISSIONS -->
-    <section id="tab-market" class="tab-content">
-      <div style="display:grid; grid-template-columns: minmax(280px, 340px) 1fr; gap:16px;">
-        <div class="card">
-          <div class="card-title">Offer Selected Tree for Sale</div>
-          <div style="font-size:0.85rem; margin-bottom:10px;" id="mkt-tree-name">Selected: Kuromatsu</div>
-          <div style="font-size:1.1rem; color:var(--gold); font-family:var(--font-serif); margin-bottom:12px;" id="mkt-tree-val">Estimated Valuation: ¥48,000</div>
-          <button class="btn gold-btn" style="width:100%;" onclick="sellCurrentTree()">Sell to Highest Collector Bid</button>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Visiting Connoisseurs & Temple Collectors</div>
-          <div id="connoisseur-dialogue" style="font-size:0.85rem; color:var(--washi); line-height:1.6; background:var(--bg-surface); padding:14px; border-radius:6px; border:1px solid var(--border);">
-            "Welcome, Artisan. Master collectors from Kyoto and Tokyo frequently inspect your benches. Cultivate high Nebari, pure Jin deadwood, and tight ramification to fetch astronomical sums."
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 7: EXHIBITIONS & TOURNAMENTS -->
-    <section id="tab-exhibitions" class="tab-content">
-      <h2 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--gold); margin-bottom:14px;">Prestigious Bonsai Exhibitions</h2>
-      <div id="exhibition-list">
-        <!-- 3 Exhibitions rendered dynamically -->
-      </div>
-    </section>
-  </main>
-
-  <!-- Bottom Dock Navigation -->
-  <nav class="dock">
-    <button class="dock-btn active" onclick="switchTab('garden')">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <span>Garden</span>
-    </button>
-    <button class="dock-btn" onclick="switchTab('tokonoma')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      <span>Tokonoma</span>
-    </button>
-    <button class="dock-btn" onclick="switchTab('workshop')">
-      <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-      <span>Workshop</span>
-    </button>
-    <button class="dock-btn" onclick="switchTab('tools')">
-      <svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-      <span>Tools</span>
-    </button>
-    <button class="dock-btn" onclick="switchTab('seedlings')">
-      <svg viewBox="0 0 24 24"><path d="M12 22v-9M12 13a5 5 0 0 1 5-5h3v3a5 5 0 0 1-5 5h-3zM12 13a5 5 0 0 0-5-5H4v3a5 5 0 0 0 5 5h3z"/></svg>
-      <span>Stock</span>
-    </button>
-    <button class="dock-btn" onclick="switchTab('market')">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <span>Market</span>
-    </button>
-    <button class="dock-btn" onclick="switchTab('exhibitions')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-      <span>Exhibits</span>
-    </button>
+  <!-- BENCH / MULTI-TREE SELECTION BAR -->
+  <nav id="bench-bar">
+    <button class="slot-btn active" onclick="Bench.selectSlot(0)">Bench #1</button>
+    <button class="slot-btn" onclick="Bench.selectSlot(1)">Bench #2</button>
+    <button class="slot-btn" onclick="Bench.selectSlot(2)">Bench #3</button>
+    <button class="slot-btn" onclick="Bench.selectSlot(3)">Bench #4</button>
+    <button class="slot-btn" onclick="Bench.selectSlot(4)">Bench #5</button>
+    <button class="slot-btn" onclick="Bench.selectSlot(5)">Bench #6</button>
   </nav>
 
-  <!-- God Mode Interactive Terminal Modal -->
-  <div class="god-console-wrap" id="godModal">
-    <div class="god-terminal">
-      <div class="god-terminal-header">
-        <span>CELESTIAL GOD CONSOLE // 神の力</span>
-        <button onclick="toggleGodMode()" style="background:none; border:none; color:var(--washi-muted); font-size:1.2rem; cursor:pointer;">&times;</button>
-      </div>
-      <div class="god-body">
-        <p style="font-size:0.75rem; color:var(--washi-muted);">Directly alter botanical physics, inject nursery capital, and bend tree morphology.</p>
-        
-        <div class="god-quick-btn-grid">
-          <button class="btn gold-btn" onclick="godAddFunds()">+¥5,000,000</button>
-          <button class="btn primary" onclick="godAddAge()">+50 Yrs Age</button>
-          <button class="btn" onclick="godMaxRamification()">Max Ramification (100%)</button>
-          <button class="btn" onclick="godMaxNebari()">Max Nebari Roots</button>
-          <button class="btn" onclick="godUnlockAllPots()">Unlock All Pots</button>
-          <button class="btn" onclick="godAutoMaster()">Auto Kokufu Master</button>
-        </div>
+  <!-- 128x128 PIXEL CANVAS VIEWPORT -->
+  <main id="canvas-container">
+    <canvas id="game-canvas" width="128" height="128"></canvas>
+  </main>
 
-        <div style="font-size:0.8rem; font-weight:600; color:var(--gold); margin-top:8px;">Morph Active Tree Style:</div>
-        <div style="display:flex; flex-wrap:wrap; gap:6px;" id="godStyleButtons">
-          <!-- 10 style morph buttons -->
-        </div>
+  <!-- LIVE VITALS MONITOR -->
+  <section id="vitals-panel">
+    <div class="vital-bar">
+      <span>Hydration: <b id="val-water">75%</b></span>
+      <div class="vital-track"><div id="bar-water" class="vital-fill" style="width:75%;"></div></div>
+    </div>
+    <div class="vital-bar">
+      <span>Soil Aeration: <b id="val-soil">88%</b></span>
+      <div class="vital-track"><div id="bar-soil" class="vital-fill" style="width:88%; background:var(--accent-gold);"></div></div>
+    </div>
+    <div class="vital-bar">
+      <span>Vigor & Health: <b id="val-vigor">94%</b></span>
+      <div class="vital-track"><div id="bar-vigor" class="vital-fill" style="width:94%;"></div></div>
+    </div>
+    <div class="vital-bar">
+      <span>Harmony / Style: <b id="val-style">45</b></span>
+      <div class="vital-track"><div id="bar-style" class="vital-fill" style="width:45%; background:var(--accent-blue);"></div></div>
+    </div>
+  </section>
 
-        <div style="font-size:0.8rem; font-weight:600; color:var(--gold); margin-top:8px;">Interactive Shell Terminal:</div>
-        <div class="terminal-input-row">
-          <input type="text" id="godCommandInput" class="terminal-input" placeholder="Type: add_funds 50000 | set_age 120 | max_wabi_sabi" onkeydown="if(event.key==='Enter') executeGodCommand()">
-          <button class="btn gold-btn" onclick="executeGodCommand()">Execute</button>
-        </div>
+  <!-- BOTTOM ACTION SYSTEM -->
+  <footer id="action-drawer">
+    <div id="sub-actions"></div>
+    <div id="tab-bar">
+      <button class="tab-btn active" onclick="UI.switchTab('care')">Care</button>
+      <button class="tab-btn" onclick="UI.switchTab('style')">Train</button>
+      <button class="tab-btn" onclick="UI.switchTab('pots')">Pot & Stand</button>
+      <button class="tab-btn" onclick="UI.switchTab('clone')">Clone</button>
+      <button class="tab-btn" onclick="UI.switchTab('tokonoma')">Exhibit</button>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- FIELD MANUAL / CODEX -->
+  <div id="modal-manual" class="modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Master Bonsai Field Codex</h3>
+        <button class="close-btn" onclick="UI.toggleModal('modal-manual')">✕</button>
       </div>
+      <div class="modal-body" id="manual-content"></div>
     </div>
   </div>
 
-  <!-- SCRIPT ENGINE -->
+  <!-- STOREFRONT / NURSERY MARKET -->
+  <div id="modal-shop" class="modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Nursery Store & Market</h3>
+        <button class="close-btn" onclick="UI.toggleModal('modal-shop')">✕</button>
+      </div>
+      <div class="modal-body" id="store-content"></div>
+    </div>
+  </div>
+
+  <!-- GOD MODE CONSOLE -->
+  <div id="modal-god" class="modal">
+    <div class="modal-card" id="god-console">
+      <div class="modal-header">
+        <h3>God Mode Dev Console</h3>
+        <button class="close-btn" onclick="UI.toggleModal('modal-god')">✕</button>
+      </div>
+      <div class="modal-body" id="god-content"></div>
+    </div>
+  </div>
+
+  <!-- SAVE / LOAD / BACKUP -->
+  <div id="modal-save" class="modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Save & Load Game</h3>
+        <button class="close-btn" onclick="UI.toggleModal('modal-save')">✕</button>
+      </div>
+      <div class="modal-body" id="save-content"></div>
+    </div>
+  </div>
+
+  <!-- ================= GLOBAL BOOTSTRAP FRAMEWORK ================= -->
   <script>
-    /* ==========================================================================
-       1. PSEUDO-RANDOM NUMBER GENERATOR (Mulberry32)
-       ========================================================================== */
-    function mulberry32(a) {
-      return function() {
-        var t = a += 0x6D2B79F5;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    // 1. Light Notification Toasts
+    const Toast = {
+      activeTimer: null,
+      show(message, type = 'info') {
+        let el = document.getElementById('toast-msg');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'toast-msg';
+          el.style.cssText = `
+            position: fixed; top: 50px; left: 50%; transform: translateX(-50%);
+            background: #1e2922; border: 1px solid #4a6852; color: #e8ede9;
+            padding: 6px 14px; font-size: 11px; font-weight: bold; border-radius: 4px;
+            z-index: 200; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+            transition: opacity 0.2s ease;
+          `;
+          document.body.appendChild(el);
+        }
+        if (type === 'warn') { el.style.borderColor = 'var(--accent-red)'; el.style.color = '#ff9999'; }
+        else if (type === 'success') { el.style.borderColor = 'var(--accent-green)'; el.style.color = '#a1e8af'; }
+        else { el.style.borderColor = 'var(--accent-gold)'; el.style.color = 'var(--accent-gold)'; }
+        el.textContent = message;
+        el.style.opacity = '1';
+        clearTimeout(this.activeTimer);
+        this.activeTimer = setTimeout(() => { el.style.opacity = '0'; }, 2200);
       }
-    }
-
-    /* ==========================================================================
-       2. DATABASE: 30+ BOTANICAL SPECIES
-       ========================================================================== */
-    const SPECIES_DATABASE = [
-      // Conifers
-      { id: "kuromatsu", name: "Japanese Black Pine", botanical: "Pinus thunbergii", category: "conifer", foliage: "pine", bark: "cork", leafColor: "#1b4d2e", price: 12000, desc: "The king of bonsai. Rugged fissured cork bark and intense needle vigor." },
-      { id: "goyomatsu", name: "Japanese White Pine", botanical: "Pinus parviflora", category: "conifer", foliage: "pine", bark: "smooth", leafColor: "#2a523e", price: 15000, desc: "Delicate five-needle clusters with gentle blue-green foliage." },
-      { id: "shimpaku", name: "Shimpaku Juniper", botanical: "Juniperus chinensis var. sargentii", category: "conifer", foliage: "juniper", bark: "stringy", leafColor: "#2e604f", price: 18000, desc: "Legendary for sinuous deadwood shari and tight billowy foliage clouds." },
-      { id: "tosho", name: "Needle Juniper", botanical: "Juniperus rigida", category: "conifer", foliage: "juniper", bark: "stringy", leafColor: "#224e39", price: 14000, desc: "Sharp, prickly needles with rigid structural lines." },
-      { id: "ezo_spruce", name: "Ezo Spruce", botanical: "Picea jezoensis", category: "conifer", foliage: "pine", bark: "cork", leafColor: "#143924", price: 16000, desc: "Northern alpine monarch with dense tiny needles and deep fissures." },
-      { id: "dawn_redwood", name: "Dawn Redwood", botanical: "Metasequoia glyptostroboides", category: "conifer", foliage: "broadleaf", bark: "stringy", leafColor: "#3e7b39", price: 9000, desc: "Ancient living fossil with feathery deciduous needles and fluted base." },
-
-      // Deciduous
-      { id: "momiji", name: "Japanese Mountain Maple", botanical: "Acer palmatum", category: "deciduous", foliage: "palmate", bark: "smooth", leafColor: "#387834", price: 11000, desc: "Delicate palmate hand-shaped leaves with blazing scarlet autumn display." },
-      { id: "bloodgood", name: "Bloodgood Red Maple", botanical: "Acer palmatum atropurpureum", category: "deciduous", foliage: "palmate", bark: "smooth", leafColor: "#801826", price: 13500, desc: "Deep imperial burgundy foliage lasting through spring and summer." },
-      { id: "arakawa", name: "Arakawa Rough-Bark Maple", botanical: "Acer palmatum 'Arakawa'", category: "deciduous", foliage: "palmate", bark: "cork", leafColor: "#42823b", price: 17500, desc: "Unique mutation producing deeply furrowed, cracked cork bark." },
-      { id: "kaede", name: "Trident Maple", botanical: "Acer buergerianum", category: "deciduous", foliage: "palmate", bark: "cork", leafColor: "#4c8f38", price: 10500, desc: "Massive nebari root flare and extreme tolerance for root carving." },
-      { id: "chinese_elm", name: "Chinese Elm", botanical: "Ulmus parvifolia", category: "deciduous", foliage: "broadleaf", bark: "cork", leafColor: "#2a662e", price: 6500, desc: "Rapid ramification and exfoliating puzzle-like bark patterns." },
-      { id: "zelkova", name: "Japanese Zelkova", botanical: "Zelkova serrata", category: "deciduous", foliage: "broadleaf", bark: "smooth", leafColor: "#3c7a33", price: 8500, desc: "The definitive broom-style bonsai with perfect upward fan ramification." },
-      { id: "beech", name: "Japanese Mountain Beech", botanical: "Fagus crenata", category: "deciduous", foliage: "broadleaf", bark: "smooth", leafColor: "#498539", price: 16000, desc: "Silvery-white muscular bark holding dried bronze leaves into winter." },
-      { id: "ginkgo", name: "Ginkgo Biloba", botanical: "Ginkgo biloba", category: "deciduous", foliage: "broadleaf", bark: "cork", leafColor: "#599932", price: 13000, desc: "Primitive fan-shaped leaves that turn incandescent golden-yellow." },
-      { id: "hornbeam", name: "Korean Hornbeam", botanical: "Carpinus coreana", category: "deciduous", foliage: "broadleaf", bark: "smooth", leafColor: "#397334", price: 12500, desc: "Fine twigging, tiny leaves, and stunning orange-yellow fall color." },
-
-      // Flowering & Fruiting
-      { id: "satsuki", name: "Satsuki Azalea", botanical: "Rhododendron indicum", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#e63980", price: 15000, desc: "Explosive late-spring blossoms in shades of vivid magenta and blush." },
-      { id: "sakura", name: "Flowering Cherry", botanical: "Prunus serrulata", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#f7b2cb", price: 21000, desc: "The ethereal symbol of ephemeral beauty with soft pink springtime blossoms." },
-      { id: "chojubai", name: "Dwarf Flowering Quince", botanical: "Chaenomeles speciosa 'Chojubai'", category: "flower", foliage: "flower", bark: "cork", leafColor: "#d92b2b", price: 14500, desc: "Coveted for scarlet blossoms that emerge directly from ancient craggy trunks." },
-      { id: "crabapple", name: "Japanese Crabapple", botanical: "Malus halliana", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#f07a9e", price: 13500, desc: "Pendant rose blossoms giving way to luminous ruby fruit clusters in autumn." },
-      { id: "pomegranate", name: "Nejikan Pomegranate", botanical: "Punica granatum", category: "flower", foliage: "flower", bark: "stringy", leafColor: "#e65124", price: 15500, desc: "Trunks naturally twist like wetted ropes with fiery orange flowers." },
-      { id: "wisteria", name: "Japanese Wisteria", botanical: "Wisteria floribunda", category: "flower", foliage: "flower", bark: "stringy", leafColor: "#8b66c9", price: 19000, desc: "Spectacular weeping cascades of fragrant lavender and violet racemes." },
-      { id: "ume", name: "Japanese Flowering Apricot", botanical: "Prunus mume", category: "flower", foliage: "flower", bark: "cork", leafColor: "#f5e1e8", price: 17000, desc: "Braves the snow to blossom in late winter upon ancient, hollow trunks." },
-      { id: "camellia", name: "Camellia Japonica", botanical: "Camellia japonica", category: "flower", foliage: "flower", bark: "smooth", leafColor: "#c92440", price: 12000, desc: "Glossy evergreen leaves framed by bold crimson winter flowers." },
-
-      // Tropical & Penjing
-      { id: "ficus_retusa", name: "Tiger Bark Ficus", botanical: "Ficus retusa", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#22662c", price: 5000, desc: "Vigorous aerial banyan roots with distinctive striped bark markings." },
-      { id: "dwarf_jade", name: "Dwarf Jade (Portulacaria)", botanical: "Portulacaria afra", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#4f8c36", price: 4000, desc: "Succulent jade-green leaves, fleshy trunks, and unmatched drought resilience." },
-      { id: "brazilian_raintree", name: "Brazilian Raintree", botanical: "Chloroleucon tortum", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#397d34", price: 14000, desc: "Contorted spiny branches with compound leaves that fold together at night." },
-      { id: "chinese_banyan", name: "Chinese Banyan", botanical: "Ficus microcarpa", category: "tropical", foliage: "broadleaf", bark: "smooth", leafColor: "#1e5e29", price: 5500, desc: "Classic banyan penjing specimen capable of dramatic aerial root framing." },
-      { id: "buttonwood", name: "Buttonwood", botanical: "Conocarpus erectus", category: "tropical", foliage: "broadleaf", bark: "stringy", leafColor: "#386b49", price: 16500, desc: "Tropical yamadori shoreline wood with wild natural deadwood grain." },
-      { id: "bougainvillea", name: "Paperflower Bougainvillea", botanical: "Bougainvillea glabra", category: "tropical", foliage: "flower", bark: "stringy", leafColor: "#d92582", price: 8000, desc: "Brilliant fuchsia bracts wrapping twisted, aged thorn trunks." }
-    ];
-
-    /* ==========================================================================
-       3. DATABASE: 10 CLASSIC BONSAI MORPHOLOGICAL STYLES
-       ========================================================================== */
-    const BONSAI_STYLES = {
-      chokkan: { id: "chokkan", name: "Chokkan", kanji: "直幹", label: "Formal Upright", desc: "Rigid vertical trunk with natural taper and balanced horizontal pads." },
-      moyogi: { id: "moyogi", name: "Moyogi", kanji: "模様木", label: "Informal Upright", desc: "Graceful S-curves with foliage pads blossoming from outer bends." },
-      shakan: { id: "shakan", name: "Shakan", kanji: "斜幹", label: "Slanted", desc: "Dynamic 45-60 degree slant counterbalanced by muscular anchor roots." },
-      kengai: { id: "kengai", name: "Kengai", kanji: "懸崖", label: "Full Cascade", desc: "Trunk plunges deep below the base of a tall cascade pot." },
-      han_kengai: { id: "han_kengai", name: "Han-Kengai", kanji: "半懸崖", label: "Semi-Cascade", desc: "Trunk sweeps horizontally, hovering right at the rim of the pot." },
-      bunjingi: { id: "bunjingi", name: "Bunjingi", kanji: "文人木", label: "Literati", desc: "Ethereal, minimalist, undulating trunk with minimal apex foliage." },
-      fukinagashi: { id: "fukinagashi", name: "Fukinagashi", kanji: "吹流し", label: "Windswept", desc: "Branches and apex whipped in a single direction by coastal gales." },
-      sokan: { id: "sokan", name: "Sokan", kanji: "双幹", label: "Twin Trunk", desc: "Two harmonious trunks rising from a unified root base: Father & Child." },
-      yose_ue: { id: "yose_ue", name: "Yose-ue", kanji: "寄せ植え", label: "Forest Planting", desc: "Multiple coordinated trunks creating deep perspective on a stone slab." },
-      ishitsuki: { id: "ishitsuki", name: "Ishitsuki", kanji: "石付き", label: "Root-Over-Rock", desc: "Muscular surface roots clasping craggy mountain stone before reaching soil." }
     };
+    window.Toast = Toast;
 
-    /* ==========================================================================
-       4. DATABASE: POTS & DISPLAY CONTAINERS
-       ========================================================================== */
-    const POT_DATABASE = [
-      { id: "tokoname_rect", name: "Tokoname Rectangular", type: "rect", color: "#66331a", rimColor: "#4d2613", desc: "Unglazed red-brown clay with classic cloud feet." },
-      { id: "celadon_oval", name: "Celadon Glazed Oval", type: "oval", color: "#588574", rimColor: "#416557", desc: "Soft pale celadon crackle glaze with gentle beveled lip." },
-      { id: "cobalt_oval", name: "Imperial Cobalt Oval", type: "oval", color: "#1d3557", rimColor: "#13233a", desc: "Vibrant deep cobalt glaze suitable for deciduous autumn hues." },
-      { id: "cascade_deep", name: "Kengai Hexagonal Cascade", type: "cascade", color: "#382c26", rimColor: "#271e1a", desc: "Tall, slender hexagonal vessel for plunging cascade lines." },
-      { id: "nanban_rustic", name: "Rustic Nanban Round", type: "nanban", color: "#473b33", rimColor: "#332a24", desc: "Hand-pinched, unrefined primitive pit-fired volcanic clay." },
-      { id: "kurama_slab", name: "Kurama Stone Slab", type: "slab", color: "#2d3330", rimColor: "#1d211f", desc: "Jagged natural charcoal-slate slab rock with mossy margins." }
-    ];
-
-    /* ==========================================================================
-       5. DATABASE: 5 UPGRADE CATEGORIES (4 TIERS EACH)
-       ========================================================================== */
-    const UPGRADE_DATABASE = {
-      tools: [
-        { tier: 1, name: "Household Shears", cost: 0, desc: "Crude scissors. Leaves ragged wounds and scars easily." },
-        { tier: 2, name: "Forged Carbon Concave Cutters", cost: 18000, desc: "Hollow circular cuts heal flush without bulbous calluses." },
-        { tier: 3, name: "Spherical Knob Cutters & Jin Pliers", cost: 45000, desc: "Master carving deadwood with precision fibers." },
-        { tier: 4, name: "Masakuni Master Damascus Cutlery", cost: 120000, desc: "Razor-honed surgical steel. Doubled pruning efficiency & zero rot." }
-      ],
-      wire: [
-        { tier: 1, name: "Craft Store Aluminum", cost: 0, desc: "Thin wire that springs back on mature branches." },
-        { tier: 2, name: "Anodized Bonsai Aluminum (Gauge 1-5)", cost: 12000, desc: "Supple training wire with reliable holding tension." },
-        { tier: 3, name: "Annealed Traditional Copper Wire", cost: 35000, desc: "Work-hardens around pine branches for legendary hold." },
-        { tier: 4, name: "Raffia Wraps & Heavy Turnbuckles", cost: 90000, desc: "Enables extreme trunk bending without fiber breakage." }
-      ],
-      soil: [
-        { tier: 1, name: "Garden Potting Soil", cost: 0, desc: "Compacts readily, suffocating delicate feeder roots." },
-        { tier: 2, name: "Sifted Pumice & Pine Bark Blend", cost: 10000, desc: "Greatly improved aeration and micro-drainage." },
-        { tier: 3, name: "Double-Red-Line Hard Akadama & Kiryu", cost: 32000, desc: "Supreme volcanic clay from Tochigi. Unmatched CEC." },
-        { tier: 4, name: "4-Part Custom Sifted + Mycorrhizae", cost: 85000, desc: "Akadama/Kanuma/Hyuga/Lava inoculated with symbiotic fungi." }
-      ],
-      water: [
-        { tier: 1, name: "Kitchen Water Jug", cost: 0, desc: "Inconsistent volume disturbs surface moss cushions." },
-        { tier: 2, name: "Hasu Copper Watering Wand", cost: 8000, desc: "Fine rain spray gentle on sensitive surface root hairs." },
-        { tier: 3, name: "Automated Micro-Mist Hygrometer Benches", cost: 28000, desc: "Prevents trees from ever desiccating below 50% hydration." },
-        { tier: 4, name: "Pure Rainwater Bio-Filtration Benches", cost: 75000, desc: "Optimal pH rainwater promoting lush emerald Yamagoke moss." }
-      ],
-      facility: [
-        { tier: 1, name: "Apartment Balcony Shelf (2 Stands)", cost: 0, capacity: 2, desc: "Modest space allowing cultivation of up to 2 trees." },
-        { tier: 2, name: "Backyard Cedar Bonsai Bench (6 Stands)", cost: 25000, capacity: 6, desc: "Elevated cedar stands sheltered from ground pests." },
-        { tier: 3, name: "Traditional Tsubo-niwa Courtyard (16 Stands)", cost: 80000, capacity: 16, desc: "Serene courtyard garden with morning mist exposure." },
-        { tier: 4, name: "Omiya Heritage Bonsai-en (40 Stands)", cost: 250000, capacity: 40, desc: "World-class traditional nursery with formal Tokonoma alcove." }
-      ]
-    };
-
-    /* ==========================================================================
-       6. DATABASE: EXHIBITIONS & TOURNAMENTS
-       ========================================================================== */
-    const EXHIBITIONS_DATA = [
-      { id: "prefectural", name: "Prefectural Autumn Bonsai Show", minScore: 55, entryFee: 5000, reward: 25000, rep: "Chuken (Artisan)" },
-      { id: "taikan_ten", name: "Taikan-ten Kyoto Winter Exhibition", minScore: 75, entryFee: 20000, reward: 120000, rep: "Meijin (Master)" },
-      { id: "kokufu_ten", name: "The Kokufu-ten (Tokyo Metropolitan Art Museum)", minScore: 90, entryFee: 60000, reward: 500000, rep: "Toshi (Grandmaster)" }
-    ];
-
-    /* ==========================================================================
-       7. GLOBAL GAME STATE & INITIALIZATION
-       ========================================================================== */
-    const GAME = {
-      funds: 25000,
-      seasonIndex: 0, // 0: Spring, 1: Summer, 2: Autumn, 3: Winter
-      year: 1,
-      rank: "Shoshinsha (Novice)",
-      trees: [],
-      selectedTreeId: null,
-      upgrades: {
-        tools: 1,
-        wire: 1,
-        soil: 1,
-        water: 1,
-        facility: 1
+    // 2. Main Window & Modal Controller
+    const UI = {
+      activeTab: 'care',
+      toggleModal(id) {
+        if (id === 'modal-shop' && window.Store) Store.render();
+        if (id === 'modal-manual' && window.Manual) Manual.render();
+        if (id === 'modal-god' && window.GodConsole) GodConsole.render();
+        if (id === 'modal-save' && window.Persistence) Persistence.render();
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('active');
       },
-      exhibitionWins: {},
-      godMode: false
-    };
-
-    const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
-
-    // Initialize state or load from localStorage
-    function loadSave() {
-      const saved = localStorage.getItem("tenkei_save_v1");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          Object.assign(GAME, parsed);
-        } catch (e) {
-          console.warn("Could not load save, creating new garden.", e);
-        }
-      }
-      if (!GAME.trees || GAME.trees.length === 0) {
-        // Create starter tree: Kuromatsu
-        const starter = createTreeInstance("kuromatsu", "moyogi");
-        starter.name = "First Pine (Hajime)";
-        starter.age = 15;
-        starter.ramification = 30;
-        starter.taperScore = 40;
-        starter.nebariScore = 45;
-        starter.wabiSabiScore = 20;
-        GAME.trees = [starter];
-      }
-      GAME.selectedTreeId = GAME.trees[0].id;
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem("tenkei_save_v1", JSON.stringify(GAME));
-      } catch (e) {
-        console.error("Save error", e);
-      }
-    }
-
-    function createTreeInstance(speciesId, styleId = "moyogi") {
-      const species = SPECIES_DATABASE.find(s => s.id === speciesId) || SPECIES_DATABASE[0];
-      const style = BONSAI_STYLES[styleId] ? styleId : "moyogi";
-      return {
-        id: "tree_" + Date.now() + "_" + Math.floor(Math.random() * 10000),
-        name: species.name,
-        speciesId: species.id,
-        styleId: style,
-        potId: style === "kengai" ? "cascade_deep" : (style === "yose_ue" || style === "ishitsuki" ? "kurama_slab" : "tokoname_rect"),
-        age: Math.floor(4 + Math.random() * 8),
-        ramification: 15,
-        taperScore: 25,
-        nebariScore: 30,
-        wabiSabiScore: 10,
-        moisture: 90,
-        vigor: 95,
-        wired: false,
-        jinCount: 0,
-        shariCount: 0,
-        seed: Math.floor(Math.random() * 1000000)
-      };
-    }
-
-    /* ==========================================================================
-       8. PROCEDURAL 2D CANVAS BONSAI ART ENGINE
-       ========================================================================== */
-    function renderBonsaiOnCanvas(canvas, tree) {
-      if (!canvas || !tree) return;
-      const ctx = canvas.getContext("2d");
-      const W = canvas.width;
-      const H = canvas.height;
-      const rng = mulberry32(tree.seed);
-
-      ctx.clearRect(0, 0, W, H);
-
-      // Tokonoma Alcove Background
-      ctx.fillStyle = "#161b17";
-      ctx.fillRect(0, 0, W, H);
-
-      // Tatami & Washi alcove frame
-      ctx.fillStyle = "#272e27";
-      ctx.fillRect(0, H - 35, W, 35);
-      ctx.fillStyle = "#1e241e";
-      ctx.fillRect(0, H - 38, W, 3);
-
-      // Hanging Scroll (Kakejiku) background silhouette
-      ctx.fillStyle = "#1b211c";
-      ctx.fillRect(W * 0.72, 20, W * 0.18, H * 0.45);
-      ctx.fillStyle = "#272f28";
-      ctx.fillRect(W * 0.74, 25, W * 0.14, H * 0.38);
-
-      const species = SPECIES_DATABASE.find(s => s.id === tree.speciesId) || SPECIES_DATABASE[0];
-      const pot = POT_DATABASE.find(p => p.id === tree.potId) || POT_DATABASE[0];
-
-      // Pot geometry constants
-      const potWidth = W * 0.52;
-      const potHeight = pot.type === "cascade" ? H * 0.28 : H * 0.11;
-      const potX = W * 0.5 - potWidth / 2;
-      const potY = pot.type === "cascade" ? H * 0.62 : H * 0.76;
-
-      // Draw Root-Over-Rock (Ishitsuki) stone if applicable
-      if (tree.styleId === "ishitsuki") {
-        ctx.fillStyle = "#3a413c";
-        ctx.beginPath();
-        ctx.moveTo(potX + potWidth * 0.35, potY + 4);
-        ctx.lineTo(potX + potWidth * 0.45, potY - H * 0.18);
-        ctx.lineTo(potX + potWidth * 0.6, potY - H * 0.15);
-        ctx.lineTo(potX + potWidth * 0.68, potY + 4);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = "#272c28";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-
-      // Draw Trunk(s)
-      const basePoint = { x: W * 0.5, y: potY + 2 };
-      if (tree.styleId === "yose_ue") {
-        // Multi-trunk forest: draw 5 coordinated trunks
-        const offsets = [-0.18, -0.09, 0.02, 0.12, 0.22];
-        offsets.forEach((off, idx) => {
-          const tH = (0.35 + (idx % 3) * 0.08) * H;
-          const trunkW = 6 - (idx % 2) * 2;
-          drawSingleTrunk(ctx, rng, { x: basePoint.x + off * W, y: basePoint.y }, tH, trunkW, tree, species, "chokkan", 0.6);
+      switchTab(tab) {
+        this.activeTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tab));
         });
-      } else if (tree.styleId === "sokan") {
-        // Twin Trunk: Father and Child
-        drawSingleTrunk(ctx, rng, { x: basePoint.x - 12, y: basePoint.y }, H * 0.46, 12, tree, species, "moyogi", 1.0, -0.2);
-        drawSingleTrunk(ctx, rng, { x: basePoint.x + 10, y: basePoint.y }, H * 0.34, 8, tree, species, "moyogi", 0.8, 0.25);
-      } else {
-        // Single dominant trunk
-        const trunkBaseWidth = Math.min(22, 10 + (tree.nebariScore / 100) * 12);
-        drawSingleTrunk(ctx, rng, basePoint, H * 0.52, trunkBaseWidth, tree, species, tree.styleId, 1.0);
+        if (window.Actions) Actions.renderSubActions(tab);
       }
+    };
+    window.UI = UI;
+  </script>
 
-      // Draw Ceramic Bonsai Pot (Bachi)
-      drawPot(ctx, pot, potX, potY, potWidth, potHeight);
+  <!-- ================= SECTION 2: AUDIO FX & 128x128 PIXEL ART ENGINE ================= -->
+  <script>
+  /**
+   * BONSAI PROCEDURAL AUDIO SYNTHESIZER
+   * Uses native Web Audio API with zero external audio assets.
+   */
+  const AudioFX = {
+    ctx: null,
+
+    init() {
+      if (!this.ctx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
+      }
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    },
+
+    playSnip() {
+      this.init();
+      const sz = Math.floor(this.ctx.sampleRate * 0.05);
+      const buf = this.ctx.createBuffer(1, sz, this.ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < sz; i++) data[i] = Math.random() * 2 - 1;
+
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(2600, this.ctx.currentTime);
+      filter.Q.setValueAtTime(3.5, this.ctx.currentTime);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.048);
+
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      src.start();
+    },
+
+    playWater() {
+      this.init();
+      const sz = Math.floor(this.ctx.sampleRate * 0.22);
+      const buf = this.ctx.createBuffer(1, sz, this.ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < sz; i++) data[i] = Math.random() * 2 - 1;
+
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1100, this.ctx.currentTime);
+      filter.frequency.linearRampToValueAtTime(350, this.ctx.currentTime + 0.2);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      src.start();
+    },
+
+    playCarve() {
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(170, this.ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(75, this.ctx.currentTime + 0.11);
+
+      gain.gain.setValueAtTime(0.28, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.11);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.11);
+    },
+
+    playCoin() {
+      this.init();
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(987.77, now); // B5
+      osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    },
+
+    playChime() {
+      this.init();
+      const freqs = [523.25, 659.25, 783.99, 1046.50];
+      freqs.forEach((f, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, this.ctx.currentTime + (idx * 0.055));
+        gain.gain.setValueAtTime(0.09, this.ctx.currentTime + (idx * 0.055));
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + (idx * 0.055) + 0.45);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(this.ctx.currentTime + (idx * 0.055));
+        osc.stop(this.ctx.currentTime + (idx * 0.055) + 0.45);
+      });
     }
+  };
+  window.AudioFX = AudioFX;
 
-    function drawPot(ctx, pot, x, y, w, h) {
-      ctx.save();
+  /**
+   * 128x128 INTEGER PIXEL RASTER ENGINE
+   */
+  const PixelEngine = {
+    canvas: null,
+    ctx: null,
+    W: 128,
+    H: 128,
 
-      // Pot Feet (Kumo-ashi)
-      ctx.fillStyle = pot.rimColor;
-      if (pot.type === "cascade") {
-        ctx.fillRect(x + w * 0.15, y + h, w * 0.15, 8);
-        ctx.fillRect(x + w * 0.7, y + h, w * 0.15, 8);
+    // 32-Color Curated Master Palette
+    pal: {
+      skyTop: '#18201a',
+      skyBot: '#0f1411',
+      barkShadow: '#1a1009',
+      barkBase: '#331e11',
+      barkMid: '#54341e',
+      barkHigh: '#7a5133',
+      jinBase: '#bbb3a0',
+      jinHigh: '#eae3d2',
+      wireCopper: '#bd6a3c',
+      pineDark: '#081c10',
+      pineBase: '#123820',
+      pineMid: '#1e5933',
+      pineHigh: '#32824e',
+      mapleSpring: ['#1e4018', '#386927', '#62a838', '#99e053'],
+      mapleSummer: ['#122b15', '#1d4f24', '#2d7837', '#48aa54'],
+      mapleAutumn: ['#420f08', '#781d10', '#b83b1a', '#e8782a'],
+      mapleWinter: ['#282220', '#3b322f'],
+      tokoDark: '#4a1e15',
+      tokoBase: '#753223',
+      tokoHigh: '#9e4935',
+      yixDark: '#2c1f1c',
+      yixBase: '#47322d',
+      yixHigh: '#634740',
+      celaDark: '#39574e',
+      celaBase: '#588275',
+      celaHigh: '#82b5a5',
+      cobaDark: '#132133',
+      cobaBase: '#213a5c',
+      cobaHigh: '#3b649e',
+      basaDark: '#131517',
+      basaBase: '#25292e',
+      basaHigh: '#3d434a',
+      soilDark: '#120d09',
+      soilBase: '#211812',
+      moss: '#4b6e28',
+      sugiDark: '#0b0c0d',
+      sugiBase: '#17191c',
+      sugiHigh: '#2a2e33',
+      roseDark: '#210d0b',
+      roseBase: '#3b1713',
+      roseHigh: '#5e2720',
+      teakDark: '#38220f',
+      teakBase: '#5e3a19',
+      teakHigh: '#8c5928',
+      walnDark: '#1a1312',
+      walnBase: '#302422',
+      walnHigh: '#4a3835'
+    },
+
+    init() {
+      this.canvas = document.getElementById('game-canvas');
+      if (this.canvas) {
+        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+        this.ctx.imageSmoothingEnabled = false;
+      }
+    },
+
+    setPixel(x, y, hex) {
+      x = Math.floor(x);
+      y = Math.floor(y);
+      if (x < 0 || x >= this.W || y < 0 || y >= this.H) return;
+      this.ctx.fillStyle = hex;
+      this.ctx.fillRect(x, y, 1, 1);
+    },
+
+    fillRect(x, y, w, h, hex) {
+      x = Math.floor(x);
+      y = Math.floor(y);
+      w = Math.floor(w);
+      h = Math.floor(h);
+      if (w <= 0 || h <= 0) return;
+      this.ctx.fillStyle = hex;
+      this.ctx.fillRect(x, y, w, h);
+    },
+
+    drawLine(x0, y0, x1, y1, width, colorBase, colorShad, colorHigh) {
+      x0 = Math.floor(x0);
+      y0 = Math.floor(y0);
+      x1 = Math.floor(x1);
+      y1 = Math.floor(y1);
+      const dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+      const dy = -Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+      let err = dx + dy;
+
+      while (true) {
+        const r = Math.max(0, Math.floor(width / 2));
+        for (let ox = -r; ox <= r; ox++) {
+          for (let oy = -r; oy <= r; oy++) {
+            let col = colorBase;
+            if (ox > 0 || oy > 0) col = colorShad;
+            else if (ox < 0 && oy <= 0) col = colorHigh;
+            this.setPixel(x0 + ox, y0 + oy, col);
+          }
+        }
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+      }
+    },
+
+    drawFoliagePad(cx, cy, rx, ry, palette, density = 1.0, isNeedle = false) {
+      cx = Math.floor(cx);
+      cy = Math.floor(cy);
+      rx = Math.floor(rx);
+      ry = Math.floor(ry);
+
+      for (let dy = -ry; dy <= ry; dy++) {
+        for (let dx = -rx; dx <= rx; dx++) {
+          const dist = (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry);
+          if (dist <= 1.0) {
+            const hash = Math.sin(cx + dx * 37.1 + (cy + dy) * 91.7) * 43758.5453;
+            if ((hash - Math.floor(hash)) > density) continue;
+
+            let colIdx = 1;
+            if (dy > ry * 0.3) colIdx = 0;
+            else if (dy < -ry * 0.3) colIdx = 3;
+            else if (dx < 0 && dy < 0) colIdx = 2;
+
+            const px = cx + dx;
+            const py = cy + dy;
+
+            if (isNeedle) {
+              this.setPixel(px, py, palette[colIdx]);
+              if ((dx + dy) % 3 === 0 && dy - 1 >= -ry) {
+                this.setPixel(px, py - 1, palette[Math.min(palette.length - 1, colIdx + 1)]);
+              }
+            } else {
+              this.setPixel(px, py, palette[colIdx]);
+            }
+          }
+        }
+      }
+    },
+
+    renderStand(type, wood, startY) {
+      const palMap = {
+        sugi: [this.pal.sugiDark, this.pal.sugiBase, this.pal.sugiHigh],
+        rosewood: [this.pal.roseDark, this.pal.roseBase, this.pal.roseHigh],
+        teak: [this.pal.teakDark, this.pal.teakBase, this.pal.teakHigh],
+        walnut: [this.pal.walnDark, this.pal.walnBase, this.pal.walnHigh]
+      };
+      const c = palMap[wood] || palMap.rosewood;
+      const y = Math.floor(startY);
+
+      switch (type) {
+        case 'jiita':
+          this.fillRect(20, y + 6, 88, 4, c[1]);
+          this.fillRect(22, y + 6, 84, 1, c[2]);
+          this.fillRect(24, y + 10, 80, 2, c[0]);
+          this.setPixel(19, y + 7, c[1]);
+          this.setPixel(108, y + 8, c[1]);
+          this.setPixel(21, y + 10, c[0]);
+          this.setPixel(107, y + 9, c[0]);
+          break;
+
+        case 'kengai':
+          this.fillRect(36, y + 3, 56, 3, c[1]);
+          this.fillRect(38, y + 3, 52, 1, c[2]);
+          this.fillRect(38, y + 6, 3, 14, c[0]);
+          this.fillRect(39, y + 6, 2, 14, c[1]);
+          this.fillRect(87, y + 6, 3, 14, c[0]);
+          this.fillRect(87, y + 6, 2, 14, c[1]);
+          this.fillRect(41, y + 15, 46, 2, c[1]);
+          this.fillRect(41, y + 16, 46, 1, c[0]);
+          break;
+
+        case 'lattice':
+          for (let i = 24; i <= 104; i += 4) {
+            this.fillRect(i, y + 5, 2, 3, c[1]);
+            this.setPixel(i, y + 5, c[2]);
+          }
+          this.fillRect(22, y + 8, 84, 2, c[0]);
+          this.fillRect(30, y + 10, 4, 3, c[1]);
+          this.fillRect(94, y + 10, 4, 3, c[1]);
+          break;
+
+        case 'shokaku':
+        default:
+          this.fillRect(26, y + 4, 76, 3, c[1]);
+          this.fillRect(26, y + 4, 76, 1, c[2]);
+          this.fillRect(28, y + 7, 72, 2, c[0]);
+          this.fillRect(29, y + 7, 4, 6, c[1]);
+          this.fillRect(31, y + 11, 4, 2, c[1]);
+          this.fillRect(95, y + 7, 4, 6, c[1]);
+          this.fillRect(93, y + 11, 4, 2, c[1]);
+          break;
+      }
+    },
+
+    renderPot(style, glaze, potY) {
+      const palMap = {
+        tokoname: [this.pal.tokoDark, this.pal.tokoBase, this.pal.tokoHigh],
+        yixing: [this.pal.yixDark, this.pal.yixBase, this.pal.yixHigh],
+        celadon: [this.pal.celaDark, this.pal.celaBase, this.pal.celaHigh],
+        cobalt: [this.pal.cobaDark, this.pal.cobaBase, this.pal.cobaHigh],
+        basalt: [this.pal.basaDark, this.pal.basaBase, this.pal.basaHigh]
+      };
+      const c = palMap[glaze] || palMap.tokoname;
+      const y = Math.floor(potY);
+
+      if (style === 'oval') {
+        this.fillRect(32, y, 64, 12, c[1]);
+        this.fillRect(34, y, 60, 2, c[2]);
+        this.fillRect(34, y + 10, 60, 2, c[0]);
+        this.fillRect(30, y + 2, 2, 8, c[1]);
+        this.fillRect(96, y + 2, 2, 8, c[0]);
+        this.fillRect(38, y + 12, 5, 2, c[0]);
+        this.fillRect(85, y + 12, 5, 2, c[0]);
+        this.fillRect(34, y - 1, 60, 3, this.pal.soilBase);
+        for (let mx = 36; mx <= 92; mx += 3) {
+          if ((mx * 7) % 5 === 0) this.setPixel(mx, y - 1, this.pal.moss);
+          if ((mx * 3) % 4 === 0) this.setPixel(mx + 1, y - 2, this.pal.moss);
+        }
+      } else if (style === 'cascade') {
+        this.fillRect(44, y - 4, 40, 20, c[1]);
+        this.fillRect(42, y - 4, 44, 3, c[2]);
+        this.fillRect(46, y + 14, 36, 2, c[0]);
+        this.fillRect(52, y - 1, 2, 16, c[2]);
+        this.fillRect(72, y - 1, 3, 16, c[0]);
+        this.fillRect(46, y + 16, 4, 3, c[0]);
+        this.fillRect(78, y + 16, 4, 3, c[0]);
+        this.fillRect(44, y - 5, 40, 3, this.pal.soilBase);
+        this.fillRect(46, y - 5, 36, 1, this.pal.moss);
+      } else if (style === 'nanban') {
+        this.fillRect(36, y, 56, 10, c[1]);
+        this.fillRect(38, y + 8, 52, 2, c[0]);
+        this.setPixel(35, y + 3, c[1]);
+        this.setPixel(92, y + 4, c[0]);
+        this.fillRect(42, y + 10, 6, 2, c[0]);
+        this.fillRect(80, y + 10, 6, 2, c[0]);
+        this.fillRect(38, y - 1, 52, 3, this.pal.soilBase);
       } else {
-        ctx.fillRect(x + w * 0.08, y + h, 14, 6);
-        ctx.fillRect(x + w * 0.92 - 14, y + h, 14, 6);
+        this.fillRect(30, y, 68, 14, c[1]);
+        this.fillRect(29, y, 70, 2, c[2]);
+        this.fillRect(32, y + 12, 64, 2, c[0]);
+        this.fillRect(33, y + 14, 6, 3, c[0]);
+        this.fillRect(34, y + 14, 4, 2, c[1]);
+        this.fillRect(89, y + 14, 6, 3, c[0]);
+        this.fillRect(90, y + 14, 4, 2, c[1]);
+        this.fillRect(32, y - 2, 64, 3, this.pal.soilBase);
+        for (let sx = 33; sx <= 94; sx++) {
+          if ((sx + y) % 3 === 0) this.setPixel(sx, y - 2, this.pal.soilDark);
+          if (sx % 4 === 0) this.setPixel(sx, y - 3, this.pal.moss);
+        }
       }
+    },
 
-      // Pot Vessel Body
-      ctx.fillStyle = pot.color;
-      ctx.strokeStyle = pot.rimColor;
-      ctx.lineWidth = 2;
+    renderTree(tree, season = 'spring') {
+      let seed = tree.seed || 12345;
+      const rnd = () => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
 
-      ctx.beginPath();
-      if (pot.type === "oval") {
-        ctx.ellipse(x + w/2, y + h/2, w/2, h/2, 0, 0, Math.PI * 2);
-      } else if (pot.type === "cascade") {
-        ctx.moveTo(x + w * 0.1, y);
-        ctx.lineTo(x + w * 0.9, y);
-        ctx.lineTo(x + w * 0.8, y + h);
-        ctx.lineTo(x + w * 0.2, y + h);
-        ctx.closePath();
-      } else if (pot.type === "slab") {
-        ctx.moveTo(x, y + h * 0.4);
-        ctx.lineTo(x + w, y + h * 0.4);
-        ctx.lineTo(x + w * 0.95, y + h);
-        ctx.lineTo(x + w * 0.05, y + h);
-        ctx.closePath();
+      const potY = 104;
+      const startX = 64;
+      const startY = potY - 2;
+      const style = tree.style || 'moyogi';
+      const isConifer = tree.species === 'pine' || tree.species === 'juniper';
+
+      let leafPal = this.pal.pineBase;
+      if (tree.species === 'pine') {
+        leafPal = [this.pal.pineDark, this.pal.pineBase, this.pal.pineMid, this.pal.pineHigh];
       } else {
-        // Classic rectangular tray
-        ctx.roundRect(x, y, w, h, [2, 2, 4, 4]);
-      }
-      ctx.fill();
-      ctx.stroke();
-
-      // Rim Highlight
-      ctx.fillStyle = pot.rimColor;
-      ctx.fillRect(x - 2, y, w + 4, 4);
-
-      // Soil & Moss Mound (Yamagoke & Akadama)
-      ctx.fillStyle = "#33261a"; // Akadama soil
-      ctx.beginPath();
-      ctx.ellipse(x + w/2, y + 2, w * 0.46, 6, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Velvet Moss Cushions
-      ctx.fillStyle = "#3e6e34";
-      for (let i = 0; i < 7; i++) {
-        const mx = x + w * 0.18 + i * (w * 0.09);
-        const my = y + 2 + Math.sin(i * 1.5) * 2;
-        ctx.beginPath();
-        ctx.arc(mx, my, 7 + (i % 3) * 2, 0, Math.PI, true);
-        ctx.fill();
+        if (season === 'spring') leafPal = this.pal.mapleSpring;
+        else if (season === 'summer') leafPal = this.pal.mapleSummer;
+        else if (season === 'autumn') leafPal = this.pal.mapleAutumn;
+        else leafPal = this.pal.mapleWinter;
       }
 
-      ctx.restore();
-    }
+      const branchStack = [];
+      const foliagePads = [];
 
-    function drawSingleTrunk(ctx, rng, base, height, baseRadius, tree, species, style, scale = 1.0, angleBias = 0) {
-      ctx.save();
+      const drawBoulder = (bx, by, bw, bh) => {
+        for (let ry = by; ry <= by + bh; ry++) {
+          for (let rx = bx - bw / 2; rx <= bx + bw / 2; rx++) {
+            const dx = (rx - bx) / (bw / 2);
+            const dy = (ry - (by + bh / 2)) / (bh / 2);
+            if (dx * dx + dy * dy <= 1.0) {
+              const col = dx < -0.2 ? '#4a574e' : (dx > 0.25 ? '#1a1d1a' : '#2e3630');
+              this.setPixel(rx, ry, col);
+            }
+          }
+        }
+      };
 
-      // Calculate trunk Bézier control points according to style morphology
-      let p0 = { x: base.x, y: base.y };
-      let p1 = { x: base.x, y: base.y - height * 0.5 };
-      let p2 = { x: base.x, y: base.y - height };
+      const drawStiltRoots = (tx, ty, by) => {
+        [-14, -7, 0, 8, 15].forEach((off) => {
+          this.drawLine(tx, ty, tx + off * 0.6, ty + (by - ty) * 0.5, 3, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(tx + off * 0.6, ty + (by - ty) * 0.5, tx + off, by, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+        });
+      };
 
-      if (style === "moyogi") {
-        p1.x += (rng() > 0.5 ? 40 : -40) * scale + angleBias * 50;
-        p2.x += (rng() > 0.5 ? -18 : 18) * scale;
-      } else if (style === "shakan") {
-        p1.x += 45 * scale;
-        p2.x += 80 * scale;
-      } else if (style === "bunjingi") {
-        // Literati: thin, exaggerated sinuous curves
-        p1.x += 50 * (rng() - 0.5);
-        p2.x += 35 * (rng() - 0.5);
-        height *= 1.25;
-        baseRadius *= 0.65;
-      } else if (style === "kengai") {
-        // Cascade: plunges down
-        p1 = { x: base.x + 35 * scale, y: base.y - height * 0.2 };
-        p2 = { x: base.x + 40 * scale, y: base.y + height * 0.45 };
-      } else if (style === "han_kengai") {
-        // Semi-cascade: sweeps horizontally
-        p1 = { x: base.x + 40 * scale, y: base.y - height * 0.35 };
-        p2 = { x: base.x + 75 * scale, y: base.y + 10 };
-      } else if (style === "fukinagashi") {
-        // Windswept
-        p1.x += 40 * scale;
-        p2.x += 90 * scale;
+      // 15 CANONICAL PROCEDURAL FORM GENERATORS
+      switch (style) {
+        case 'chokkan':
+          for (let s = 0; s < 6; s++) {
+            const y0 = startY - s * 9;
+            const y1 = y0 - 10;
+            const thick = Math.max(1, 7 - s);
+            this.drawLine(startX, y0, startX, y1, thick, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+            if (s >= 1 && s <= 4) {
+              const side = s % 2 === 0 ? 1 : -1;
+              const bl = 20 - s * 3;
+              this.drawLine(startX, y0 - 2, startX + side * bl, y0 - 4, thick - 1, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+              foliagePads.push({ x: startX + side * bl, y: y0 - 5, rx: 9, ry: 4 });
+            }
+          }
+          foliagePads.push({ x: startX, y: startY - 58, rx: 11, ry: 6 });
+          break;
+
+        case 'shakan':
+          this.drawLine(startX - 14, startY, startX - 2, startY - 4, 5, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          branchStack.push({ x0: startX, y0: startY, angle: -Math.PI / 2.7, length: 24, thickness: 6, depth: 0 });
+          break;
+
+        case 'kengai':
+          this.drawLine(startX, startY - 4, startX + 10, startY - 14, 5, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 10, startY - 14, startX + 22, startY - 6, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 22, startY - 6, startX + 24, startY + 12, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 24, startY + 12, startX + 18, startY + 24, 3, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          foliagePads.push({ x: startX + 10, y: startY - 16, rx: 8, ry: 4 });
+          foliagePads.push({ x: startX + 26, y: startY - 4, rx: 8, ry: 4 });
+          foliagePads.push({ x: startX + 26, y: startY + 14, rx: 9, ry: 5 });
+          foliagePads.push({ x: startX + 18, y: startY + 26, rx: 7, ry: 4 });
+          break;
+
+        case 'han_kengai':
+          this.drawLine(startX, startY - 4, startX + 12, startY - 12, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 12, startY - 12, startX + 28, startY - 2, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 28, startY - 2, startX + 38, startY + 4, 3, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          foliagePads.push({ x: startX + 12, y: startY - 14, rx: 7, ry: 4 });
+          foliagePads.push({ x: startX + 30, y: startY - 4, rx: 8, ry: 4 });
+          foliagePads.push({ x: startX + 40, y: startY + 4, rx: 8, ry: 4 });
+          break;
+
+        case 'bunjingi':
+          this.drawLine(startX, startY, startX - 8, startY - 20, 3, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX - 8, startY - 20, startX + 8, startY - 42, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 8, startY - 42, startX - 2, startY - 60, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX - 2, startY - 60, startX + 6, startY - 70, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          foliagePads.push({ x: startX + 8, y: startY - 71, rx: 7, ry: 4 });
+          foliagePads.push({ x: startX - 4, y: startY - 62, rx: 6, ry: 3 });
+          break;
+
+        case 'fukinagashi':
+          this.drawLine(startX, startY, startX + 14, startY - 18, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 14, startY - 18, startX + 30, startY - 34, 3, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 12, startY - 16, startX + 36, startY - 14, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 28, startY - 32, startX + 48, startY - 28, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          foliagePads.push({ x: startX + 38, y: startY - 15, rx: 11, ry: 4 });
+          foliagePads.push({ x: startX + 50, y: startY - 29, rx: 12, ry: 4 });
+          break;
+
+        case 'hokidachi':
+          this.drawLine(startX, startY, startX, startY - 24, 5, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          for (let a = -0.7; a <= 0.7; a += 0.28) {
+            this.drawLine(startX, startY - 24, startX + Math.sin(a) * 26, (startY - 24) - Math.cos(a) * 24, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          }
+          foliagePads.push({ x: startX, y: startY - 50, rx: 20, ry: 10 });
+          break;
+
+        case 'sokan':
+          branchStack.push({ x0: startX - 3, y0: startY, angle: -Math.PI / 2.2, length: 26, thickness: 5, depth: 0 });
+          branchStack.push({ x0: startX + 4, y0: startY, angle: -Math.PI / 2.8, length: 18, thickness: 3, depth: 0 });
+          break;
+
+        case 'kabudachi':
+          [-0.45, -0.22, 0, 0.22, 0.45].forEach((a, idx) => {
+            branchStack.push({
+              x0: startX + (idx - 2) * 4,
+              y0: startY,
+              angle: -Math.PI / 2 + a,
+              length: 18 + (2 - Math.abs(idx - 2)) * 5,
+              thickness: Math.max(2, 4 - Math.abs(idx - 2)),
+              depth: 1
+            });
+          });
+          break;
+
+        case 'yose_ue':
+          [-24, -12, 2, 16, 28].forEach((ox, idx) => {
+            const h = 22 + (idx === 2 ? 18 : 6);
+            const th = idx === 2 ? 4 : 2;
+            this.drawLine(startX + ox, startY, startX + ox, startY - h, th, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+            foliagePads.push({ x: startX + ox, y: startY - h - 3, rx: 8, ry: 4 });
+          });
+          break;
+
+        case 'sharimiki':
+          this.drawLine(startX - 2, startY, startX - 6, startY - 32, 6, this.pal.jinBase, this.pal.barkShadow, this.pal.jinHigh);
+          this.drawLine(startX + 2, startY, startX + 4, startY - 30, 3, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX - 6, startY - 32, startX - 10, startY - 48, 4, this.pal.jinBase, this.pal.barkShadow, this.pal.jinHigh);
+          foliagePads.push({ x: startX + 10, y: startY - 42, rx: 9, ry: 5 });
+          foliagePads.push({ x: startX + 2, y: startY - 34, rx: 7, ry: 4 });
+          break;
+
+        case 'neagari':
+          drawStiltRoots(startX, startY - 18, startY);
+          branchStack.push({ x0: startX, y0: startY - 18, angle: -Math.PI / 2 + 0.1, length: 22, thickness: 4, depth: 0 });
+          break;
+
+        case 'ishitsuki':
+          drawBoulder(startX, startY - 12, 34, 22);
+          this.drawLine(startX - 10, startY - 18, startX - 14, startY, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 8, startY - 18, startX + 12, startY, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          branchStack.push({ x0: startX, y0: startY - 20, angle: -Math.PI / 2.3, length: 22, thickness: 4, depth: 0 });
+          break;
+
+        case 'ikadabuki':
+          this.drawLine(startX - 34, startY - 2, startX + 34, startY - 2, 5, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          [-24, -12, 0, 14, 26].forEach((ox, idx) => {
+            const h = 18 + (3 - Math.abs(idx - 2)) * 5;
+            this.drawLine(startX + ox, startY - 4, startX + ox + 2, startY - 4 - h, 2, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+            foliagePads.push({ x: startX + ox + 2, y: startY - 4 - h, rx: 7, ry: 4 });
+          });
+          break;
+
+        case 'moyogi':
+        default:
+          this.drawLine(startX - 8, startY, startX, startY - 4, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          this.drawLine(startX + 8, startY, startX, startY - 4, 4, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          branchStack.push({
+            x0: startX,
+            y0: startY - 2,
+            angle: -Math.PI / 2 + (tree.slant || 0.05),
+            length: 22,
+            thickness: Math.min(8, 4 + Math.floor(tree.age / 5)),
+            depth: 0,
+            wired: tree.wiredTrunk
+          });
+          break;
       }
 
-      // Root Flare (Nebari)
-      ctx.fillStyle = getBarkColor(species.bark);
-      ctx.beginPath();
-      ctx.moveTo(p0.x - baseRadius * 1.8, p0.y);
-      ctx.quadraticCurveTo(p0.x - baseRadius, p0.y - 12, p0.x - baseRadius * 0.7, p0.y - 20);
-      ctx.lineTo(p0.x + baseRadius * 0.7, p0.y - 20);
-      ctx.quadraticCurveTo(p0.x + baseRadius, p0.y - 12, p0.x + baseRadius * 1.8, p0.y);
-      ctx.closePath();
-      ctx.fill();
+      // Branch Stack Evaluation Loop
+      while (branchStack.length > 0) {
+        const b = branchStack.pop();
+        const x1 = b.x0 + Math.cos(b.angle) * b.length;
+        const y1 = b.y0 + Math.sin(b.angle) * b.length;
+        const bId = `${Math.floor(b.x0)}_${Math.floor(b.y0)}`;
 
-      // Render Trunk Taper via Segments
-      const steps = 24;
-      let prevPt = { x: p0.x, y: p0.y };
-
-      for (let i = 1; i <= steps; i++) {
-        const t = i / steps;
-        const pt = getBezierPoint(p0, p1, p2, t);
-        const radius = Math.max(2, baseRadius * (1 - 0.82 * t));
-
-        ctx.strokeStyle = getBarkColor(species.bark, t);
-        ctx.lineWidth = radius * 2;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.moveTo(prevPt.x, prevPt.y);
-        ctx.lineTo(pt.x, pt.y);
-        ctx.stroke();
-
-        // Shari (Sinuous deadwood vein)
-        if (tree.shariCount > 0 && i > 4 && i < 16 && (i % 2 === 0)) {
-          ctx.strokeStyle = "#e8e5dc"; // Lime-sulfur bleached tone
-          ctx.lineWidth = Math.max(1.5, radius * 0.5);
-          ctx.beginPath();
-          ctx.moveTo(prevPt.x + radius * 0.2, prevPt.y);
-          ctx.lineTo(pt.x + radius * 0.2, pt.y);
-          ctx.stroke();
+        if (tree.prunedBranches && tree.prunedBranches.includes(bId)) {
+          this.drawLine(b.x0, b.y0, b.x0 + Math.cos(b.angle) * 3, b.y0 + Math.sin(b.angle) * 3, b.thickness, this.pal.barkBase, this.pal.barkShadow, this.pal.barkHigh);
+          continue;
         }
 
-        // Branch emergence at outer curve bends
-        if (i > 6 && i % 4 === 0) {
-          const dir = (pt.x >= prevPt.x) ? 1 : -1;
-          const branchLength = (height * 0.35) * (1 - t * 0.5) * scale;
-          const bTarget = {
-            x: pt.x + (style === "fukinagashi" ? 1 : dir) * branchLength,
-            y: pt.y - 5 + (style === "kengai" ? 18 : (rng() * 10 - 5))
-          };
+        let cBase = this.pal.barkBase;
+        let cShad = this.pal.barkShadow;
+        let cHigh = this.pal.barkHigh;
 
-          drawBranchAndPad(ctx, rng, pt, bTarget, radius * 0.6, tree, species, t);
+        if (tree.deadwoodBranches && tree.deadwoodBranches.includes(bId)) {
+          cBase = this.pal.jinBase;
+          cHigh = this.pal.jinHigh;
         }
 
-        prevPt = pt;
+        this.drawLine(b.x0, b.y0, x1, y1, b.thickness, cBase, cShad, cHigh);
+
+        if (b.wired) {
+          for (let t = 0.2; t <= 0.8; t += 0.3) {
+            this.setPixel(b.x0 + (x1 - b.x0) * t, b.y0 + (y1 - b.y0) * t, this.pal.wireCopper);
+          }
+        }
+
+        if (b.depth >= 3 || b.length < 8) {
+          foliagePads.push({ x: x1, y: y1, rx: Math.max(7, 12 - b.depth * 2), ry: Math.max(4, 7 - b.depth) });
+        } else {
+          const branchesCount = (b.depth === 0) ? 2 : (rnd() > 0.3 ? 2 : 1);
+          for (let i = 0; i < branchesCount; i++) {
+            branchStack.push({
+              x0: x1,
+              y0: y1,
+              angle: b.angle + (i === 0 ? -1 : 1) * (0.35 + rnd() * 0.35) + (tree.wiringBend || 0),
+              length: b.length * 0.7,
+              thickness: Math.max(1, b.thickness - 1.5),
+              depth: b.depth + 1,
+              wired: b.wired
+            });
+          }
+        }
       }
 
-      // Apex Deadwood Jin Spike if carved
-      if (tree.jinCount > 0) {
-        ctx.strokeStyle = "#f3efe6";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(prevPt.x, prevPt.y);
-        ctx.lineTo(prevPt.x + (rng() * 12 - 6), prevPt.y - 18);
-        ctx.stroke();
+      // Render Foliage Pads
+      if (season !== 'winter' || isConifer) {
+        foliagePads.forEach(pad => {
+          const density = tree.water < 30 ? 0.6 : (tree.foliageDensity || 1.0);
+          this.drawFoliagePad(pad.x, pad.y, pad.rx, pad.ry, leafPal, density, isConifer);
+        });
       }
+    },
 
-      // Apex Crown Pad
-      drawFoliagePad(ctx, rng, prevPt.x, prevPt.y - 8, 22 * scale, 12 * scale, tree, species);
-
-      ctx.restore();
+    render(tree, potStyle, potGlaze, standStyle, standWood, season) {
+      if (!this.ctx) this.init();
+      if (!this.ctx) return;
+      this.fillRect(0, 0, this.W, this.H, '#151c17');
+      this.renderStand(standStyle || 'shokaku', standWood || 'rosewood', 108);
+      this.renderPot(potStyle || 'rectangle', potGlaze || 'tokoname', 104);
+      if (tree) this.renderTree(tree, season);
     }
+  };
+  window.PixelEngine = PixelEngine;
 
-    function getBezierPoint(p0, p1, p2, t) {
-      const inv = 1 - t;
+  document.addEventListener('DOMContentLoaded', () => {
+    PixelEngine.init();
+  });
+  </script>
+  <!-- ================= SECTION 3: SPECIES DATABASE & HORTICULTURAL SIMULATION STATE ================= -->
+  <script>
+  /**
+   * BOTANICAL SPECIES PROFILES
+   * Precise horticultural parameters governing water uptake, soil preferences, and synergy.
+   */
+  const SpeciesDB = {
+    pine: {
+      name: "Japanese Black Pine",
+      latin: "Pinus thunbergii",
+      conifer: true,
+      waterDemand: 0.55,       // Drought-tolerant; demands fast-draining substrate
+      soilDrainagePref: 0.85,
+      feedDemand: 0.60,
+      stressTolerance: 0.85,
+      growthRate: 0.50,
+      idealRepotSeason: 'spring',
+      synergyPots: ['rectangle', 'nanban'],
+      synergyGlazes: ['tokoname', 'basalt'],
+      synergyStands: ['shokaku', 'jiita'],
+      basePrice: 120
+    },
+    maple: {
+      name: "Japanese Maple",
+      latin: "Acer palmatum",
+      conifer: false,
+      waterDemand: 0.85,       // High transpiration; sensitive to leaf scorch
+      soilDrainagePref: 0.60,
+      feedDemand: 0.75,
+      stressTolerance: 0.60,
+      growthRate: 0.90,
+      idealRepotSeason: 'spring',
+      synergyPots: ['oval', 'rectangle'],
+      synergyGlazes: ['celadon', 'cobalt'],
+      synergyStands: ['shokaku', 'lattice'],
+      basePrice: 95
+    },
+    elm: {
+      name: "Chinese Elm",
+      latin: "Ulmus parvifolia",
+      conifer: false,
+      waterDemand: 0.70,       // Vigorous clip-and-grow grower
+      soilDrainagePref: 0.65,
+      feedDemand: 0.80,
+      stressTolerance: 0.90,
+      growthRate: 1.10,
+      idealRepotSeason: 'spring',
+      synergyPots: ['oval', 'rectangle'],
+      synergyGlazes: ['celadon', 'tokoname', 'yixing'],
+      synergyStands: ['shokaku', 'jiita'],
+      basePrice: 70
+    },
+    juniper: {
+      name: "Shimpaku Juniper",
+      latin: "Juniperus chinensis",
+      conifer: true,
+      waterDemand: 0.60,       // Elastic wood; ideal for wiring & deadwood
+      soilDrainagePref: 0.80,
+      feedDemand: 0.50,
+      stressTolerance: 0.95,
+      growthRate: 0.60,
+      idealRepotSeason: 'spring',
+      synergyPots: ['cascade', 'nanban'],
+      synergyGlazes: ['tokoname', 'basalt', 'yixing'],
+      synergyStands: ['kengai', 'jiita'],
+      basePrice: 110
+    }
+  };
+  window.SpeciesDB = SpeciesDB;
+
+  /**
+   * TREE ENTITY FACTORY
+   */
+  const TreeFactory = {
+    createTree(speciesKey, customName, ageYears = 3) {
+      const spec = SpeciesDB[speciesKey] || SpeciesDB.elm;
+      const baseSeed = Math.floor(Math.random() * 999999);
+
+      // Species-authentic default shape
+      let initialStyle = 'moyogi';
+      if (speciesKey === 'elm') initialStyle = 'hokidachi';      // Broom Elm
+      if (speciesKey === 'juniper') initialStyle = 'kengai';     // Cascade Juniper
+      if (speciesKey === 'pine') initialStyle = 'chokkan';       // Formal Pine
+
       return {
-        x: inv * inv * p0.x + 2 * inv * t * p1.x + t * t * p2.x,
-        y: inv * inv * p0.y + 2 * inv * t * p1.y + t * t * p2.y
+        id: 'tree_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        species: speciesKey,
+        name: customName || spec.name,
+        seed: baseSeed,
+        style: initialStyle,      // One of the 15 classical shapes
+        age: ageYears,            // Chronological simulated years
+        ageDays: 0,
+        // Physiological Vitals (0 - 100)
+        water: 75,
+        soilHealth: 90,           // Substrate aeration / lack of compaction
+        npk: 60,                  // Available nutrients
+        vigor: 85,                // Biological vitality
+        stress: 5,                // Accumulates from cuts, bending, drought
+        rootbound: Math.min(80, ageYears * 12),
+        // Styling Parameters
+        slant: 0.05,
+        wiringBend: 0.0,
+        wiredTrunk: false,
+        wireDaysRemaining: 0,
+        hasWireBite: false,       // Scarring penalty if wire left too long
+        prunedBranches: [],       // Cut branch node ids
+        deadwoodBranches: [],     // Bleached Jin / Shari branch node ids
+        foliageDensity: 1.0,
+        // Pot & Furniture Match
+        potStyle: speciesKey === 'juniper' ? 'cascade' : 'rectangle',
+        potGlaze: 'tokoname',
+        standStyle: speciesKey === 'juniper' ? 'kengai' : 'shokaku',
+        standWood: 'rosewood',
+        // Scoring
+        styleScore: 50,
+        harmonyBonus: 10
       };
     }
+  };
+  window.TreeFactory = TreeFactory;
 
-    function getBarkColor(barkType, t = 0) {
-      if (barkType === "cork") return `rgb(${60 + t * 20}, ${45 + t * 15}, ${35 + t * 10})`;
-      if (barkType === "stringy") return `rgb(${85 + t * 15}, ${42 + t * 10}, ${30 + t * 10})`;
-      // Smooth muscular beech/maple
-      return `rgb(${75 + t * 25}, ${78 + t * 20}, ${72 + t * 18})`;
+  /**
+   * MASTER GAME STATE & NURSERY REPOSITORY
+   */
+  const GameState = {
+    coins: 350,
+    day: 1,
+    seasonIndex: 0, // 0: Spring, 1: Summer, 2: Autumn, 3: Winter
+    year: 1,
+    activeSlot: 0,
+    seasons: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    seasonIcons: ['🌸 Spring', '☀️ Summer', '🍁 Autumn', '❄️ Winter'],
+    bench: [
+      TreeFactory.createTree('pine', 'Master Kuromatsu', 8),
+      TreeFactory.createTree('maple', 'Scarlet Momiji', 4),
+      null, null, null, null // 6 Bench Slots Total
+    ],
+    // Propagation Tray for rooted clones & air layers (Max 6)
+    propTray: [],
+    // Consumable inventory supplies
+    inventory: {
+      fertilizerCakes: 8,
+      wireCoils: 5,
+      limeSulfur: 2,
+      akadamaBags: 3,
+      pumiceBags: 2
+    },
+
+    getCurrentTree() {
+      return this.bench[this.activeSlot];
     }
+  };
+  window.GameState = GameState;
 
-    function drawBranchAndPad(ctx, rng, start, end, width, tree, species, heightRatio) {
-      ctx.save();
-      ctx.strokeStyle = getBarkColor(species.bark, heightRatio);
-      ctx.lineWidth = Math.max(1.8, width);
-      ctx.beginPath();
-      ctx.moveTo(start.x, start.y);
-      const cp = { x: (start.x + end.x) / 2, y: Math.min(start.y, end.y) - 6 };
-      ctx.quadraticCurveTo(cp.x, cp.y, end.x, end.y);
-      ctx.stroke();
+  /**
+   * BOTANICAL SIMULATION RUNTIME (TIME, WEATHER, & PHYSIOLOGY)
+   */
+  const BotanicalEngine = {
+    tickRateMs: 3000, // 1 Game Day every 3 real seconds
+    timerId: null,
 
-      // Pad size corresponds to tree's ramification score
-      const padW = 20 + (tree.ramification / 100) * 26;
-      const padH = 10 + (tree.ramification / 100) * 14;
-      drawFoliagePad(ctx, rng, end.x, end.y, padW, padH, tree, species);
+    init() {
+      this.startLoop();
+      this.recalculateAllStyles();
+      this.renderCurrentView();
+      this.syncHUD();
+    },
 
-      ctx.restore();
-    }
+    startLoop() {
+      if (this.timerId) clearInterval(this.timerId);
+      this.timerId = setInterval(() => {
+        this.stepDay();
+      }, this.tickRateMs);
+    },
 
-    function drawFoliagePad(ctx, rng, x, y, radiusX, radiusY, tree, species) {
-      ctx.save();
+    setSpeed(msPerDay) {
+      this.tickRateMs = Math.max(50, msPerDay);
+      this.startLoop();
+    },
 
-      // Seasonal Color Shift
-      let foliageColor = species.leafColor;
-      if (species.category === "deciduous") {
-        if (GAME.seasonIndex === 2) foliageColor = "#b8321d"; // Autumn Blaze Crimson
-        else if (GAME.seasonIndex === 3) foliageColor = "rgba(120,100,80,0.25)"; // Bare Winter Twigs
-      } else if (species.category === "flower") {
-        if (GAME.seasonIndex === 0) foliageColor = species.leafColor; // Spring full blossom
-        else foliageColor = "#2b5e32"; // Post-bloom summer foliage
+    stepDay() {
+      GameState.day++;
+      if (GameState.day > 30) {
+        GameState.day = 1;
+        GameState.seasonIndex = (GameState.seasonIndex + 1) % 4;
+        if (GameState.seasonIndex === 0) {
+          GameState.year++;
+          this.annualMaturityTick();
+        }
       }
 
-      // Foliage Underside Shadow (Depth)
-      ctx.fillStyle = "rgba(10, 20, 12, 0.7)";
-      ctx.beginPath();
-      ctx.ellipse(x, y + 3, radiusX * 0.9, radiusY * 0.7, 0, 0, Math.PI * 2);
-      ctx.fill();
+      const currentSeason = GameState.seasons[GameState.seasonIndex].toLowerCase();
 
-      // Botanical Foliage Modes
-      if (species.foliage === "pine") {
-        // Radiating Needle Tufts (Matsuba)
-        ctx.strokeStyle = foliageColor;
-        ctx.lineWidth = 1.3;
-        const count = 14 + Math.floor(tree.ramification / 8);
-        for (let i = 0; i < count; i++) {
-          const angle = (Math.PI / count) * i;
-          const len = radiusX * 0.8 + (rng() * 4);
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x + Math.cos(angle) * len * (rng() > 0.5 ? 1 : -1), y - Math.sin(angle) * radiusY);
-          ctx.stroke();
+      // 1. Simulate all active trees on the nursery bench
+      GameState.bench.forEach((tree) => {
+        if (!tree) return;
+        this.simulateTreeDay(tree, currentSeason);
+      });
+
+      // 2. Simulate Propagation Tray (Cuttings & Air-Layers)
+      this.simulatePropagationDay(currentSeason);
+
+      // 3. Refresh Visuals, Scores, and HUD
+      this.recalculateAllStyles();
+      this.renderCurrentView();
+      this.syncHUD();
+    },
+
+    simulateTreeDay(tree, season) {
+      const spec = SpeciesDB[tree.species] || SpeciesDB.elm;
+
+      // A. Evapotranspiration Dynamics (Water Loss)
+      let evaporation = spec.waterDemand * 3.5;
+      if (season === 'summer') evaporation *= 1.8;
+      if (season === 'winter') evaporation *= 0.4;
+      if (season === 'autumn') evaporation *= 0.8;
+
+      // Pot depth influences water retention
+      if (tree.potStyle === 'cascade') evaporation *= 0.75;
+      if (tree.potStyle === 'oval') evaporation *= 1.25;
+
+      tree.water = Math.max(0, tree.water - evaporation);
+
+      // B. Soil Compaction & Decomposition
+      tree.soilHealth = Math.max(10, tree.soilHealth - 0.15);
+      tree.rootbound = Math.min(100, tree.rootbound + 0.12);
+
+      // C. Nutrient Consumption (NPK)
+      if (tree.water > 20 && season !== 'winter') {
+        tree.npk = Math.max(0, tree.npk - (spec.feedDemand * 0.4));
+      }
+
+      // D. Stress Physics & Wire Bite
+      if (tree.wiredTrunk) {
+        tree.wireDaysRemaining--;
+        if (tree.wireDaysRemaining <= 0) {
+          tree.hasWireBite = true; // Permanent bark scar
+          tree.stress = Math.min(100, tree.stress + 15);
         }
-      } else if (species.foliage === "juniper") {
-        // Tight Cloud-like Billowing Tufts
-        ctx.fillStyle = foliageColor;
-        for (let i = 0; i < 6; i++) {
-          const ox = (rng() - 0.5) * radiusX * 1.2;
-          const oy = (rng() - 0.5) * radiusY * 1.1;
-          const r = 5 + rng() * 6;
-          ctx.beginPath();
-          ctx.arc(x + ox, y + oy, r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      } else if (species.foliage === "palmate") {
-        // Palmate Maple Stars
-        ctx.fillStyle = foliageColor;
-        const leaves = 8 + Math.floor(tree.ramification / 10);
-        for (let i = 0; i < leaves; i++) {
-          const lx = x + (rng() - 0.5) * radiusX * 1.4;
-          const ly = y + (rng() - 0.5) * radiusY * 1.2;
-          ctx.beginPath();
-          ctx.ellipse(lx, ly, 4, 7, rng() * Math.PI, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      } else if (species.foliage === "flower") {
-        // Pastel Flowering Clusters
-        ctx.fillStyle = foliageColor;
-        for (let i = 0; i < 9; i++) {
-          const fx = x + (rng() - 0.5) * radiusX * 1.2;
-          const fy = y + (rng() - 0.5) * radiusY;
-          ctx.beginPath();
-          ctx.arc(fx, fy, 4, 0, Math.PI * 2);
-          ctx.fill();
-          // Blossom center pistil
-          ctx.fillStyle = "#fff";
-          ctx.fillRect(fx - 0.5, fy - 0.5, 1, 1);
-          ctx.fillStyle = foliageColor;
-        }
+      }
+
+      // Water Extremes Stress
+      if (tree.water < 20) {
+        tree.stress = Math.min(100, tree.stress + (20 - tree.water) * 0.4);
+      } else if (tree.water > 90 && tree.soilHealth < 40) {
+        tree.stress = Math.min(100, tree.stress + 3); // Root suffocation
       } else {
-        // Dense micro-leaved broadleaf canopy
-        ctx.fillStyle = foliageColor;
-        ctx.beginPath();
-        ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Highlight rim on top canopy
-        ctx.fillStyle = "rgba(255,255,255,0.18)";
-        ctx.beginPath();
-        ctx.ellipse(x, y - radiusY * 0.4, radiusX * 0.7, radiusY * 0.4, 0, 0, Math.PI * 2);
-        ctx.fill();
+        tree.stress = Math.max(0, tree.stress - 0.5); // Natural recovery
       }
 
-      ctx.restore();
+      // E. Vigor Calculation (Health Index)
+      let vigorDelta = 0;
+      if (tree.water >= 30 && tree.water <= 80 && tree.npk > 15 && tree.soilHealth > 30) {
+        vigorDelta += 0.8;
+      } else {
+        vigorDelta -= 0.8;
+      }
+      if (tree.stress > 50) vigorDelta -= 1.2;
+      if (tree.rootbound > 85) vigorDelta -= 0.5;
+
+      tree.vigor = Math.max(5, Math.min(100, tree.vigor + vigorDelta));
+      tree.foliageDensity = Math.max(0.3, Math.min(1.0, (tree.vigor / 100) * (tree.water > 15 ? 1.0 : 0.5)));
+      tree.ageDays++;
+    },
+
+    annualMaturityTick() {
+      GameState.bench.forEach(tree => {
+        if (!tree) return;
+        if (tree.vigor > 55) {
+          tree.age++;
+        }
+      });
+    },
+
+    simulatePropagationDay(season) {
+      for (let i = GameState.propTray.length - 1; i >= 0; i--) {
+        const item = GameState.propTray[i];
+        item.daysActive++;
+
+        const speed = (season === 'spring' || season === 'summer') ? 2.0 : 0.6;
+        item.progress = Math.min(100, item.progress + speed);
+
+        // Rare rotting chance if neglected
+        if (Math.random() < 0.005) {
+          item.health -= 25;
+        }
+
+        if (item.health <= 0) {
+          GameState.propTray.splice(i, 1);
+        }
+      }
+    },
+
+    recalculateAllStyles() {
+      GameState.bench.forEach(tree => {
+        if (!tree) return;
+        tree.styleScore = StyleEvaluator.evaluate(tree);
+        tree.harmonyBonus = StyleEvaluator.calculateHarmony(tree);
+      });
+    },
+
+    renderCurrentView() {
+      const tree = GameState.getCurrentTree();
+      const season = GameState.seasons[GameState.seasonIndex].toLowerCase();
+      if (tree) {
+        PixelEngine.render(tree, tree.potStyle, tree.potGlaze, tree.standStyle, tree.standWood, season);
+      } else {
+        PixelEngine.render(null, 'rectangle', 'basalt', 'shokaku', 'rosewood', season);
+      }
+    },
+
+    syncHUD() {
+      // Top Bar Elements
+      const seasonEl = document.getElementById('display-season');
+      const dayEl = document.getElementById('display-day');
+      const coinsEl = document.getElementById('display-coins');
+
+      if (seasonEl) seasonEl.textContent = GameState.seasonIcons[GameState.seasonIndex];
+      if (dayEl) dayEl.textContent = `D${GameState.day} (Y${GameState.year})`;
+      if (coinsEl) coinsEl.textContent = GameState.coins;
+
+      // Bench Buttons
+      const benchBtns = document.querySelectorAll('#bench-bar .slot-btn');
+      benchBtns.forEach((btn, idx) => {
+        const tree = GameState.bench[idx];
+        btn.className = `slot-btn ${idx === GameState.activeSlot ? 'active' : ''}`;
+        btn.textContent = tree ? `${idx + 1}: ${tree.name.slice(0, 8)}.` : `${idx + 1}: [Empty]`;
+      });
+
+      // Vitals Monitors
+      const tree = GameState.getCurrentTree();
+      if (tree) {
+        document.getElementById('val-water').textContent = `${Math.round(tree.water)}%`;
+        document.getElementById('bar-water').style.width = `${tree.water}%`;
+        document.getElementById('bar-water').style.background = tree.water < 25 ? 'var(--accent-red)' : 'var(--accent-blue)';
+
+        document.getElementById('val-soil').textContent = `${Math.round(tree.soilHealth)}%`;
+        document.getElementById('bar-soil').style.width = `${tree.soilHealth}%`;
+
+        document.getElementById('val-vigor').textContent = `${Math.round(tree.vigor)}%`;
+        document.getElementById('bar-vigor').style.width = `${tree.vigor}%`;
+        document.getElementById('bar-vigor').style.background = tree.vigor < 30 ? 'var(--accent-red)' : 'var(--accent-green)';
+
+        document.getElementById('val-style').textContent = `${Math.round(tree.styleScore + tree.harmonyBonus)} pts`;
+        document.getElementById('bar-style').style.width = `${Math.min(100, tree.styleScore + tree.harmonyBonus)}%`;
+      } else {
+        ['water', 'soil', 'vigor', 'style'].forEach(k => {
+          document.getElementById(`val-${k}`).textContent = '--';
+          document.getElementById(`bar-${k}`).style.width = '0%';
+        });
+      }
     }
+  };
+  window.BotanicalEngine = BotanicalEngine;
 
-    /* ==========================================================================
-       9. AESTHETIC SCORING & VALUATION ALGORITHM
-       ========================================================================== */
-    function calculateTreeMetrics(tree) {
-      const species = SPECIES_DATABASE.find(s => s.id === tree.speciesId) || SPECIES_DATABASE[0];
-      
-      // Balance factor from ramification and root nebari
-      const ramScore = Math.min(100, tree.ramification);
-      const nebari = Math.min(100, tree.nebariScore);
-      const taper = Math.min(100, tree.taperScore);
-      const wabi = Math.min(100, tree.wabiSabiScore + tree.jinCount * 12 + tree.shariCount * 14);
+  /**
+   * KOKUFU-TEN AESTHETIC EVALUATION SYSTEM
+   */
+  const StyleEvaluator = {
+    evaluate(tree) {
+      if (!tree) return 0;
+      let score = 25;
 
-      // Pot harmony multiplier
-      let potHarmony = 1.0;
-      if (tree.styleId === "kengai" && tree.potId === "cascade_deep") potHarmony = 1.25;
-      if ((tree.styleId === "yose_ue" || tree.styleId === "ishitsuki") && tree.potId === "kurama_slab") potHarmony = 1.25;
+      // Maturity & Nebari Flare
+      score += Math.min(35, tree.age * 3.5);
+      // Foliage Density & Balance
+      if (tree.foliageDensity > 0.8) score += 15;
+      // Refined Pruning
+      score += Math.min(20, (tree.prunedBranches ? tree.prunedBranches.length : 0) * 3);
+      // Carved Deadwood Artistry
+      if (tree.deadwoodBranches && tree.deadwoodBranches.length > 0) {
+        score += (tree.species === 'juniper' || tree.species === 'pine') ? 15 : 5;
+      }
+      // Penalties
+      if (tree.hasWireBite) score -= 20;
+      if (tree.stress > 40) score -= 15;
 
-      // Overall Kokufu aesthetic index (0 - 100)
-      const overallScore = Math.min(100, ((ramScore * 0.3) + (nebari * 0.25) + (taper * 0.25) + (wabi * 0.2)) * potHarmony);
+      return Math.max(10, Math.round(score));
+    },
 
-      // Valuation (Yen)
-      const baseSpeciesVal = species.price;
-      const ageMultiplier = 1 + (tree.age * 0.08);
-      const scoreMultiplier = Math.pow(overallScore / 30, 2);
-      const valuation = Math.floor(baseSpeciesVal * ageMultiplier * scoreMultiplier);
+    calculateHarmony(tree) {
+      if (!tree) return 0;
+      const spec = SpeciesDB[tree.species];
+      if (!spec) return 0;
 
-      return {
-        overallScore: Math.round(overallScore * 10) / 10,
-        valuation: Math.max(2000, valuation)
-      };
+      let harmony = 0;
+      if (spec.synergyPots.includes(tree.potStyle)) harmony += 12;
+      if (spec.synergyGlazes.includes(tree.potGlaze)) harmony += 10;
+      if (spec.synergyStands.includes(tree.standStyle)) harmony += 8;
+
+      return harmony;
     }
+  };
+  window.StyleEvaluator = StyleEvaluator;
 
-    /* ==========================================================================
-       10. CULTIVATION DISCIPLINES & WORKSHOP ACTIONS
-       ========================================================================== */
-    function applyAction(actionType) {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
+  /**
+   * VEGETATIVE PROPAGATION ENGINE (CLONING & HARVESTING)
+   */
+  const Propagation = {
+    takeCutting(tree) {
+      if (!tree || tree.vigor < 35 || GameState.propTray.length >= 6) return false;
 
-      const toolLevel = GAME.upgrades.tools;
-      const wireLevel = GAME.upgrades.wire;
+      GameState.propTray.push({
+        id: 'cut_' + Date.now(),
+        species: tree.species,
+        name: `Cutting of ${tree.name}`,
+        type: 'cutting',
+        progress: 0,
+        health: 100,
+        daysActive: 0
+      });
 
-      if (actionType === "prune") {
-        const boost = 5 + toolLevel * 3;
-        tree.ramification = Math.min(100, tree.ramification + boost);
-        tree.taperScore = Math.min(100, tree.taperScore + 2);
-        showToast(`Pruned with precision! Ramification +${boost}%.`);
-      } else if (actionType === "wire") {
-        const boost = 4 + wireLevel * 4;
-        tree.ramification = Math.min(100, tree.ramification + 3);
-        tree.taperScore = Math.min(100, tree.taperScore + boost);
-        tree.wired = true;
-        showToast(`Structural wire applied. Pad alignment perfected.`);
-      } else if (actionType === "carve") {
-        if (toolLevel < 2) {
-          showToast("Requires Tier 2+ Forged Cutters to carve deadwood!", true);
+      tree.stress = Math.min(100, tree.stress + 8);
+      AudioFX.playSnip();
+      return true;
+    },
+
+    startAirLayer(tree) {
+      if (!tree || tree.age < 3 || tree.vigor < 60 || GameState.propTray.length >= 6) return false;
+
+      GameState.propTray.push({
+        id: 'layer_' + Date.now(),
+        species: tree.species,
+        name: `Layered Crown of ${tree.name}`,
+        type: 'airlayer',
+        progress: 0,
+        health: 100,
+        daysActive: 0
+      });
+
+      tree.stress = Math.min(100, tree.stress + 20);
+      AudioFX.playCarve();
+      return true;
+    },
+
+    harvestReadyProp(index) {
+      const item = GameState.propTray[index];
+      if (!item || item.progress < 100) return null;
+
+      const emptyIndex = GameState.bench.findIndex(slot => slot === null);
+      if (emptyIndex === -1) return null;
+
+      const newAge = item.type === 'airlayer' ? 3 : 1;
+      const clonedTree = TreeFactory.createTree(item.species, item.name, newAge);
+      clonedTree.vigor = 90;
+      clonedTree.water = 80;
+
+      GameState.bench[emptyIndex] = clonedTree;
+      GameState.propTray.splice(index, 1);
+
+      AudioFX.playChime();
+      BotanicalEngine.syncHUD();
+      return clonedTree;
+    }
+  };
+  window.Propagation = Propagation;
+
+  /**
+   * BENCH CONTROLLER HOOK
+   */
+  const Bench = {
+    selectSlot(index) {
+      if (index < 0 || index >= GameState.bench.length) return;
+      GameState.activeSlot = index;
+      BotanicalEngine.renderCurrentView();
+      BotanicalEngine.syncHUD();
+      if (window.Actions && window.Actions.renderSubActions) {
+        window.Actions.renderSubActions(UI.activeTab);
+      }
+    }
+  };
+  window.Bench = Bench;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    BotanicalEngine.init();
+  });
+  </script>
+  <!-- ================= SECTION 4: TOOL INTERACTIONS, CARPENTRY & TRAINING ACTIONS ================= -->
+  <script>
+  /**
+   * INTERACTIVE DRAWER ACTIONS CONTROLLER
+   */
+  const Actions = {
+    // Render contextual action buttons into #sub-actions
+    renderSubActions(tab = UI.activeTab) {
+      const container = document.getElementById('sub-actions');
+      if (!container) return;
+      container.innerHTML = '';
+      const tree = GameState.getCurrentTree();
+
+      // Guard: if bench slot is empty and not in the clone tab
+      if (!tree && tab !== 'clone') {
+        const emptyMsg = document.createElement('span');
+        emptyMsg.style.cssText = "font-size:11px; color:var(--text-muted); padding:10px;";
+        emptyMsg.textContent = "Current bench slot is empty. Acquire stock in the Nursery Store.";
+        container.appendChild(emptyMsg);
+        return;
+      }
+
+      switch (tab) {
+        case 'care':
+          this.renderCareButtons(container, tree);
+          break;
+        case 'style':
+          this.renderStyleButtons(container, tree);
+          break;
+        case 'pots':
+          this.renderPotStandButtons(container, tree);
+          break;
+        case 'clone':
+          this.renderCloneButtons(container, tree);
+          break;
+        case 'tokonoma':
+          this.renderExhibitButtons(container, tree);
+          break;
+        default:
+          this.renderCareButtons(container, tree);
+          break;
+      }
+    },
+
+    // ================= 1. CARE & BOTANICAL HYGIENE =================
+    renderCareButtons(parent, tree) {
+      // Water Soak
+      parent.appendChild(this.createBtn("💧 Water Soak", () => {
+        if (tree.water >= 95) {
+          Toast.show("Substrate is saturated! Avoid root rot.", "warn");
           return;
         }
-        if (Math.random() > 0.5) {
-          tree.jinCount++;
-          showToast("Sculpted bleached Jin spike on upper branch!");
-        } else {
-          tree.shariCount++;
-          showToast("Carved flowing Shari deadwood ribbon along trunk vein!");
+        tree.water = Math.min(100, tree.water + 38);
+        AudioFX.playWater();
+        Toast.show("Deep soak applied. Roots hydrated.", "success");
+        this.refreshAfterAction();
+      }));
+
+      // Foliage Mist
+      parent.appendChild(this.createBtn("🌫️ Foliage Mist", () => {
+        tree.water = Math.min(100, tree.water + 8);
+        tree.stress = Math.max(0, tree.stress - 3);
+        AudioFX.playWater();
+        Toast.show("Foliage misted. Ambient humidity boosted.", "info");
+        this.refreshAfterAction();
+      }));
+
+      // Organic NPK Cake
+      parent.appendChild(this.createBtn(`🍙 Feed NPK (${GameState.inventory.fertilizerCakes})`, () => {
+        if (GameState.inventory.fertilizerCakes <= 0) {
+          Toast.show("No organic fertilizer cakes left! Restock at Store.", "warn");
+          return;
         }
-        tree.wabiSabiScore = Math.min(100, tree.wabiSabiScore + 12);
-      } else if (actionType === "fertilize") {
-        tree.vigor = 100;
-        tree.ramification = Math.min(100, tree.ramification + 4);
-        showToast("Applied organic Aburakasu rapeseed cakes. Vigor restored.");
-      } else if (actionType === "water") {
-        tree.moisture = 100;
-        showToast("Thoroughly saturated root ball with Hasu copper wand.");
-      }
-
-      saveState();
-      updateAllUI();
-    }
-
-    function openRepotModal() {
-      const repotPanel = document.getElementById("repotPanel");
-      const grid = document.getElementById("repotPotGrid");
-      grid.innerHTML = "";
-
-      POT_DATABASE.forEach(pot => {
-        const btn = document.createElement("button");
-        btn.className = "btn";
-        btn.innerHTML = `<strong>${pot.name}</strong><span style="font-size:0.65rem; color:var(--washi-muted);">${pot.desc}</span>`;
-        btn.onclick = () => selectRepotPot(pot.id);
-        grid.appendChild(btn);
-      });
-
-      repotPanel.style.display = "block";
-    }
-
-    function closeRepotModal() {
-      document.getElementById("repotPanel").style.display = "none";
-    }
-
-    function selectRepotPot(potId) {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
-      tree.potId = potId;
-      tree.nebariScore = Math.min(100, tree.nebariScore + 10);
-      tree.moisture = 95;
-      showToast(`Repotted into ${POT_DATABASE.find(p=>p.id===potId).name}! Nebari flare boosted.`);
-      closeRepotModal();
-      saveState();
-      updateAllUI();
-    }
-
-    function renameCurrentTree() {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
-      const newName = prompt("Enter new name for this Bonsai sculpture:", tree.name);
-      if (newName && newName.trim().length > 0) {
-        tree.name = newName.trim();
-        saveState();
-        updateAllUI();
-      }
-    }
-
-    /* ==========================================================================
-       11. SALES, AUCTIONS & VISITING CONNOISSEURS
-       ========================================================================== */
-    function sellCurrentTree() {
-      if (GAME.trees.length <= 1) {
-        showToast("Cannot sell your last remaining bonsai!", true);
-        return;
-      }
-      const treeIdx = GAME.trees.findIndex(t => t.id === GAME.selectedTreeId);
-      if (treeIdx === -1) return;
-
-      const tree = GAME.trees[treeIdx];
-      const { valuation, overallScore } = calculateTreeMetrics(tree);
-
-      if (!confirm(`Sell "${tree.name}" to collector for ¥${valuation.toLocaleString()}?`)) return;
-
-      GAME.funds += valuation;
-      GAME.trees.splice(treeIdx, 1);
-      GAME.selectedTreeId = GAME.trees[0].id;
-
-      showToast(`Sold "${tree.name}" for ¥${valuation.toLocaleString()}!`);
-      generateCollectorDialogue(overallScore);
-      saveState();
-      updateAllUI();
-      switchTab("garden");
-    }
-
-    function generateCollectorDialogue(score) {
-      const box = document.getElementById("connoisseur-dialogue");
-      if (!box) return;
-      if (score >= 90) {
-        box.innerHTML = `"Astonishing! The masterwork is worthy of the Kokufu-ten imperial hall. The balance between nebari and deadwood shari reflects profound Zen enlightenment." — Connoisseur from Ueno`;
-      } else if (score >= 70) {
-        box.innerHTML = `"A very commendable specimen. The ramification is dense and pads are well separated. With another decade of leaf pinching, this will win top honors." — Kyoto Temple Curator`;
-      } else {
-        box.innerHTML = `"A promising juvenile tree. The trunk line shows good intention, though the root flare still needs deeper Akadama development." — Traveling Collector`;
-      }
-    }
-
-    /* ==========================================================================
-       12. TIME STEPPING & SEASONAL SIMULATION TICKS
-       ========================================================================== */
-    function progressSeason() {
-      GAME.seasonIndex = (GAME.seasonIndex + 1) % 4;
-      if (GAME.seasonIndex === 0) {
-        GAME.year++;
-        // Annual growth for all trees
-        GAME.trees.forEach(t => {
-          t.age++;
-          t.nebariScore = Math.min(100, t.nebariScore + 2);
-          t.taperScore = Math.min(100, t.taperScore + 1);
-        });
-        showToast(`A new year dawns. Year ${GAME.year}! Trees age +1 year.`);
-      } else {
-        showToast(`The season turns to ${SEASONS[GAME.seasonIndex]}.`);
-      }
-
-      // Evaporation & natural vegetative growth
-      const mistUpgrade = GAME.upgrades.water >= 3;
-      GAME.trees.forEach(t => {
-        if (!mistUpgrade) {
-          t.moisture = Math.max(10, t.moisture - 25);
-        } else {
-          t.moisture = Math.max(60, t.moisture - 10);
+        if (tree.npk > 85) {
+          Toast.show("Soil nutrient levels are already optimal.", "info");
+          return;
         }
-        if (t.moisture > 30) {
-          t.ramification = Math.min(100, t.ramification + 2);
+        GameState.inventory.fertilizerCakes--;
+        tree.npk = Math.min(100, tree.npk + 45);
+        tree.vigor = Math.min(100, tree.vigor + 8);
+        AudioFX.playChime();
+        Toast.show("Organic NPK cake pinned to soil rim.", "success");
+        this.refreshAfterAction();
+      }));
+
+      // Chopstick Aeration
+      parent.appendChild(this.createBtn("🥢 Chopstick Aerate", () => {
+        if (tree.soilHealth >= 95) {
+          Toast.show("Substrate is already loose and airy.", "info");
+          return;
         }
-      });
+        tree.soilHealth = Math.min(100, tree.soilHealth + 20);
+        tree.water = Math.max(0, tree.water - 5);
+        AudioFX.playSnip();
+        Toast.show("Poked aeration channels. Soil compaction eased.", "success");
+        this.refreshAfterAction();
+      }));
 
-      saveState();
-      updateAllUI();
-    }
+      // Repot & Root Rake
+      parent.appendChild(this.createBtn("🪴 Repot & Rake", () => {
+        const currentSeason = GameState.seasons[GameState.seasonIndex].toLowerCase();
+        let stressPenalty = 15;
+        if (currentSeason !== 'spring') {
+          stressPenalty = 45;
+          Toast.show("Warning: Repotting outside Spring causes severe shock!", "warn");
+        }
+        if (GameState.inventory.akadamaBags <= 0 || GameState.inventory.pumiceBags <= 0) {
+          Toast.show("Requires 1 Akadama & 1 Pumice bag to refresh substrate!", "warn");
+          return;
+        }
 
-    // Auto seasonal advance every 60 seconds
-    setInterval(progressSeason, 60000);
+        GameState.inventory.akadamaBags--;
+        GameState.inventory.pumiceBags--;
+        tree.rootbound = 0;
+        tree.soilHealth = 100;
+        tree.stress = Math.min(100, tree.stress + stressPenalty);
+        tree.vigor = Math.max(10, tree.vigor - 8);
+        AudioFX.playCarve();
+        Toast.show("Root ball pruned; fresh Akadama/Pumice mix added.", "success");
+        this.refreshAfterAction();
+      }));
+    },
 
-    /* ==========================================================================
-       13. EXHIBITIONS & PRESTIGE TOURNAMENTS
-       ========================================================================== */
-    function enterExhibition(exhibitId) {
-      const exhibit = EXHIBITIONS_DATA.find(e => e.id === exhibitId);
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!exhibit || !tree) return;
+    // ================= 2. TRAINING, SHAPING & DEADWOOD =================
+    renderStyleButtons(parent, tree) {
+      // 15 Canonical Bonsai Forms
+      const allStyles = [
+        { id: 'chokkan', name: 'Chokkan (Formal Upright)' },
+        { id: 'moyogi', name: 'Moyogi (Informal Upright)' },
+        { id: 'shakan', name: 'Shakan (Slanting)' },
+        { id: 'kengai', name: 'Kengai (Full Cascade)' },
+        { id: 'han_kengai', name: 'Han-Kengai (Semi-Cascade)' },
+        { id: 'bunjingi', name: 'Bunjingi (Literati)' },
+        { id: 'fukinagashi', name: 'Fukinagashi (Windswept)' },
+        { id: 'hokidachi', name: 'Hokidachi (Broom)' },
+        { id: 'sokan', name: 'Sokan (Twin Trunk)' },
+        { id: 'kabudachi', name: 'Kabudachi (Clump)' },
+        { id: 'yose_ue', name: 'Yose-ue (Forest Planting)' },
+        { id: 'sharimiki', name: 'Sharimiki (Driftwood)' },
+        { id: 'neagari', name: 'Neagari (Exposed Root)' },
+        { id: 'ishitsuki', name: 'Ishitsuki (Root-over-Rock)' },
+        { id: 'ikadabuki', name: 'Ikadabuki (Raft Style)' }
+      ];
 
-      if (GAME.funds < exhibit.entryFee) {
-        showToast(`Insufficient funds! Entry requires ¥${exhibit.entryFee.toLocaleString()}`, true);
-        return;
-      }
+      // Train Shape Button
+      parent.appendChild(this.createBtn("🎋 Train Shape", () => {
+        const curIdx = allStyles.findIndex(s => s.id === tree.style);
+        const nextIdx = (curIdx + 1) % allStyles.length;
+        tree.style = allStyles[nextIdx].id;
+        tree.stress = Math.min(100, tree.stress + 10);
+        AudioFX.playCarve();
+        Toast.show(`Trained into: ${allStyles[nextIdx].name}`, "success");
+        this.refreshAfterAction();
+      }));
 
-      GAME.funds -= exhibit.entryFee;
-      const { overallScore } = calculateTreeMetrics(tree);
+      // Structural Clip
+      parent.appendChild(this.createBtn("✂️ Clip Branch", () => {
+        const nodes = ['64_92', '64_80', '60_70', '68_68', '56_58', '72_56'];
+        const avail = nodes.filter(n => !tree.prunedBranches.includes(n));
+        if (avail.length === 0) {
+          Toast.show("Specimen is already heavily pruned.", "info");
+          return;
+        }
+        const chosen = avail[Math.floor(Math.random() * avail.length)];
+        tree.prunedBranches.push(chosen);
+        tree.stress = Math.min(100, tree.stress + 5);
+        tree.foliageDensity = Math.max(0.4, tree.foliageDensity - 0.1);
+        AudioFX.playSnip();
+        Toast.show("Branch excised. Taper line defined.", "success");
+        this.refreshAfterAction();
+      }));
 
-      if (overallScore >= exhibit.minScore) {
-        GAME.funds += exhibit.reward;
-        GAME.exhibitionWins[exhibit.id] = true;
-        GAME.rank = exhibit.rep;
-        showToast(`VICTORY! "${tree.name}" won the ${exhibit.name}! Awarded ¥${exhibit.reward.toLocaleString()}!`);
+      // Candle Pinching
+      parent.appendChild(this.createBtn("🤏 Pinch Foliage", () => {
+        tree.foliageDensity = Math.min(1.0, tree.foliageDensity + 0.08);
+        tree.stress = Math.min(100, tree.stress + 4);
+        AudioFX.playSnip();
+        Toast.show("Bud tips pinched. Compact growth encouraged.", "success");
+        this.refreshAfterAction();
+      }));
+
+      // Wire / Unwire
+      if (!tree.wiredTrunk) {
+        parent.appendChild(this.createBtn(`🌀 Apply Wire (${GameState.inventory.wireCoils})`, () => {
+          if (GameState.inventory.wireCoils <= 0) {
+            Toast.show("No copper wire coils in inventory!", "warn");
+            return;
+          }
+          GameState.inventory.wireCoils--;
+          tree.wiredTrunk = true;
+          tree.wireDaysRemaining = 45;
+          tree.wiringBend = (Math.random() > 0.5 ? 1 : -1) * (0.2 + Math.random() * 0.25);
+          tree.stress = Math.min(100, tree.stress + 12);
+          AudioFX.playCarve();
+          Toast.show("Annealed copper wire coiled onto trunk.", "success");
+          this.refreshAfterAction();
+        }));
       } else {
-        showToast(`Judged Unplaced. Score was ${overallScore} / Required ${exhibit.minScore}. Keep cultivating.`, true);
+        parent.appendChild(this.createBtn("✂️ Remove Wire", () => {
+          tree.wiredTrunk = false;
+          tree.wireDaysRemaining = 0;
+          AudioFX.playSnip();
+          if (tree.hasWireBite) {
+            Toast.show("Wire uncoiled, but wire-bite scars remain.", "warn");
+          } else {
+            Toast.show("Wire removed safely without scarring.", "success");
+          }
+          this.refreshAfterAction();
+        }));
       }
 
-      saveState();
-      updateAllUI();
-    }
+      // Carve Jin / Shari
+      parent.appendChild(this.createBtn(`🪓 Carve Jin (${GameState.inventory.limeSulfur})`, () => {
+        if (GameState.inventory.limeSulfur <= 0) {
+          Toast.show("No lime-sulfur bleaching agent available!", "warn");
+          return;
+        }
+        const candidateNodes = ['64_80', '60_70', '68_68', '56_58', '72_56'];
+        const avail = candidateNodes.filter(n => !tree.deadwoodBranches.includes(n));
+        if (avail.length === 0) {
+          Toast.show("No eligible branches remain for deadwood carving.", "info");
+          return;
+        }
+        GameState.inventory.limeSulfur--;
+        const target = avail[Math.floor(Math.random() * avail.length)];
+        tree.deadwoodBranches.push(target);
+        tree.stress = Math.min(100, tree.stress + 16);
+        AudioFX.playCarve();
+        Toast.show("Bark stripped and bleached with lime-sulfur Jin.", "success");
+        this.refreshAfterAction();
+      }));
+    },
 
-    /* ==========================================================================
-       14. UPGRADE PROGRESSION SYSTEM
-       ========================================================================== */
-    function purchaseUpgrade(category, nextTier) {
-      const upg = UPGRADE_DATABASE[category][nextTier - 1];
-      if (!upg) return;
+    // ================= 3. POTS & DISPLAY CARPENTRY =================
+    renderPotStandButtons(parent, tree) {
+      const potStyles = ['rectangle', 'oval', 'cascade', 'nanban'];
+      const potGlazes = ['tokoname', 'yixing', 'celadon', 'cobalt', 'basalt'];
+      const standStyles = ['shokaku', 'jiita', 'kengai', 'lattice'];
+      const standWoods = ['rosewood', 'sugi', 'teak', 'walnut'];
 
-      if (GAME.funds < upg.cost) {
-        showToast("Insufficient treasury capital for this upgrade!", true);
-        return;
+      // Pot Shape
+      parent.appendChild(this.createBtn("🏺 Pot Shape", () => {
+        const idx = (potStyles.indexOf(tree.potStyle) + 1) % potStyles.length;
+        tree.potStyle = potStyles[idx];
+        AudioFX.playCoin();
+        Toast.show(`Pot Shape: ${tree.potStyle.toUpperCase()}`, "info");
+        this.refreshAfterAction();
+      }));
+
+      // Ceramic Glaze
+      parent.appendChild(this.createBtn("🎨 Ceramic Glaze", () => {
+        const idx = (potGlazes.indexOf(tree.potGlaze) + 1) % potGlazes.length;
+        tree.potGlaze = potGlazes[idx];
+        AudioFX.playCoin();
+        Toast.show(`Ceramic Glaze: ${tree.potGlaze.toUpperCase()}`, "info");
+        this.refreshAfterAction();
+      }));
+
+      // Stand Style
+      parent.appendChild(this.createBtn("🪑 Stand Style", () => {
+        const idx = (standStyles.indexOf(tree.standStyle) + 1) % standStyles.length;
+        tree.standStyle = standStyles[idx];
+        AudioFX.playCoin();
+        Toast.show(`Display Stand: ${tree.standStyle.toUpperCase()}`, "info");
+        this.refreshAfterAction();
+      }));
+
+      // Timber Wood
+      parent.appendChild(this.createBtn("🪵 Timber Wood", () => {
+        const idx = (standWoods.indexOf(tree.standWood) + 1) % standWoods.length;
+        tree.standWood = standWoods[idx];
+        AudioFX.playCoin();
+        Toast.show(`Timber Wood: ${tree.standWood.toUpperCase()}`, "info");
+        this.refreshAfterAction();
+      }));
+    },
+
+    // ================= 4. PROPAGATION & CLONING =================
+    renderCloneButtons(parent, tree) {
+      if (tree) {
+        parent.appendChild(this.createBtn("🌱 Take Cutting", () => {
+          if (Propagation.takeCutting(tree)) {
+            Toast.show("Softwood cutting placed in propagation tray.", "success");
+            this.refreshAfterAction();
+          } else {
+            Toast.show("Tree too weak, or propagation tray is full (Max 6).", "warn");
+          }
+        }));
+
+        parent.appendChild(this.createBtn("🌿 Air-Layer Branch", () => {
+          if (Propagation.startAirLayer(tree)) {
+            Toast.show("Branch girdled and packed with sphagnum moss.", "success");
+            this.refreshAfterAction();
+          } else {
+            Toast.show("Requires mature, vigorous tree (Vigor > 60, Age > 2).", "warn");
+          }
+        }));
       }
 
-      GAME.funds -= upg.cost;
-      GAME.upgrades[category] = nextTier;
-      showToast(`Installed: ${upg.name}!`);
-      saveState();
-      updateAllUI();
-    }
-
-    /* ==========================================================================
-       15. SEEDLINGS & EXPEDITIONS STORE
-       ========================================================================== */
-    function purchaseSpeciesStock(speciesId) {
-      const spec = SPECIES_DATABASE.find(s => s.id === speciesId);
-      if (!spec) return;
-
-      const maxTrees = UPGRADE_DATABASE.facility[GAME.upgrades.facility - 1].capacity;
-      if (GAME.trees.length >= maxTrees) {
-        showToast(`Garden benches full (${GAME.trees.length}/${maxTrees})! Upgrade facility first.`, true);
-        return;
-      }
-
-      if (GAME.funds < spec.price) {
-        showToast("Insufficient nursery capital!", true);
-        return;
-      }
-
-      // Pick random complementary style
-      const styles = Object.keys(BONSAI_STYLES);
-      const chosenStyle = styles[Math.floor(Math.random() * styles.length)];
-
-      GAME.funds -= spec.price;
-      const newTree = createTreeInstance(spec.id, chosenStyle);
-      GAME.trees.push(newTree);
-      GAME.selectedTreeId = newTree.id;
-
-      showToast(`Acquired raw ${spec.name} stock! Added to benches.`);
-      saveState();
-      updateAllUI();
-      switchTab("workshop");
-    }
-
-    /* ==========================================================================
-       16. GOD MODE CHEATS & COMMAND TERMINAL
-       ========================================================================== */
-    function toggleGodMode() {
-      const modal = document.getElementById("godModal");
-      modal.classList.toggle("active");
-    }
-
-    function godAddFunds() {
-      GAME.funds += 5000000;
-      showToast("Celestial Bounty: +¥5,000,000 added.");
-      saveState();
-      updateAllUI();
-    }
-
-    function godAddAge() {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
-      tree.age += 50;
-      tree.wabiSabiScore = Math.min(100, tree.wabiSabiScore + 25);
-      showToast(`Time warp: ${tree.name} aged +50 years!`);
-      saveState();
-      updateAllUI();
-    }
-
-    function godMaxRamification() {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
-      tree.ramification = 100;
-      showToast(`Infinite density: Ramification set to 100%!`);
-      saveState();
-      updateAllUI();
-    }
-
-    function godMaxNebari() {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
-      tree.nebariScore = 100;
-      tree.taperScore = 100;
-      showToast("Nebari and Taper maximized!");
-      saveState();
-      updateAllUI();
-    }
-
-    function godUnlockAllPots() {
-      showToast("All pots and stone slabs unlocked.");
-      openRepotModal();
-    }
-
-    function godAutoMaster() {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree) return;
-      tree.age = 120;
-      tree.ramification = 100;
-      tree.nebariScore = 100;
-      tree.taperScore = 100;
-      tree.wabiSabiScore = 95;
-      tree.jinCount = 2;
-      tree.shariCount = 3;
-      showToast("Ascended tree into legendary Kokufu Masterpiece!");
-      saveState();
-      updateAllUI();
-    }
-
-    function godMorphStyle(styleKey) {
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-      if (!tree || !BONSAI_STYLES[styleKey]) return;
-      tree.styleId = styleKey;
-      if (styleKey === "kengai") tree.potId = "cascade_deep";
-      if (styleKey === "yose_ue" || styleKey === "ishitsuki") tree.potId = "kurama_slab";
-      showToast(`Tree morphed into ${BONSAI_STYLES[styleKey].name}!`);
-      saveState();
-      updateAllUI();
-    }
-
-    function executeGodCommand() {
-      const input = document.getElementById("godCommandInput");
-      const cmd = input.value.trim();
-      input.value = "";
-      if (!cmd) return;
-
-      const parts = cmd.split(" ");
-      const action = parts[0].toLowerCase();
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId);
-
-      if (action === "add_funds") {
-        const amt = parseInt(parts[1]) || 100000;
-        GAME.funds += amt;
-        showToast(`God Shell: +¥${amt.toLocaleString()} added.`);
-      } else if (action === "set_age" && tree) {
-        const yrs = parseInt(parts[1]) || 50;
-        tree.age = yrs;
-        showToast(`God Shell: Tree age set to ${yrs} years.`);
-      } else if (action === "max_wabi_sabi" && tree) {
-        tree.wabiSabiScore = 100;
-        tree.jinCount = 3;
-        tree.shariCount = 3;
-        showToast("God Shell: Max Wabi-Sabi deadwood carved.");
-      } else if (action === "auto_master") {
-        godAutoMaster();
+      if (GameState.propTray.length === 0) {
+        const info = document.createElement('span');
+        info.style.cssText = "font-size:11px; color:var(--text-muted); padding:10px;";
+        info.textContent = "Propagation tray empty. Harvest softwood cuttings or air-layer branches.";
+        parent.appendChild(info);
       } else {
-        showToast(`Unknown command: ${cmd}`, true);
-      }
-
-      saveState();
-      updateAllUI();
-    }
-
-    /* ==========================================================================
-       17. UI RENDERING & TAB NAVIGATION
-       ========================================================================== */
-    function switchTab(tabId) {
-      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".dock-btn").forEach(el => el.classList.remove("active"));
-
-      const target = document.getElementById("tab-" + tabId);
-      if (target) target.classList.add("active");
-
-      // Match dock button highlight
-      const btns = Array.from(document.querySelectorAll(".dock-btn"));
-      const map = ["garden", "tokonoma", "workshop", "tools", "seedlings", "market", "exhibitions"];
-      const idx = map.indexOf(tabId);
-      if (idx !== -1 && btns[idx]) btns[idx].classList.add("active");
-
-      updateAllUI();
-    }
-
-    function showToast(msg, isError = false) {
-      const rack = document.getElementById("toast-rack");
-      const toast = document.createElement("div");
-      toast.className = "toast";
-      if (isError) toast.style.borderLeftColor = "var(--vermilion)";
-      toast.textContent = msg;
-      rack.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = "0";
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
-    }
-
-    function selectTree(treeId) {
-      GAME.selectedTreeId = treeId;
-      updateAllUI();
-      switchTab("tokonoma");
-    }
-
-    function updateAllUI() {
-      // HUD
-      document.getElementById("hud-funds").textContent = `¥${GAME.funds.toLocaleString()}`;
-      document.getElementById("hud-rank").textContent = GAME.rank;
-      document.getElementById("hud-season").textContent = `${SEASONS[GAME.seasonIndex]}, Yr ${GAME.year}`;
-      const capacity = UPGRADE_DATABASE.facility[GAME.upgrades.facility - 1].capacity;
-      document.getElementById("hud-trees").textContent = `${GAME.trees.length} / ${capacity}`;
-
-      const tree = GAME.trees.find(t => t.id === GAME.selectedTreeId) || GAME.trees[0];
-      if (!tree) return;
-      const species = SPECIES_DATABASE.find(s => s.id === tree.speciesId) || SPECIES_DATABASE[0];
-      const style = BONSAI_STYLES[tree.styleId] || BONSAI_STYLES.moyogi;
-      const { overallScore, valuation } = calculateTreeMetrics(tree);
-
-      // Tokonoma dossier
-      document.getElementById("tok-tree-name").textContent = tree.name;
-      document.getElementById("tok-tree-style").textContent = `${style.name} (${style.kanji})`;
-      document.getElementById("tok-species-botanical").textContent = species.botanical;
-      document.getElementById("tok-tree-age").textContent = `${tree.age} yrs`;
-      document.getElementById("tok-tree-ram").textContent = `${tree.ramification}%`;
-      document.getElementById("tok-ram-bar").style.width = `${tree.ramification}%`;
-      document.getElementById("tok-tree-nebari").textContent = `${tree.nebariScore} / 100`;
-      document.getElementById("tok-neb-bar").style.width = `${tree.nebariScore}%`;
-      document.getElementById("tok-tree-wabi").textContent = `${tree.wabiSabiScore} / 100`;
-      document.getElementById("tok-wabi-bar").style.width = `${tree.wabiSabiScore}%`;
-      document.getElementById("tok-tree-moisture").textContent = `${tree.moisture}%`;
-      document.getElementById("tok-tree-score").textContent = overallScore.toFixed(1);
-
-      const pot = POT_DATABASE.find(p => p.id === tree.potId) || POT_DATABASE[0];
-      document.getElementById("tok-pot-desc").textContent = `${pot.name} — ${pot.desc}`;
-
-      // Market tab info
-      document.getElementById("mkt-tree-name").textContent = `Selected: ${tree.name} (${species.name})`;
-      document.getElementById("mkt-tree-val").textContent = `Estimated Valuation: ¥${valuation.toLocaleString()}`;
-
-      // Workshop tab title
-      document.getElementById("ws-tree-title").textContent = tree.name;
-      document.getElementById("ws-tree-subtitle").textContent = `${style.name} // ${species.name}`;
-
-      // Render Active Canvases
-      renderBonsaiOnCanvas(document.getElementById("tokonomaCanvas"), tree);
-      renderBonsaiOnCanvas(document.getElementById("workshopCanvas"), tree);
-
-      // Render Garden Grid
-      renderGardenGrid();
-
-      // Render Upgrades
-      renderUpgrades();
-
-      // Render Species Nursery Market
-      renderNurseryStock();
-
-      // Render Exhibitions
-      renderExhibitions();
-    }
-
-    function renderGardenGrid() {
-      const grid = document.getElementById("garden-grid");
-      grid.innerHTML = "";
-
-      GAME.trees.forEach(t => {
-        const card = document.createElement("div");
-        card.className = "tree-mini-card" + (t.id === GAME.selectedTreeId ? " selected" : "");
-        card.onclick = () => selectTree(t.id);
-
-        const canvasWrap = document.createElement("div");
-        canvasWrap.className = "mini-canvas-wrap";
-        const miniCan = document.createElement("canvas");
-        miniCan.width = 180;
-        miniCan.height = 180;
-        canvasWrap.appendChild(miniCan);
-        renderBonsaiOnCanvas(miniCan, t);
-
-        const { overallScore, valuation } = calculateTreeMetrics(t);
-        const spec = SPECIES_DATABASE.find(s => s.id === t.speciesId) || SPECIES_DATABASE[0];
-
-        card.appendChild(canvasWrap);
-        card.innerHTML += `
-          <div style="font-family:var(--font-serif); font-weight:600; font-size:0.95rem; color:var(--washi);">${t.name}</div>
-          <div style="font-size:0.75rem; color:var(--washi-muted); margin-bottom:6px;">${spec.name} // ${t.age} yrs</div>
-          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-top:auto;">
-            <span style="color:var(--gold-light);">Score: ${overallScore}</span>
-            <span style="color:var(--bamboo-light);">¥${valuation.toLocaleString()}</span>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      });
-    }
-
-    function renderUpgrades() {
-      const container = document.getElementById("upgrades-container");
-      container.innerHTML = "";
-
-      Object.keys(UPGRADE_DATABASE).forEach(catKey => {
-        const cat = UPGRADE_DATABASE[catKey];
-        const currentTier = GAME.upgrades[catKey];
-
-        const section = document.createElement("div");
-        section.className = "upgrade-category";
-
-        const title = document.createElement("div");
-        title.style.fontFamily = "var(--font-serif)";
-        title.style.fontSize = "1rem";
-        title.style.color = "var(--washi)";
-        title.style.textTransform = "capitalize";
-        title.textContent = `${catKey} Infrastructure (Current: Level ${currentTier})`;
-        section.appendChild(title);
-
-        const grid = document.createElement("div");
-        grid.className = "upgrade-tier-grid";
-
-        cat.forEach(tierObj => {
-          const box = document.createElement("div");
-          const isPurchased = tierObj.tier <= currentTier;
-          const isNext = tierObj.tier === currentTier + 1;
-
-          box.className = "upgrade-box" + (isPurchased ? " purchased" : (isNext ? " current" : ""));
-          box.innerHTML = `
-            <div>
-              <div style="font-size:0.7rem; color:var(--gold-light); text-transform:uppercase;">Tier ${tierObj.tier}</div>
-              <div style="font-weight:600; font-size:0.9rem; margin:2px 0 6px 0;">${tierObj.name}</div>
-              <div style="font-size:0.75rem; color:var(--washi-muted); line-height:1.4;">${tierObj.desc}</div>
-            </div>
-            <div style="margin-top:12px;">
-              ${isPurchased ? 
-                '<span style="font-size:0.75rem; color:var(--bamboo-light); font-weight:600;">ACTIVE</span>' : 
-                `<button class="btn primary" style="width:100%;" ${!isNext ? "disabled" : ""} onclick="purchaseUpgrade('${catKey}', ${tierObj.tier})">
-                   Upgrade ¥${tierObj.cost.toLocaleString()}
-                 </button>`
+        GameState.propTray.forEach((item, idx) => {
+          const isReady = item.progress >= 100;
+          const label = isReady ? `🎍 Pot Clone (${item.species})` : `⏳ ${item.species} (${Math.round(item.progress)}%)`;
+          parent.appendChild(this.createBtn(label, () => {
+            if (isReady) {
+              const newTree = Propagation.harvestReadyProp(idx);
+              if (newTree) {
+                Toast.show(`Cloned ${newTree.name} potted on bench!`, "success");
+                this.refreshAfterAction();
+              } else {
+                Toast.show("No empty bench slot available! Sell or move stock first.", "warn");
               }
-            </div>
-          `;
-          grid.appendChild(box);
+            } else {
+              Toast.show(`Roots developing: ${Math.round(item.progress)}% complete.`, "info");
+            }
+          }));
         });
+      }
+    },
 
-        section.appendChild(grid);
-        container.appendChild(section);
-      });
+    // ================= 5. EXHIBIT & TOKONOMA =================
+    renderExhibitButtons(parent, tree) {
+      parent.appendChild(this.createBtn("🏆 Kokufu-ten Contest", () => {
+        const total = tree.styleScore + tree.harmonyBonus;
+        let rank = "Honorable Mention";
+        let reward = 35;
+        if (total > 85) { rank = "Prime Minister Award"; reward = 300; }
+        else if (total > 70) { rank = "Gold Ribbon Masterwork"; reward = 150; }
+        else if (total > 50) { rank = "Silver Ribbon Certificate"; reward = 75; }
+
+        GameState.coins += reward;
+        AudioFX.playChime();
+        Toast.show(`Judged: ${rank}! Awarded 🪙 ${reward}`, "success");
+        BotanicalEngine.syncHUD();
+      }));
+
+      parent.appendChild(this.createBtn("📜 View Synergy Breakdown", () => {
+        Toast.show(`Form: ${tree.styleScore} pts | Pot/Stand Synergy: +${tree.harmonyBonus} pts`, "info");
+      }));
+    },
+
+    // Helper: Button Constructor
+    createBtn(text, onClick) {
+      const btn = document.createElement('button');
+      btn.className = 'action-btn';
+      btn.textContent = text;
+      btn.onclick = (e) => {
+        e.preventDefault();
+        onClick();
+      };
+      return btn;
+    },
+
+    refreshAfterAction() {
+      BotanicalEngine.recalculateAllStyles();
+      BotanicalEngine.renderCurrentView();
+      BotanicalEngine.syncHUD();
+      this.renderSubActions(UI.activeTab);
     }
+  };
+  window.Actions = Actions;
 
-    function renderNurseryStock() {
-      const grid = document.getElementById("species-market-grid");
-      grid.innerHTML = "";
-
-      SPECIES_DATABASE.forEach(s => {
-        const item = document.createElement("div");
-        item.className = "seedling-item";
-        item.innerHTML = `
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
-              <span class="tag ${s.category}">${s.category}</span>
-              <span style="font-family:var(--font-serif); font-size:1rem; color:var(--gold-light);">¥${s.price.toLocaleString()}</span>
-            </div>
-            <div style="font-family:var(--font-serif); font-weight:600; font-size:1rem; margin-top:6px;">${s.name}</div>
-            <div style="font-size:0.75rem; color:var(--washi-muted); font-style:italic; margin-bottom:6px;">${s.botanical}</div>
-            <div style="font-size:0.75rem; color:var(--washi); line-height:1.4;">${s.desc}</div>
-          </div>
-          <button class="btn gold-btn" style="margin-top:12px;" onclick="purchaseSpeciesStock('${s.id}')">
-            Acquire Specimen
-          </button>
-        `;
-        grid.appendChild(item);
-      });
-    }
-
-    function renderExhibitions() {
-      const list = document.getElementById("exhibition-list");
-      list.innerHTML = "";
-
-      EXHIBITIONS_DATA.forEach(ex => {
-        const won = GAME.exhibitionWins[ex.id];
-        const card = document.createElement("div");
-        card.className = "exhibition-tier" + (won ? " passed" : "");
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <div style="font-family:var(--font-serif); font-size:1.1rem; color:var(--gold);">${ex.name}</div>
-            <span style="font-size:0.8rem; color:${won ? "var(--gold-light)" : "var(--washi-muted)"};">
-              ${won ? "★ MEDAL CONQUERED" : `Entry Fee: ¥${ex.entryFee.toLocaleString()}`}
-            </span>
-          </div>
-          <div style="font-size:0.8rem; color:var(--washi-muted);">
-            Minimum Aesthetic Score Required: <strong style="color:var(--washi);">${ex.minScore} / 100</strong> | Prize Purse: <strong style="color:var(--bamboo-light);">¥${ex.reward.toLocaleString()}</strong>
-          </div>
-          <button class="btn ${won ? "gold-btn" : "primary"}" style="align-self:flex-start; min-width:180px;" onclick="enterExhibition('${ex.id}')">
-            ${won ? "Compete Again for Purse" : "Submit Selected Bonsai"}
-          </button>
-        `;
-        list.appendChild(card);
-      });
-    }
-
-    // Populate God Mode Style Morph Buttons
-    function initGodStyleButtons() {
-      const container = document.getElementById("godStyleButtons");
-      container.innerHTML = "";
-      Object.keys(BONSAI_STYLES).forEach(key => {
-        const style = BONSAI_STYLES[key];
-        const b = document.createElement("button");
-        b.className = "btn";
-        b.style.fontSize = "0.7rem";
-        b.style.padding = "4px 8px";
-        b.textContent = `${style.name} (${style.kanji})`;
-        b.onclick = () => godMorphStyle(key);
-        container.appendChild(b);
-      });
-    }
-
-    // Quick water all benches
-    document.getElementById("quickWaterAllBtn").onclick = () => {
-      GAME.trees.forEach(t => t.moisture = 100);
-      showToast("All cultivation benches hydrated.");
-      saveState();
-      updateAllUI();
-    };
-
-    document.getElementById("godModeToggle").onclick = toggleGodMode;
-
-    // Boot engine on load
-    window.addEventListener("DOMContentLoaded", () => {
-      loadSave();
-      initGodStyleButtons();
-      updateAllUI();
-    });
+  document.addEventListener('DOMContentLoaded', () => {
+    Actions.renderSubActions('care');
+  });
   </script>
+  <!-- ================= SECTION 5: STOREFRONT, CODEX, GOD CONSOLE & PERSISTENCE ================= -->
+  <script>
+  /**
+   * 1. COMMERCIAL STOREFRONT & NURSERY ECONOMY
+   */
+  const Store = {
+    suppliesCatalog: [
+      { id: 'fertilizerCakes', name: 'Organic NPK Cakes (x3)', cost: 35, key: 'fertilizerCakes', qty: 3, icon: '🍙' },
+      { id: 'wireCoils', name: 'Annealed Wire Coils (x2)', cost: 40, key: 'wireCoils', qty: 2, icon: '🌀' },
+      { id: 'limeSulfur', name: 'Lime-Sulfur Bleach (x1)', cost: 50, key: 'limeSulfur', qty: 1, icon: '🪓' },
+      { id: 'akadamaBags', name: 'Hard Akadama Clay (x2)', cost: 55, key: 'akadamaBags', qty: 2, icon: '🪨' },
+      { id: 'pumiceBags', name: 'Hyuga Pumice Grit (x2)', cost: 45, key: 'pumiceBags', qty: 2, icon: '⚪' }
+    ],
+
+    nurseryStarters: [
+      { species: 'pine', name: 'Kuromatsu Seedling', cost: 130, age: 2, icon: '🌲' },
+      { species: 'maple', name: 'Momiji Whip Stock', cost: 110, age: 2, icon: '🍁' },
+      { species: 'elm', name: 'Chinese Elm Cutting', cost: 85, age: 1, icon: '🌳' },
+      { species: 'juniper', name: 'Shimpaku Starter', cost: 125, age: 2, icon: '🌿' }
+    ],
+
+    calculateTreeValuation(tree) {
+      if (!tree) return 0;
+      const spec = SpeciesDB[tree.species] || SpeciesDB.elm;
+      const maturityMult = Math.max(1, tree.age * 0.85);
+      const healthMult = Math.max(0.2, tree.vigor / 100);
+      const scoreFactor = Math.max(0.3, (tree.styleScore + tree.harmonyBonus) / 60);
+      const wirePenalty = tree.hasWireBite ? 0.65 : 1.0;
+      const stressPenalty = Math.max(0.5, 1 - (tree.stress / 180));
+
+      const total = spec.basePrice * maturityMult * scoreFactor * healthMult * wirePenalty * stressPenalty;
+      return Math.max(25, Math.round(total));
+    },
+
+    render() {
+      const root = document.getElementById('store-content');
+      if (!root) return;
+      const tree = GameState.getCurrentTree();
+      const val = this.calculateTreeValuation(tree);
+
+      let html = `
+        <div style="background:var(--bg-card); padding:10px; border:1px solid var(--border-color); border-radius:4px; margin-bottom:10px;">
+          <h4 style="color:var(--accent-gold); margin-bottom:4px;">Nursery Commercial Bench</h4>
+          <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Sell cultivated specimens to visiting patrons.</p>
+          ${tree ? `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#18211b; padding:8px; border-radius:4px;">
+              <div>
+                <b>${tree.name}</b> (${tree.style.toUpperCase()})<br>
+                <span style="font-size:10px; color:var(--text-muted);">Age: ${tree.age} yrs | Style: ${tree.styleScore + tree.harmonyBonus} pts</span>
+              </div>
+              <button class="action-btn" style="background:var(--accent-gold); color:#000; font-weight:bold;" onclick="Store.sellCurrentTree()">
+                Sell: 🪙 ${val}
+              </button>
+            </div>
+          ` : `<div style="font-size:11px; color:var(--text-muted);">Current bench slot is empty.</div>`}
+        </div>
+
+        <h4 style="color:var(--accent-gold); margin-bottom:6px;">Horticultural Supplies</h4>
+        <div style="display:grid; grid-template-columns:1fr; gap:6px; margin-bottom:12px;">
+      `;
+
+      this.suppliesCatalog.forEach(item => {
+        html += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); padding:6px 10px; border:1px solid var(--border-color); border-radius:4px;">
+            <span>${item.icon} ${item.name}</span>
+            <button class="action-btn" style="min-height:36px; padding:4px 10px;" onclick="Store.buySupply('${item.id}')">
+              🪙 ${item.cost}
+            </button>
+          </div>
+        `;
+      });
+
+      html += `
+        </div>
+        <h4 style="color:var(--accent-gold); margin-bottom:6px;">Pre-Bonsai Nursery Stock</h4>
+        <div style="display:grid; grid-template-columns:1fr; gap:6px;">
+      `;
+
+      this.nurseryStarters.forEach(st => {
+        html += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); padding:6px 10px; border:1px solid var(--border-color); border-radius:4px;">
+            <div>
+              <span>${st.icon} <b>${st.name}</b></span><br>
+              <span style="font-size:10px; color:var(--text-muted);">Starter Stock (Age: ${st.age}y)</span>
+            </div>
+            <button class="action-btn" style="min-height:36px; padding:4px 10px;" onclick="Store.buyStarter('${st.species}', '${st.name}', ${st.cost}, ${st.age})">
+              🪙 ${st.cost}
+            </button>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      root.innerHTML = html;
+    },
+
+    buySupply(supplyId) {
+      const item = this.suppliesCatalog.find(s => s.id === supplyId);
+      if (!item) return;
+      if (GameState.coins < item.cost) {
+        Toast.show("Insufficient coin balance!", "warn");
+        return;
+      }
+      GameState.coins -= item.cost;
+      GameState.inventory[item.key] += item.qty;
+      AudioFX.playCoin();
+      Toast.show(`Acquired ${item.name}`, "success");
+      BotanicalEngine.syncHUD();
+      this.render();
+      if (window.Actions) Actions.renderSubActions();
+    },
+
+    buyStarter(species, name, cost, age) {
+      const freeSlot = GameState.bench.findIndex(slot => slot === null);
+      if (freeSlot === -1) {
+        Toast.show("Nursery bench is full! Free a bench slot first.", "warn");
+        return;
+      }
+      if (GameState.coins < cost) {
+        Toast.show("Insufficient coin balance!", "warn");
+        return;
+      }
+      GameState.coins -= cost;
+      GameState.bench[freeSlot] = TreeFactory.createTree(species, name, age);
+      AudioFX.playCoin();
+      Toast.show(`${name} placed in Bench Slot #${freeSlot + 1}!`, "success");
+      BotanicalEngine.syncHUD();
+      BotanicalEngine.renderCurrentView();
+      this.render();
+    },
+
+    sellCurrentTree() {
+      const tree = GameState.getCurrentTree();
+      if (!tree) return;
+      const value = this.calculateTreeValuation(tree);
+      GameState.coins += value;
+      GameState.bench[GameState.activeSlot] = null;
+      AudioFX.playCoin();
+      Toast.show(`Specimen sold for 🪙 ${value}!`, "success");
+      BotanicalEngine.renderCurrentView();
+      BotanicalEngine.syncHUD();
+      this.render();
+      if (window.Actions) Actions.renderSubActions();
+    }
+  };
+  window.Store = Store;
+
+  /**
+   * 2. MASTER BONSAI FIELD CODEX & MANUAL
+   */
+  const Manual = {
+    render() {
+      const root = document.getElementById('manual-content');
+      if (!root) return;
+      root.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="background:var(--bg-card); padding:10px; border-radius:4px; border:1px solid var(--border-color);">
+            <h4 style="color:var(--accent-gold);">📜 The Three Disciplines of Bonsai</h4>
+            <p style="font-size:11px; margin-top:4px; line-height:1.4;">
+              1. <b>Watering Discipline</b>: Water thoroughly when top substrate begins to dry. Overwatering suffocates root hairs; underwatering scorches foliage.<br>
+              2. <b>Pruning & Taper</b>: Structural clips define movement. Clip thick apical shoots to force energy into finer back-buds.<br>
+              3. <b>Repotting Cycle</b>: Repot exclusively in <b>Spring</b> during bud swell. Pruning roots in summer or autumn will cause catastrophic stress.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card); padding:10px; border-radius:4px; border:1px solid var(--border-color);">
+            <h4 style="color:var(--accent-gold);">🎋 15 Classical Japanese Forms</h4>
+            <p style="font-size:11px; margin-top:4px; line-height:1.4;">
+              • <b>Chokkan</b> (Formal Upright) | <b>Moyogi</b> (Informal Upright)<br>
+              • <b>Shakan</b> (Slanting) | <b>Kengai</b> (Full Cascade)<br>
+              • <b>Han-Kengai</b> (Semi-Cascade) | <b>Bunjingi</b> (Literati)<br>
+              • <b>Fukinagashi</b> (Windswept) | <b>Hokidachi</b> (Broom)<br>
+              • <b>Sokan</b> (Twin Trunk) | <b>Kabudachi</b> (Clump)<br>
+              • <b>Yose-ue</b> (Forest) | <b>Sharimiki</b> (Driftwood Deadwood)<br>
+              • <b>Neagari</b> (Exposed Root) | <b>Ishitsuki</b> (Root-over-Rock)<br>
+              • <b>Ikadabuki</b> (Raft Style)<br>
+              <i>Use the <b>Train Shape</b> tool in the Train drawer to sculpt any form.</i>
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card); padding:10px; border-radius:4px; border:1px solid var(--border-color);">
+            <h4 style="color:var(--accent-gold);">🪵 Deadwood: Jin & Shari</h4>
+            <p style="font-size:11px; margin-top:4px; line-height:1.4;">
+              Conifers (Junipers and Black Pines) excel with bleached deadwood. Use the carving tool and lime-sulfur to preserve structural branches into rugged, aged deadwood spikes (*Jin*) or trunk strips (*Shari*).
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card); padding:10px; border-radius:4px; border:1px solid var(--border-color);">
+            <h4 style="color:var(--accent-gold);">🏺 Pot & Stand Harmony</h4>
+            <p style="font-size:11px; margin-top:4px; line-height:1.4;">
+              Conifers demand unglazed clay (Tokoname red clay or Basalt black). Deciduous trees shine in glazed pottery (Celadon crackle or Cobalt blue). Match tall cascade trees with deep pots on high Kengai stands for maximum Kokufu-ten harmony points.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+  };
+  window.Manual = Manual;
+
+  /**
+   * 3. GOD MODE DEVELOPER CONSOLE
+   */
+  const GodConsole = {
+    render() {
+      const root = document.getElementById('god-content');
+      if (!root) return;
+      const tree = GameState.getCurrentTree();
+
+      root.innerHTML = `
+        <div class="god-group">
+          <b style="color:var(--accent-gold);">⏳ Chrono Warp & Engine Speed</b>
+          <div class="god-grid">
+            <button class="action-btn" onclick="GodConsole.warpDays(1)">+1 Day</button>
+            <button class="action-btn" onclick="GodConsole.warpSeason()">+1 Season</button>
+            <button class="action-btn" onclick="GodConsole.warpYear()">+1 Year</button>
+            <button class="action-btn" onclick="GodConsole.setSpeed(200)">⚡ Ultra (5x)</button>
+            <button class="action-btn" onclick="GodConsole.setSpeed(3000)">🐢 Normal (1x)</button>
+          </div>
+        </div>
+
+        <div class="god-group">
+          <b style="color:var(--accent-gold);">🪴 Active Specimen Overrides</b>
+          ${tree ? `
+            <div class="god-grid">
+              <button class="action-btn" onclick="GodConsole.fillWater()">Max Hydration (100%)</button>
+              <button class="action-btn" onclick="GodConsole.healTree()">Heal All Stress & Vigor</button>
+              <button class="action-btn" onclick="GodConsole.refreshSoil()">Max Aeration & Soil</button>
+              <button class="action-btn" onclick="GodConsole.addAge(5)">Age Tree +5 Yrs</button>
+              <button class="action-btn" onclick="GodConsole.rerollSeed()">🎲 Mutate Branch Seed</button>
+              <button class="action-btn" onclick="GodConsole.clearWireBite()">Cure Wire Bites</button>
+            </div>
+          ` : `<span style="color:var(--text-muted); font-size:10px;">Select an active bench slot first.</span>`}
+        </div>
+
+        <div class="god-group">
+          <b style="color:var(--accent-gold);">💰 Treasury & Infinite Resources</b>
+          <div class="god-grid">
+            <button class="action-btn" onclick="GodConsole.addCoins(1000)">+1,000 Coins</button>
+            <button class="action-btn" onclick="GodConsole.maxSupplies()">Max All Inventory</button>
+            <button class="action-btn" onclick="GodConsole.instantRoots()">Instant Clones Ready</button>
+            <button class="action-btn" onclick="GodConsole.spawnMaster()">Spawn Master Juniper</button>
+          </div>
+        </div>
+      `;
+    },
+
+    warpDays(n) {
+      for (let i = 0; i < n; i++) BotanicalEngine.stepDay();
+      Toast.show(`Warped ${n} day(s) forward.`, "info");
+      this.render();
+    },
+    warpSeason() {
+      this.warpDays(30);
+    },
+    warpYear() {
+      this.warpDays(120);
+    },
+    setSpeed(ms) {
+      BotanicalEngine.setSpeed(ms);
+      Toast.show(`Clock set to ${ms}ms / day.`, "info");
+    },
+    fillWater() {
+      const t = GameState.getCurrentTree();
+      if (t) { t.water = 100; BotanicalEngine.syncHUD(); }
+    },
+    healTree() {
+      const t = GameState.getCurrentTree();
+      if (t) { t.stress = 0; t.vigor = 100; t.npk = 100; BotanicalEngine.syncHUD(); }
+    },
+    refreshSoil() {
+      const t = GameState.getCurrentTree();
+      if (t) { t.soilHealth = 100; t.rootbound = 0; BotanicalEngine.syncHUD(); }
+    },
+    addAge(years) {
+      const t = GameState.getCurrentTree();
+      if (t) { t.age += years; BotanicalEngine.renderCurrentView(); BotanicalEngine.syncHUD(); }
+    },
+    rerollSeed() {
+      const t = GameState.getCurrentTree();
+      if (t) { t.seed = Math.floor(Math.random() * 999999); BotanicalEngine.renderCurrentView(); }
+    },
+    clearWireBite() {
+      const t = GameState.getCurrentTree();
+      if (t) { t.hasWireBite = false; BotanicalEngine.syncHUD(); }
+    },
+    addCoins(amt) {
+      GameState.coins += amt;
+      BotanicalEngine.syncHUD();
+    },
+    maxSupplies() {
+      Object.keys(GameState.inventory).forEach(k => GameState.inventory[k] = 50);
+      Toast.show("Inventory filled to 50x each!", "success");
+    },
+    instantRoots() {
+      GameState.propTray.forEach(p => p.progress = 100);
+      Toast.show("All propagation cuttings ready to pot!", "success");
+      if (window.Actions) Actions.renderSubActions();
+    },
+    spawnMaster() {
+      const free = GameState.bench.findIndex(s => s === null);
+      if (free === -1) { Toast.show("Bench is full!", "warn"); return; }
+      const master = TreeFactory.createTree('juniper', 'Ancient Shinshoku', 45);
+      master.style = 'sharimiki';
+      master.deadwoodBranches = ['64_80', '60_70', '56_58'];
+      master.potStyle = 'cascade';
+      master.standStyle = 'kengai';
+      master.standWood = 'rosewood';
+      master.potGlaze = 'yixing';
+      GameState.bench[free] = master;
+      BotanicalEngine.syncHUD();
+      BotanicalEngine.renderCurrentView();
+      Toast.show("45-Year Ancient Shimpaku spawned!", "success");
+    }
+  };
+  window.GodConsole = GodConsole;
+
+  /**
+   * 4. SAVE & LOAD PERSISTENCE SYSTEM
+   */
+  const Persistence = {
+    storageKey: 'BONSAI_MASTER_SAVE_V1',
+
+    init() {
+      if (localStorage.getItem(this.storageKey)) {
+        this.load();
+      }
+      // Auto-save every 30 seconds
+      setInterval(() => {
+        this.save(true);
+      }, 30000);
+    },
+
+    render() {
+      const root = document.getElementById('save-content');
+      if (!root) return;
+      const saveStr = this.serialize();
+
+      root.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="action-btn" style="background:var(--accent-green);" onclick="Persistence.save()">
+            💾 Save Game to Device Storage
+          </button>
+          <button class="action-btn" style="background:var(--bg-card);" onclick="Persistence.load()">
+            📂 Reload Game from Local Storage
+          </button>
+
+          <h4 style="color:var(--accent-gold); margin-top:8px;">Cloud Backup / Export</h4>
+          <textarea id="save-backup-box" readonly style="width:100%; height:70px; background:#121613; color:#a1cfbe; border:1px solid var(--border-color); font-size:10px; padding:6px; font-family:monospace; resize:none;">${saveStr}</textarea>
+          <button class="action-btn" onclick="Persistence.copyBackup()">📋 Copy Save to Clipboard</button>
+
+          <h4 style="color:var(--accent-gold); margin-top:8px;">Import Save String</h4>
+          <textarea id="save-import-box" placeholder="Paste Base64/JSON string here..." style="width:100%; height:55px; background:#121613; color:#fff; border:1px solid var(--border-color); font-size:10px; padding:6px; font-family:monospace; resize:none;"></textarea>
+          <button class="action-btn" style="background:var(--accent-gold); color:#000; font-weight:bold;" onclick="Persistence.applyImport()">📥 Import & Restore</button>
+        </div>
+      `;
+    },
+
+    serialize() {
+      const payload = {
+        coins: GameState.coins,
+        day: GameState.day,
+        seasonIndex: GameState.seasonIndex,
+        year: GameState.year,
+        activeSlot: GameState.activeSlot,
+        bench: GameState.bench,
+        propTray: GameState.propTray,
+        inventory: GameState.inventory
+      };
+      return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    },
+
+    deserialize(str) {
+      const json = decodeURIComponent(escape(atob(str)));
+      return JSON.parse(json);
+    },
+
+    save(isAuto = false) {
+      try {
+        const data = this.serialize();
+        localStorage.setItem(this.storageKey, data);
+        if (!isAuto) Toast.show("Game progress saved!", "success");
+      } catch (e) {
+        if (!isAuto) Toast.show("Failed to write to localStorage.", "warn");
+      }
+    },
+
+    load() {
+      try {
+        const raw = localStorage.getItem(this.storageKey);
+        if (!raw) {
+          Toast.show("No save found in local storage.", "warn");
+          return;
+        }
+        const data = this.deserialize(raw);
+        this.applyState(data);
+        Toast.show("Game restored from local storage!", "success");
+      } catch (e) {
+        Toast.show("Error parsing save file.", "warn");
+      }
+    },
+
+    copyBackup() {
+      const box = document.getElementById('save-backup-box');
+      if (box) {
+        box.select();
+        navigator.clipboard.writeText(box.value).then(() => {
+          Toast.show("Save string copied to clipboard!", "success");
+        });
+      }
+    },
+
+    applyImport() {
+      const box = document.getElementById('save-import-box');
+      if (!box || !box.value.trim()) return;
+      try {
+        const data = this.deserialize(box.value.trim());
+        this.applyState(data);
+        Toast.show("Save successfully imported!", "success");
+        UI.toggleModal('modal-save');
+      } catch (e) {
+        Toast.show("Invalid save backup string!", "warn");
+      }
+    },
+
+    applyState(data) {
+      GameState.coins = data.coins;
+      GameState.day = data.day;
+      GameState.seasonIndex = data.seasonIndex;
+      GameState.year = data.year;
+      GameState.activeSlot = data.activeSlot || 0;
+      GameState.bench = data.bench;
+      GameState.propTray = data.propTray || [];
+      GameState.inventory = data.inventory;
+
+      BotanicalEngine.recalculateAllStyles();
+      BotanicalEngine.renderCurrentView();
+      BotanicalEngine.syncHUD();
+      if (window.Actions) Actions.renderSubActions();
+    }
+  };
+  window.Persistence = Persistence;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Persistence.init();
+  });
+  </script>
+
 </body>
 </html>
